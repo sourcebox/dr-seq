@@ -56,7 +56,7 @@ pub(crate) fn create(
         HStack::new(cx, |cx| {
             Label::new(cx, "Dr. Seq")
                 .font_family(vec![FamilyOwned::Name(String::from(
-                    assets::NOTO_SANS_THIN,
+                    assets::NOTO_SANS_LIGHT,
                 ))])
                 .font_size(20.0);
         })
