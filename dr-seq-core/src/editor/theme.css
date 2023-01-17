@@ -1,0 +1,27 @@
+:root {
+    color: white;
+    background-color: #333333;
+}
+
+#header {
+    color: black;
+    background-color: #cd9090;
+}
+
+button label {
+    color: blue;
+}
+
+.step {
+    background-color: #666666;
+    border-radius: 3px;
+}
+
+.step.current {
+    background-color: white;
+}
+
+.step.active .content {
+    background-color: #ec6708;
+    border-radius: 50%;
+}

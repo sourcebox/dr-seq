@@ -1,0 +1,14 @@
+[package]
+name = "dr-seq-vst3"
+version = "0.1.0"
+edition = "2021"
+authors = ["Oliver Rockstedt <info@sourcebox.de>"]
+description = "Grid-based drum sequencer VST3 plugin"
+license = "GPL-3.0-or-later"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+nih_plug = { git = "https://github.com/robbert-vdh/nih-plug" }
+dr-seq-core = { path = "../dr-seq-core" }
