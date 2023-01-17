@@ -16,7 +16,7 @@ pub struct DrSeq {
 #[derive(Params)]
 struct DrSeqParams {
     #[persist = "pattern"]
-    pattern: Arc<Pattern>,
+    pattern: Pattern,
 
     #[persist = "editor-state"]
     editor_state: Arc<ViziaState>,
@@ -34,7 +34,7 @@ impl Default for DrSeqParams {
     fn default() -> Self {
         Self {
             editor_state: editor::default_state(),
-            pattern: Arc::new(Pattern::default()),
+            pattern: Pattern::default(),
         }
     }
 }
@@ -109,7 +109,7 @@ struct Pattern {
     steps: [[AtomicBool; 32]; 8],
 }
 
-impl<'a> PersistentField<'a, Pattern> for Arc<Pattern> {
+impl<'a> PersistentField<'a, Pattern> for Pattern {
     fn set(&self, new_value: Pattern) {
         for (step, new_step) in self.steps.iter().zip(new_value.steps) {
             for s in step.iter().zip(new_step) {
