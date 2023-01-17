@@ -85,7 +85,7 @@ pub(crate) fn create(
                                 .space(Pixels(2.0))
                                 .child_space(Pixels(3.0))
                                 .class("step")
-                                .on_press(move |eh| {
+                                .on_press_down(move |eh| {
                                     eh.emit(AppEvent::CellClick(track, step));
                                 });
                                 if step == active_step {
