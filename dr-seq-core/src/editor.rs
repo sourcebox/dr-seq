@@ -25,6 +25,7 @@ impl Model for Data {
             AppEvent::CellClick(track, step) => {
                 let param = &self.params.pattern.steps[*track][*step];
                 param.store(!param.load(Ordering::Relaxed), Ordering::Relaxed);
+                self.params.pattern_changed.store(true, Ordering::Relaxed);
             }
         });
     }

@@ -18,6 +18,9 @@ struct DrSeqParams {
     #[persist = "pattern"]
     pattern: Pattern,
 
+    /// Flag if pattern was changed in the editor.
+    pattern_changed: AtomicBool,
+
     #[persist = "editor-state"]
     editor_state: Arc<ViziaState>,
 }
@@ -35,6 +38,7 @@ impl Default for DrSeqParams {
         Self {
             editor_state: editor::default_state(),
             pattern: Pattern::default(),
+            pattern_changed: AtomicBool::new(false),
         }
     }
 }
@@ -80,6 +84,10 @@ impl Plugin for DrSeq {
         _aux: &mut AuxiliaryBuffers,
         context: &mut impl ProcessContext<Self>,
     ) -> ProcessStatus {
+        if self.params.pattern_changed.load(Ordering::Relaxed) {
+            self.params.pattern_changed.store(false, Ordering::Relaxed);
+        }
+
         while let Some(event) = context.next_event() {
             context.send_event(event);
         }
