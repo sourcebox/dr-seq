@@ -1,3 +1,5 @@
+mod editor;
+
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
@@ -7,9 +9,10 @@ use nih_plug::prelude::*;
 use nih_plug_vizia::ViziaState;
 use serde::{Deserialize, Serialize};
 
-mod editor;
+use dr_seq_engine::Engine;
 
 pub struct DrSeq {
+    engine: Engine,
     params: Arc<DrSeqParams>,
 }
 
@@ -28,6 +31,7 @@ struct DrSeqParams {
 impl Default for DrSeq {
     fn default() -> Self {
         Self {
+            engine: Engine::new(),
             params: Arc::new(DrSeqParams::default()),
         }
     }

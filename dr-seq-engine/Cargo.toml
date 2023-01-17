@@ -1,0 +1,10 @@
+[package]
+name = "dr-seq-engine"
+version = "0.1.0"
+edition = "2021"
+authors = ["Oliver Rockstedt <info@sourcebox.de>"]
+description = "Drum sequencer engine"
+license = "MIT"
+
+[dependencies]
+array-init = "2.1"

@@ -84,6 +84,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "33954243bd79057c2de7338850b85983a44588021f8a5fee574a8888c6de4344"
 
 [[package]]
+name = "array-init"
+version = "2.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3d62b7694a562cdf5a74227903507c56ab2cc8bdd1f781ed5cb4cf9c9f810bfc"
+
+[[package]]
 name = "assert_no_alloc"
 version = "1.1.2"
 source = "git+https://github.com/robbert-vdh/rust-assert-no-alloc.git?branch=nih-plug#95120d996240a2c279a6067502e11b62d30563a6"
@@ -677,9 +683,17 @@ name = "dr-seq-core"
 version = "0.1.0"
 dependencies = [
  "atomic_float",
+ "dr-seq-engine",
  "nih_plug",
  "nih_plug_vizia",
  "serde",
+]
+
+[[package]]
+name = "dr-seq-engine"
+version = "0.1.0"
+dependencies = [
+ "array-init",
 ]
 
 [[package]]
