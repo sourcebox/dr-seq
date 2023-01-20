@@ -17,5 +17,5 @@ impl Track {
     }
 
     /// Process a clock pulse.
-    pub fn clock(&mut self, clock_no: u32) {}
+    pub fn clock(&mut self, pulse_no: i32) {}
 }

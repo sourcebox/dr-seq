@@ -1,3 +1,4 @@
+mod clock;
 mod editor;
 
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -9,10 +10,14 @@ use nih_plug::prelude::*;
 use nih_plug_vizia::ViziaState;
 use serde::{Deserialize, Serialize};
 
-use dr_seq_engine::Engine;
+use clock::Clock;
+use dr_seq_engine::{Engine, CLOCK_PPQ};
 
 pub struct DrSeq {
+    /// Sequencer engine.
     engine: Engine,
+
+    /// Parameters shared with host.
     params: Arc<DrSeqParams>,
 }
 
@@ -84,12 +89,40 @@ impl Plugin for DrSeq {
 
     fn process(
         &mut self,
-        _buffer: &mut Buffer,
+        buffer: &mut Buffer,
         _aux: &mut AuxiliaryBuffers,
         context: &mut impl ProcessContext<Self>,
     ) -> ProcessStatus {
         if self.params.pattern_changed.load(Ordering::Relaxed) {
             self.params.pattern_changed.store(false, Ordering::Relaxed);
+        }
+
+        // Pulses per quarter note.
+        let ppq = CLOCK_PPQ as f64;
+
+        let clock = Clock::new(buffer, context.transport(), ppq);
+
+        for (pulse_no, timing) in clock {
+            if pulse_no % ppq as i32 == 0 {
+                let event = NoteEvent::NoteOn {
+                    timing,
+                    voice_id: None,
+                    channel: 0,
+                    note: 60,
+                    velocity: 1.0,
+                };
+                context.send_event(event);
+            }
+            if pulse_no % ppq as i32 == ppq as i32 / 2 {
+                let event = NoteEvent::NoteOff {
+                    timing,
+                    voice_id: None,
+                    channel: 0,
+                    note: 60,
+                    velocity: 0.0,
+                };
+                context.send_event(event);
+            }
         }
 
         while let Some(event) = context.next_event() {

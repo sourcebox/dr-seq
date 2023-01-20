@@ -13,7 +13,7 @@ use crate::track::Track;
 const NUM_TRACKS: usize = 8;
 
 /// Clock pulses per quarter note.
-const CLOCK_PPQ: u32 = 384;
+pub const CLOCK_PPQ: u32 = 384;
 
 /// Sequencer engine.
 #[derive(Debug, Default)]
@@ -30,9 +30,9 @@ impl Engine {
     }
 
     /// Process a clock pulse.
-    pub fn clock(&mut self, clock_no: u32) {
+    pub fn clock(&mut self, pulse_no: i32) {
         for track in self.tracks.as_mut() {
-            track.clock(clock_no);
+            track.clock(pulse_no);
         }
     }
 }
