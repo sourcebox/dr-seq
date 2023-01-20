@@ -11,7 +11,11 @@ use nih_plug_vizia::ViziaState;
 use serde::{Deserialize, Serialize};
 
 use clock::Clock;
-use dr_seq_engine::{Engine, CLOCK_PPQ};
+use dr_seq_engine::{
+    event::Event as EngineEvent,
+    params::{Pitch, Velocity},
+    Engine, CLOCK_PPQ,
+};
 
 pub struct DrSeq {
     /// Sequencer engine.
@@ -111,25 +115,41 @@ impl Plugin for DrSeq {
                 .active_step
                 .store(pulse_no / (ppq / 4.0) as i32 % 16, Ordering::Relaxed);
 
-            if pulse_no % ppq as i32 == 0 {
-                let event = NoteEvent::NoteOn {
-                    timing,
-                    voice_id: None,
-                    channel: 0,
-                    note: 60,
-                    velocity: 1.0,
-                };
-                context.send_event(event);
-            }
-            if pulse_no % ppq as i32 == ppq as i32 / 2 {
-                let event = NoteEvent::NoteOff {
-                    timing,
-                    voice_id: None,
-                    channel: 0,
-                    note: 60,
-                    velocity: 0.0,
-                };
-                context.send_event(event);
+            self.engine.clock(pulse_no);
+
+            while let Some(event) = self.engine.next_event() {
+                match event {
+                    EngineEvent::NoteOn(pitch, velocity) => {
+                        let event = NoteEvent::NoteOn {
+                            timing,
+                            voice_id: None,
+                            channel: 0,
+                            note: match pitch {
+                                Pitch::Default => 60,
+                                Pitch::Custom(pitch) => pitch,
+                            },
+                            velocity: match velocity {
+                                Velocity::Strong => 1.0,
+                                Velocity::Weak => 0.4,
+                                _ => 0.7,
+                            },
+                        };
+                        context.send_event(event);
+                    }
+                    EngineEvent::NoteOff(pitch) => {
+                        let event = NoteEvent::NoteOff {
+                            timing,
+                            voice_id: None,
+                            channel: 0,
+                            note: match pitch {
+                                Pitch::Default => 60,
+                                Pitch::Custom(pitch) => pitch,
+                            },
+                            velocity: 0.0,
+                        };
+                        context.send_event(event)
+                    }
+                }
             }
         }
 

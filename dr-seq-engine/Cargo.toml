@@ -8,3 +8,4 @@ license = "MIT"
 
 [dependencies]
 array-init = "2.1"
+heapless = "0.7"
