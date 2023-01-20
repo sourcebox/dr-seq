@@ -60,16 +60,18 @@ impl Iterator for Clock {
                 .round() as u32;
 
             if next_pulse_delta < self.buffer_length as u32 {
-                let result = Some((pos_pulses.ceil() as i32, next_pulse_delta));
+                let pulse = (pos_pulses.ceil() as i32, next_pulse_delta);
 
                 // Prepare next pulse.
                 self.pos_pulses = Some(pos_pulses + 1.0);
                 self.count += 1;
 
-                return result;
+                Some(pulse)
+            } else {
+                None
             }
+        } else {
+            None
         }
-
-        None
     }
 }
