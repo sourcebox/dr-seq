@@ -65,44 +65,49 @@ pub(crate) fn create(
         .height(Pixels(40.0))
         .id("header");
 
-        let active_step = 2;
-
-        for track in 0..8 {
-            VStack::new(cx, |cx| {
-                HStack::new(cx, |cx| {
-                    for step in 0..16 {
-                        Binding::new(
-                            cx,
-                            Data::params.map(move |params| {
-                                params.pattern.steps[track][step].load(Ordering::Relaxed)
-                            }),
-                            move |cx, param| {
-                                let cell_state = param.get(cx);
-                                let mut cell = VStack::new(cx, |cx| {
-                                    Element::new(cx).class("content");
-                                })
-                                .size(Pixels(30.0))
-                                .space(Pixels(2.0))
-                                .child_space(Pixels(3.0))
-                                .class("step")
-                                .on_press_down(move |eh| {
-                                    eh.emit(AppEvent::CellClick(track, step));
-                                });
-                                if step == active_step {
-                                    cell = cell.class("current");
-                                }
-                                if cell_state {
-                                    cell = cell.class("active");
-                                }
-                                if step % 4 == 3 {
-                                    cell.right(Pixels(4.0));
-                                }
-                            },
-                        );
-                    }
-                });
-            })
-            .height(Pixels(30.0));
-        }
+        Binding::new(
+            cx,
+            Data::params.map(move |params| params.active_step.load(Ordering::Relaxed)),
+            move |cx, param| {
+                let active_step = param.get(cx);
+                for track in 0..8 {
+                    VStack::new(cx, |cx| {
+                        HStack::new(cx, |cx| {
+                            for step in 0..16 {
+                                Binding::new(
+                                    cx,
+                                    Data::params.map(move |params| {
+                                        params.pattern.steps[track][step].load(Ordering::Relaxed)
+                                    }),
+                                    move |cx, param| {
+                                        let cell_state = param.get(cx);
+                                        let mut cell = VStack::new(cx, |cx| {
+                                            Element::new(cx).class("content");
+                                        })
+                                        .size(Pixels(30.0))
+                                        .space(Pixels(2.0))
+                                        .child_space(Pixels(3.0))
+                                        .class("step")
+                                        .on_press_down(move |eh| {
+                                            eh.emit(AppEvent::CellClick(track, step));
+                                        });
+                                        if step == active_step as usize {
+                                            cell = cell.class("current");
+                                        }
+                                        if cell_state {
+                                            cell = cell.class("active");
+                                        }
+                                        if step % 4 == 3 {
+                                            cell.right(Pixels(4.0));
+                                        }
+                                    },
+                                );
+                            }
+                        });
+                    })
+                    .height(Pixels(30.0));
+                }
+            },
+        );
     })
 }

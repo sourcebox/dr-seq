@@ -1,7 +1,7 @@
 mod clock;
 mod editor;
 
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicI32, Ordering};
 use std::sync::Arc;
 
 use atomic_float::AtomicF32;
@@ -23,14 +23,17 @@ pub struct DrSeq {
 
 #[derive(Params)]
 struct DrSeqParams {
+    #[persist = "editor-state"]
+    editor_state: Arc<ViziaState>,
+
     #[persist = "pattern"]
     pattern: Pattern,
 
     /// Flag if pattern was changed in the editor.
     pattern_changed: AtomicBool,
 
-    #[persist = "editor-state"]
-    editor_state: Arc<ViziaState>,
+    /// Number of the active step.
+    active_step: AtomicI32,
 }
 
 impl Default for DrSeq {
@@ -48,6 +51,7 @@ impl Default for DrSeqParams {
             editor_state: editor::default_state(),
             pattern: Pattern::default(),
             pattern_changed: AtomicBool::new(false),
+            active_step: AtomicI32::new(0),
         }
     }
 }
@@ -103,6 +107,10 @@ impl Plugin for DrSeq {
         let clock = Clock::new(buffer, context.transport(), ppq);
 
         for (pulse_no, timing) in clock {
+            self.params
+                .active_step
+                .store(pulse_no / (ppq / 4.0) as i32 % 16, Ordering::Relaxed);
+
             if pulse_no % ppq as i32 == 0 {
                 let event = NoteEvent::NoteOn {
                     timing,
