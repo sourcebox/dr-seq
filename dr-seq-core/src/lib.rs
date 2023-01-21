@@ -2,7 +2,7 @@ mod clock;
 mod editor;
 mod params;
 
-use std::sync::atomic::Ordering;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
 use nih_plug::prelude::*;
@@ -25,18 +25,23 @@ const BARS: usize = 1;
 const CLOCK_PPQ: u32 = 384;
 
 pub struct App {
+    /// Parameters shared with host.
+    params: Arc<AppParams>,
+
     /// Sequencer engine.
     engine: Engine<TRACKS, BARS, CLOCK_PPQ>,
 
-    /// Parameters shared with host.
-    params: Arc<AppParams>,
+    /// Flag to update the engine after a parameter has been changed.
+    update_engine: Arc<AtomicBool>,
 }
 
 impl Default for App {
     fn default() -> Self {
+        let update_engine = Arc::new(AtomicBool::new(false));
         Self {
+            params: Arc::new(AppParams::new(update_engine.clone())),
             engine: Engine::new(),
-            params: Arc::new(AppParams::default()),
+            update_engine,
         }
     }
 }
@@ -89,6 +94,11 @@ impl Plugin for App {
         context: &mut impl ProcessContext<Self>,
     ) -> ProcessStatus {
         if self.params.pattern_changed.load(Ordering::Relaxed) {
+            self.update_engine();
+            self.params.pattern_changed.store(false, Ordering::Relaxed);
+        }
+
+        if self.update_engine.load(Ordering::Relaxed) {
             self.update_engine();
             self.params.pattern_changed.store(false, Ordering::Relaxed);
         }

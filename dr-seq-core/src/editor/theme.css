@@ -25,3 +25,12 @@ button label {
     background-color: #ec6708;
     border-radius: 50%;
 }
+
+.slider {
+    color: black;
+    background-color: green;
+}
+
+.slider:hover {
+    background-color: #03ca03;
+}
