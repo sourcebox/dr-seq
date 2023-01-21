@@ -4,7 +4,6 @@ mod editor;
 use std::sync::atomic::{AtomicBool, AtomicI32, Ordering};
 use std::sync::Arc;
 
-use atomic_float::AtomicF32;
 use nih_plug::params::persist::PersistentField;
 use nih_plug::prelude::*;
 use nih_plug_vizia::ViziaState;
@@ -12,14 +11,23 @@ use serde::{Deserialize, Serialize};
 
 use clock::Clock;
 use dr_seq_engine::{
-    event::Event as EngineEvent,
+    event::TrackEvent,
     params::{Pitch, Velocity},
-    Engine, CLOCK_PPQ,
+    Engine,
 };
+
+/// Number of tracks.
+const TRACKS: usize = 8;
+
+/// Number of bars per track.
+const BARS: usize = 1;
+
+/// Clock pulses per quarter note.
+const CLOCK_PPQ: u32 = 384;
 
 pub struct DrSeq {
     /// Sequencer engine.
-    engine: Engine,
+    engine: Engine<TRACKS, BARS, CLOCK_PPQ>,
 
     /// Parameters shared with host.
     params: Arc<DrSeqParams>,
@@ -92,6 +100,12 @@ impl Plugin for DrSeq {
         _buffer_config: &BufferConfig,
         _context: &mut impl InitContext<Self>,
     ) -> bool {
+        for track in self.engine.tracks() {
+            track.enable();
+        }
+
+        self.update_engine();
+
         true
     }
 
@@ -102,6 +116,7 @@ impl Plugin for DrSeq {
         context: &mut impl ProcessContext<Self>,
     ) -> ProcessStatus {
         if self.params.pattern_changed.load(Ordering::Relaxed) {
+            self.update_engine();
             self.params.pattern_changed.store(false, Ordering::Relaxed);
         }
 
@@ -118,15 +133,17 @@ impl Plugin for DrSeq {
             self.engine.clock(pulse_no);
 
             while let Some(event) = self.engine.next_event() {
-                match event {
-                    EngineEvent::NoteOn(pitch, velocity) => {
+                let note = (36 + event.0) as u8;
+                match event.1 {
+                    TrackEvent::NoteOn(pitch, velocity) => {
                         let event = NoteEvent::NoteOn {
                             timing,
                             voice_id: None,
                             channel: 0,
                             note: match pitch {
-                                Pitch::Default => 60,
-                                Pitch::Custom(pitch) => pitch,
+                                Pitch::Default => note,
+                                Pitch::Custom(pitch) => pitch as u8,
+                                _ => note,
                             },
                             velocity: match velocity {
                                 Velocity::Strong => 1.0,
@@ -136,19 +153,21 @@ impl Plugin for DrSeq {
                         };
                         context.send_event(event);
                     }
-                    EngineEvent::NoteOff(pitch) => {
+                    TrackEvent::NoteOff(pitch) => {
                         let event = NoteEvent::NoteOff {
                             timing,
                             voice_id: None,
                             channel: 0,
                             note: match pitch {
-                                Pitch::Default => 60,
-                                Pitch::Custom(pitch) => pitch,
+                                Pitch::Default => note,
+                                Pitch::Custom(pitch) => pitch as u8,
+                                _ => note,
                             },
                             velocity: 0.0,
                         };
                         context.send_event(event)
                     }
+                    _ => {}
                 }
             }
         }
@@ -158,6 +177,21 @@ impl Plugin for DrSeq {
         }
 
         ProcessStatus::Normal
+    }
+}
+
+impl DrSeq {
+    fn update_engine(&mut self) {
+        for (t, track) in self.engine.tracks().iter_mut().enumerate() {
+            for (s, step) in track.pattern().bar(0).steps().iter_mut().enumerate() {
+                let state = self.params.pattern.steps[t][s].load(Ordering::Relaxed);
+                if state {
+                    step.enable();
+                } else {
+                    step.disable();
+                }
+            }
+        }
     }
 }
 
@@ -179,7 +213,7 @@ nih_export_clap!(DrSeq);
 #[derive(Default, Serialize, Deserialize)]
 struct Pattern {
     /// Array of tracks with steps.
-    steps: [[AtomicBool; 32]; 8],
+    steps: [[AtomicBool; 16]; 8],
 }
 
 impl<'a> PersistentField<'a, Pattern> for Pattern {

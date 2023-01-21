@@ -1,22 +1,24 @@
 //! Parameter types.
 
 /// Pitch options.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+#[non_exhaustive]
 pub enum Pitch {
     /// Default setting.
     #[default]
     Default,
 
     /// Individual setting.
-    Custom(u8),
+    Custom(i32),
 }
 
 /// Velocity options.
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+#[non_exhaustive]
 pub enum Velocity {
     /// Normal velocity.
     #[default]
-    Normal,
+    Default,
 
     /// Accented step.
     Strong,
@@ -25,5 +27,5 @@ pub enum Velocity {
     Weak,
 
     /// Individual setting.
-    Custom(u8),
+    Custom(i32),
 }

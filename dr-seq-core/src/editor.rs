@@ -1,11 +1,11 @@
-use atomic_float::AtomicF32;
-use nih_plug::prelude::{util, Editor};
+//! Editor module using vizia.
+
+use nih_plug::prelude::Editor;
 use nih_plug_vizia::vizia::prelude::*;
 use nih_plug_vizia::widgets::*;
 use nih_plug_vizia::{assets, create_vizia_editor, ViziaState, ViziaTheming};
 use std::sync::atomic::Ordering;
 use std::sync::Arc;
-use std::time::Duration;
 
 use crate::DrSeqParams;
 

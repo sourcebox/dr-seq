@@ -3,30 +3,34 @@
 
 pub mod event;
 pub mod params;
-
-mod pattern;
-mod step;
-mod track;
+pub mod pattern;
+pub mod step;
+pub mod track;
 
 use array_init::array_init;
 
-use crate::event::Event;
+use crate::event::EngineEvent;
 use crate::track::Track;
 
-/// Number of tracks.
-const NUM_TRACKS: usize = 8;
-
-/// Clock pulses per quarter note.
-pub const CLOCK_PPQ: u32 = 384;
-
 /// Sequencer engine.
-#[derive(Default)]
-pub struct Engine {
+/// - `TRACKS` is the total number of tracks.
+/// - `BARS` is the max number of bars in each pattern.
+/// - `PPQ` is the resolution in pulses per quarter note.
+#[derive(Debug)]
+pub struct Engine<const TRACKS: usize, const BARS: usize, const PPQ: u32> {
     /// Individual tracks.
-    tracks: [Track; NUM_TRACKS],
+    tracks: [Track<BARS, PPQ>; TRACKS],
 }
 
-impl Engine {
+impl<const TRACKS: usize, const BARS: usize, const PPQ: u32> Default for Engine<TRACKS, BARS, PPQ> {
+    fn default() -> Self {
+        Self {
+            tracks: array_init(|_| Track::default()),
+        }
+    }
+}
+
+impl<const TRACKS: usize, const BARS: usize, const PPQ: u32> Engine<TRACKS, BARS, PPQ> {
     /// Returns a new instance.
     pub fn new() -> Self {
         Self {
@@ -42,23 +46,23 @@ impl Engine {
     }
 
     /// Return next event.
-    pub fn next_event(&mut self) -> Option<Event> {
-        for track in self.tracks.as_mut() {
+    pub fn next_event(&mut self) -> Option<EngineEvent> {
+        for (n, track) in self.tracks.iter_mut().enumerate() {
             if let Some(event) = track.next_event() {
-                return Some(event);
+                return Some(EngineEvent(n as u32, event));
             }
         }
 
         None
     }
 
-    /// Return a mutable reference to the tracks.
-    pub fn tracks(&mut self) -> &mut [Track] {
+    /// Returns a mutable reference to the tracks.
+    pub fn tracks(&mut self) -> &mut [Track<BARS, PPQ>] {
         &mut self.tracks
     }
 
-    /// Return a mutable reference to a specific track.
-    pub fn track(&mut self, track_no: usize) -> &mut Track {
-        &mut self.tracks[track_no]
+    /// Returns a mutable reference to a specific track.
+    pub fn track(&mut self, track_no: u32) -> &mut Track<BARS, PPQ> {
+        &mut self.tracks[track_no as usize]
     }
 }
