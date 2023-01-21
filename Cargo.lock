@@ -214,9 +214,9 @@ checksum = "0d261e256854913907f67ed06efbc3338dfe6179796deefc1ff763fc1aee5535"
 
 [[package]]
 name = "bytemuck"
-version = "1.12.3"
+version = "1.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aaa3a8d9a1ca92e282c96a32d6511b695d7d994d1d102ba85d279f9b2756947f"
+checksum = "c041d3eab048880cb0b86b256447da3f18859a163c3b8d8893f4e6368abe6393"
 
 [[package]]
 name = "byteorder"
@@ -1422,7 +1422,7 @@ dependencies = [
 [[package]]
 name = "nih_plug"
 version = "0.0.0"
-source = "git+https://github.com/robbert-vdh/nih-plug#7e7fea37ee27ba5c2aca3311ccb11dfc2ebe123c"
+source = "git+https://github.com/robbert-vdh/nih-plug#875c9da23ca2e9fbab963f4a42aea4e17c174193"
 dependencies = [
  "anyhow",
  "anymap",
@@ -1465,7 +1465,7 @@ source = "git+https://github.com/robbert-vdh/nih_plug_assets.git#a04e327923e120b
 [[package]]
 name = "nih_plug_derive"
 version = "0.1.0"
-source = "git+https://github.com/robbert-vdh/nih-plug#7e7fea37ee27ba5c2aca3311ccb11dfc2ebe123c"
+source = "git+https://github.com/robbert-vdh/nih-plug#875c9da23ca2e9fbab963f4a42aea4e17c174193"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1475,7 +1475,7 @@ dependencies = [
 [[package]]
 name = "nih_plug_vizia"
 version = "0.0.0"
-source = "git+https://github.com/robbert-vdh/nih-plug#7e7fea37ee27ba5c2aca3311ccb11dfc2ebe123c"
+source = "git+https://github.com/robbert-vdh/nih-plug#875c9da23ca2e9fbab963f4a42aea4e17c174193"
 dependencies = [
  "baseview",
  "crossbeam",
@@ -1488,7 +1488,7 @@ dependencies = [
 [[package]]
 name = "nih_plug_xtask"
 version = "0.1.0"
-source = "git+https://github.com/robbert-vdh/nih-plug#7e7fea37ee27ba5c2aca3311ccb11dfc2ebe123c"
+source = "git+https://github.com/robbert-vdh/nih-plug#875c9da23ca2e9fbab963f4a42aea4e17c174193"
 dependencies = [
  "anyhow",
  "goblin",
@@ -2408,9 +2408,9 @@ dependencies = [
 
 [[package]]
 name = "toml"
-version = "0.5.10"
+version = "0.5.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1333c76748e868a4d9d1017b5ab53171dfd095f70c712fdb4653a406547f598f"
+checksum = "f4f7f0dd8d50a853a531c426359045b1998f04219d88799810762cd4ad314234"
 dependencies = [
  "serde",
 ]
@@ -2450,9 +2450,9 @@ dependencies = [
 
 [[package]]
 name = "unicode-bidi"
-version = "0.3.8"
+version = "0.3.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "099b7128301d285f79ddd55b9a83d5e6b9e97c92e0ea0daebee7263e932de992"
+checksum = "d54675592c1dbefd78cbd98db9bacd89886e1ca50692a0692baefffdeb92dd58"
 
 [[package]]
 name = "unicode-bidi-mirroring"
@@ -3019,9 +3019,9 @@ dependencies = [
 
 [[package]]
 name = "x11"
-version = "2.20.1"
+version = "2.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c2638d5b9c17ac40575fb54bb461a4b1d2a8d1b4ffcc4ff237d254ec59ddeb82"
+checksum = "502da5464ccd04011667b11c435cb992822c2c0dbde1770c988480d312a0db2e"
 dependencies = [
  "libc",
  "pkg-config",
@@ -3038,12 +3038,12 @@ dependencies = [
 
 [[package]]
 name = "x11-dl"
-version = "2.20.1"
+version = "2.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b1536d6965a5d4e573c7ef73a2c15ebcd0b2de3347bdf526c34c297c00ac40f0"
+checksum = "38735924fedd5314a6e548792904ed8c6de6636285cb9fec04d5b1db85c1516f"
 dependencies = [
- "lazy_static",
  "libc",
+ "once_cell",
  "pkg-config",
 ]
 

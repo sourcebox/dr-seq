@@ -3,7 +3,6 @@
 use heapless::spsc::Queue;
 
 use crate::event::TrackEvent;
-use crate::params::{Pitch, Velocity};
 use crate::pattern::Pattern;
 
 /// Capacity of the event queue.
@@ -71,13 +70,24 @@ impl<const BARS: usize, const PPQ: u32> Track<BARS, PPQ> {
                 let play_bar = play_pos / 16;
                 let play_step = play_pos % 16;
 
-                if self.pattern.bar(play_bar).step(play_step).enabled() {
+                let step = self.pattern.bar(play_bar).step(play_step);
+
+                if step.enabled() {
                     // For now, we don't use a specific gate time.
                     self.event_queue
-                        .enqueue(TrackEvent::NoteOn(Pitch::Default, Velocity::Default))
+                        .enqueue(TrackEvent::NoteOn {
+                            bar: play_bar,
+                            step: play_step,
+                            pitch: step.pitch(),
+                            vel: step.velocity(),
+                        })
                         .ok();
                     self.event_queue
-                        .enqueue(TrackEvent::NoteOff(Pitch::Default))
+                        .enqueue(TrackEvent::NoteOff {
+                            bar: play_bar,
+                            step: play_step,
+                            pitch: step.pitch(),
+                        })
                         .ok();
                 }
             }

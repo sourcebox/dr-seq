@@ -6,10 +6,15 @@ use crate::params::{Pitch, Velocity};
 #[non_exhaustive]
 pub enum TrackEvent {
     /// Start a note with pitch and velocity.
-    NoteOn(Pitch, Velocity),
+    NoteOn {
+        bar: u32,
+        step: u32,
+        pitch: Pitch,
+        vel: Velocity,
+    },
 
     /// Stop a note with pitch.
-    NoteOff(Pitch),
+    NoteOff { bar: u32, step: u32, pitch: Pitch },
 }
 
 /// Engine event with track number.

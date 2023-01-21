@@ -39,4 +39,24 @@ impl Step {
     pub fn enabled(&self) -> bool {
         self.enabled
     }
+
+    /// Sets the pitch of the step.
+    pub fn set_pitch(&mut self, pitch: Pitch) {
+        self.pitch = pitch;
+    }
+
+    /// Returns the pitch of the step.
+    pub fn pitch(&self) -> Pitch {
+        self.pitch
+    }
+
+    /// Sets the velocity of the step.
+    pub fn set_velocity(&mut self, vel: Velocity) {
+        self.velocity = vel;
+    }
+
+    /// Returns the velocity of the step.
+    pub fn velocity(&self) -> Velocity {
+        self.velocity
+    }
 }

@@ -118,7 +118,12 @@ impl Plugin for App {
             while let Some(event) = self.engine.next_event() {
                 let note = (36 + event.0) as u8;
                 match event.1 {
-                    TrackEvent::NoteOn(pitch, velocity) => {
+                    TrackEvent::NoteOn {
+                        bar: _,
+                        step: _,
+                        pitch,
+                        vel,
+                    } => {
                         let event = NoteEvent::NoteOn {
                             timing,
                             voice_id: None,
@@ -128,15 +133,19 @@ impl Plugin for App {
                                 Pitch::Custom(pitch) => pitch as u8,
                                 _ => note,
                             },
-                            velocity: match velocity {
+                            velocity: match vel {
                                 Velocity::Strong => 1.0,
-                                Velocity::Weak => 0.4,
-                                _ => 0.7,
+                                Velocity::Weak => 50.0 / 127.0,
+                                _ => 100.0 / 127.0,
                             },
                         };
                         context.send_event(event);
                     }
-                    TrackEvent::NoteOff(pitch) => {
+                    TrackEvent::NoteOff {
+                        bar: _,
+                        step: _,
+                        pitch,
+                    } => {
                         let event = NoteEvent::NoteOff {
                             timing,
                             voice_id: None,
