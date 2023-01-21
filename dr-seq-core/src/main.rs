@@ -1,7 +1,7 @@
 use nih_plug::prelude::*;
 
-use dr_seq_core::DrSeq;
+use dr_seq_core::App;
 
 fn main() {
-    nih_export_standalone::<DrSeq>();
+    nih_export_standalone::<App>();
 }

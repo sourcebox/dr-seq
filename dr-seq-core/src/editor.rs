@@ -7,7 +7,7 @@ use nih_plug_vizia::{assets, create_vizia_editor, ViziaState, ViziaTheming};
 use std::sync::atomic::Ordering;
 use std::sync::Arc;
 
-use crate::DrSeqParams;
+use crate::AppParams;
 
 #[derive(Debug)]
 enum AppEvent {
@@ -16,7 +16,7 @@ enum AppEvent {
 
 #[derive(Lens)]
 struct Data {
-    params: Arc<DrSeqParams>,
+    params: Arc<AppParams>,
 }
 
 impl Model for Data {
@@ -37,7 +37,7 @@ pub(crate) fn default_state() -> Arc<ViziaState> {
 }
 
 pub(crate) fn create(
-    params: Arc<DrSeqParams>,
+    params: Arc<AppParams>,
     editor_state: Arc<ViziaState>,
 ) -> Option<Box<dyn Editor>> {
     create_vizia_editor(editor_state, ViziaTheming::Custom, move |cx, _| {

@@ -1,13 +1,11 @@
 mod clock;
 mod editor;
+mod params;
 
-use std::sync::atomic::{AtomicBool, AtomicI32, Ordering};
+use std::sync::atomic::Ordering;
 use std::sync::Arc;
 
-use nih_plug::params::persist::PersistentField;
 use nih_plug::prelude::*;
-use nih_plug_vizia::ViziaState;
-use serde::{Deserialize, Serialize};
 
 use clock::Clock;
 use dr_seq_engine::{
@@ -15,6 +13,7 @@ use dr_seq_engine::{
     params::{Pitch, Velocity},
     Engine,
 };
+use params::AppParams;
 
 /// Number of tracks.
 const TRACKS: usize = 8;
@@ -25,50 +24,24 @@ const BARS: usize = 1;
 /// Clock pulses per quarter note.
 const CLOCK_PPQ: u32 = 384;
 
-pub struct DrSeq {
+pub struct App {
     /// Sequencer engine.
     engine: Engine<TRACKS, BARS, CLOCK_PPQ>,
 
     /// Parameters shared with host.
-    params: Arc<DrSeqParams>,
+    params: Arc<AppParams>,
 }
 
-#[derive(Params)]
-struct DrSeqParams {
-    #[persist = "editor-state"]
-    editor_state: Arc<ViziaState>,
-
-    #[persist = "pattern"]
-    pattern: Pattern,
-
-    /// Flag if pattern was changed in the editor.
-    pattern_changed: AtomicBool,
-
-    /// Number of the active step.
-    active_step: AtomicI32,
-}
-
-impl Default for DrSeq {
+impl Default for App {
     fn default() -> Self {
         Self {
             engine: Engine::new(),
-            params: Arc::new(DrSeqParams::default()),
+            params: Arc::new(AppParams::default()),
         }
     }
 }
 
-impl Default for DrSeqParams {
-    fn default() -> Self {
-        Self {
-            editor_state: editor::default_state(),
-            pattern: Pattern::default(),
-            pattern_changed: AtomicBool::new(false),
-            active_step: AtomicI32::new(0),
-        }
-    }
-}
-
-impl Plugin for DrSeq {
+impl Plugin for App {
     const NAME: &'static str = "Dr. Seq";
     const VENDOR: &'static str = "sourcebox";
     const URL: &'static str = "https://sourcebox.de";
@@ -180,7 +153,7 @@ impl Plugin for DrSeq {
     }
 }
 
-impl DrSeq {
+impl App {
     fn update_engine(&mut self) {
         for (t, track) in self.engine.tracks().iter_mut().enumerate() {
             for (s, step) in track.pattern().bar(0).steps().iter_mut().enumerate() {
@@ -195,7 +168,7 @@ impl DrSeq {
     }
 }
 
-impl ClapPlugin for DrSeq {
+impl ClapPlugin for App {
     const CLAP_ID: &'static str = "de.sourcebox.dr-seq";
     const CLAP_DESCRIPTION: Option<&'static str> = Some("TR-style drum sequencer");
     const CLAP_MANUAL_URL: Option<&'static str> = Some(Self::URL);
@@ -203,32 +176,9 @@ impl ClapPlugin for DrSeq {
     const CLAP_FEATURES: &'static [ClapFeature] = &[ClapFeature::NoteEffect, ClapFeature::Utility];
 }
 
-impl Vst3Plugin for DrSeq {
+impl Vst3Plugin for App {
     const VST3_CLASS_ID: [u8; 16] = *b"sb-dr-seq-plugin";
     const VST3_CATEGORIES: &'static str = "Instrument|Tools";
 }
 
-nih_export_clap!(DrSeq);
-
-#[derive(Default, Serialize, Deserialize)]
-struct Pattern {
-    /// Array of tracks with steps.
-    steps: [[AtomicBool; 16]; 8],
-}
-
-impl<'a> PersistentField<'a, Pattern> for Pattern {
-    fn set(&self, new_value: Pattern) {
-        for (step, new_step) in self.steps.iter().zip(new_value.steps) {
-            for s in step.iter().zip(new_step) {
-                s.0.store(s.1.load(Ordering::Relaxed), Ordering::Relaxed)
-            }
-        }
-    }
-
-    fn map<F, R>(&self, f: F) -> R
-    where
-        F: Fn(&Pattern) -> R,
-    {
-        f(self)
-    }
-}
+nih_export_clap!(App);
