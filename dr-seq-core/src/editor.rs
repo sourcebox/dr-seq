@@ -65,22 +65,33 @@ pub(crate) fn create(
         .height(Pixels(40.0))
         .id("header");
 
-        HStack::new(cx, move |cx| {
-            VStack::new(cx, move |cx| {
-                grid(cx);
+        VStack::new(cx, move |cx| {
+            HStack::new(cx, move |cx| {
+                VStack::new(cx, move |cx| {
+                    grid(cx);
+                });
+
+                VStack::new(cx, move |cx| {
+                    delay_slider(cx, Data::params, |params| &params.track1_delay);
+                    delay_slider(cx, Data::params, |params| &params.track2_delay);
+                    delay_slider(cx, Data::params, |params| &params.track3_delay);
+                    delay_slider(cx, Data::params, |params| &params.track4_delay);
+                    delay_slider(cx, Data::params, |params| &params.track5_delay);
+                    delay_slider(cx, Data::params, |params| &params.track6_delay);
+                    delay_slider(cx, Data::params, |params| &params.track7_delay);
+                    delay_slider(cx, Data::params, |params| &params.track8_delay);
+                });
             });
 
             VStack::new(cx, move |cx| {
-                delay_slider(cx, Data::params, |params| &params.track1_delay);
-                delay_slider(cx, Data::params, |params| &params.track2_delay);
-                delay_slider(cx, Data::params, |params| &params.track3_delay);
-                delay_slider(cx, Data::params, |params| &params.track4_delay);
-                delay_slider(cx, Data::params, |params| &params.track5_delay);
-                delay_slider(cx, Data::params, |params| &params.track6_delay);
-                delay_slider(cx, Data::params, |params| &params.track7_delay);
-                delay_slider(cx, Data::params, |params| &params.track8_delay);
-            });
-        });
+                HStack::new(cx, move |cx| {
+                    Label::new(cx, "Swing").top(Pixels(5.0)).right(Pixels(10.0));
+                    ParamSlider::new(cx, Data::params, |params| &params.swing).class("slider");
+                });
+            })
+            .top(Pixels(20.0));
+        })
+        .space(Pixels(10.0));
     })
 }
 

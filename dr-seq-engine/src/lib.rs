@@ -56,6 +56,13 @@ impl<const TRACKS: usize, const BARS: usize, const PPQ: u32> Engine<TRACKS, BARS
         None
     }
 
+    /// Set the swing for all tracks.
+    pub fn set_swing(&mut self, swing: i32) {
+        for track in self.tracks.iter_mut() {
+            track.set_swing(swing);
+        }
+    }
+
     /// Returns a mutable reference to the tracks.
     pub fn tracks(&mut self) -> &mut [Track<BARS, PPQ>] {
         &mut self.tracks

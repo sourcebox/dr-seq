@@ -20,6 +20,9 @@ pub struct Track<const BARS: usize, const PPQ: u32> {
     /// Play position as step number.
     play_pos: Option<u32>,
 
+    /// Swing offset in pulses.
+    swing: i32,
+
     /// Delay in pulses.
     delay: i32,
 
@@ -36,6 +39,7 @@ impl<const BARS: usize, const PPQ: u32> Clone for Track<BARS, PPQ> {
         Self {
             enabled: false,
             play_pos: None,
+            swing: self.swing,
             delay: self.delay,
             pattern: self.pattern.clone(),
             event_queue: EventQueue::new(),
@@ -52,7 +56,13 @@ impl<const BARS: usize, const PPQ: u32> Track<BARS, PPQ> {
     /// Process a clock pulse.
     pub fn clock(&mut self, pulse_no: i32) {
         if self.enabled {
-            let pulse_no = pulse_no - self.delay;
+            let mut pulse_no = pulse_no - self.delay;
+
+            // Apply swing value to each 2nd step.
+            if pulse_no / (PPQ as i32 / 4) % 2 == 1 {
+                pulse_no -= self.swing;
+            }
+
             let play_pos =
                 (pulse_no / (PPQ as i32 / 4) % self.pattern.length_steps() as i32) as u32;
 
@@ -92,6 +102,16 @@ impl<const BARS: usize, const PPQ: u32> Track<BARS, PPQ> {
     /// Returns if the track is enabled.
     pub fn enabled(&self) -> bool {
         self.enabled
+    }
+
+    /// Sets the swing in pulses.
+    pub fn set_swing(&mut self, swing: i32) {
+        self.swing = swing;
+    }
+
+    /// Returns the swing in pulses.
+    pub fn swing(&mut self) -> i32 {
+        self.swing
     }
 
     /// Sets the track delay in pulses.

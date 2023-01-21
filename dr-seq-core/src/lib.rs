@@ -176,6 +176,8 @@ impl App {
             }
         }
 
+        self.engine.set_swing(self.params.swing.value() * 48 / 100);
+
         self.engine
             .track(0)
             .set_delay(self.params.track1_delay.value());
