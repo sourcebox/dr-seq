@@ -82,6 +82,9 @@ impl Plugin for App {
             track.enable();
         }
 
+        // Used as accent track.
+        self.engine.track(7).disable();
+
         self.update_engine();
 
         true
@@ -119,11 +122,12 @@ impl Plugin for App {
                 let note = (36 + event.0) as u8;
                 match event.1 {
                     TrackEvent::NoteOn {
-                        bar: _,
-                        step: _,
+                        bar,
+                        step,
                         pitch,
                         vel,
                     } => {
+                        let accent = self.engine.track(7).pattern().bar(bar).step(step).enabled();
                         let event = NoteEvent::NoteOn {
                             timing,
                             voice_id: None,
@@ -136,7 +140,13 @@ impl Plugin for App {
                             velocity: match vel {
                                 Velocity::Strong => 1.0,
                                 Velocity::Weak => 50.0 / 127.0,
-                                _ => 100.0 / 127.0,
+                                _ => {
+                                    if accent {
+                                        1.0
+                                    } else {
+                                        100.0 / 127.0
+                                    }
+                                }
                             },
                         };
                         context.send_event(event);
