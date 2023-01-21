@@ -20,6 +20,9 @@ pub struct Track<const BARS: usize, const PPQ: u32> {
     /// Play position as step number.
     play_pos: Option<u32>,
 
+    /// Delay in pulses.
+    delay: i32,
+
     /// Pattern containing step information.
     pattern: Pattern<BARS>,
 
@@ -33,6 +36,7 @@ impl<const BARS: usize, const PPQ: u32> Clone for Track<BARS, PPQ> {
         Self {
             enabled: false,
             play_pos: None,
+            delay: self.delay,
             pattern: self.pattern.clone(),
             event_queue: EventQueue::new(),
         }
@@ -48,8 +52,10 @@ impl<const BARS: usize, const PPQ: u32> Track<BARS, PPQ> {
     /// Process a clock pulse.
     pub fn clock(&mut self, pulse_no: i32) {
         if self.enabled {
+            let pulse_no = pulse_no - self.delay;
             let play_pos =
                 (pulse_no / (PPQ as i32 / 4) % self.pattern.length_steps() as i32) as u32;
+
             if self.play_pos.is_none() || play_pos != self.play_pos.unwrap() {
                 self.play_pos = Some(play_pos);
                 let play_bar = play_pos / 16;
@@ -86,6 +92,16 @@ impl<const BARS: usize, const PPQ: u32> Track<BARS, PPQ> {
     /// Returns if the track is enabled.
     pub fn enabled(&self) -> bool {
         self.enabled
+    }
+
+    /// Sets the track delay in pulses.
+    pub fn set_delay(&mut self, delay: i32) {
+        self.delay = delay;
+    }
+
+    /// Returns the track delay in pulses.
+    pub fn delay(&self) -> i32 {
+        self.delay
     }
 
     /// Returns a mutable reference to the pattern.

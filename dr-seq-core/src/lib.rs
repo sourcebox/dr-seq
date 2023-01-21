@@ -175,6 +175,31 @@ impl App {
                 }
             }
         }
+
+        self.engine
+            .track(0)
+            .set_delay(self.params.track1_delay.value());
+        self.engine
+            .track(1)
+            .set_delay(self.params.track2_delay.value());
+        self.engine
+            .track(2)
+            .set_delay(self.params.track3_delay.value());
+        self.engine
+            .track(3)
+            .set_delay(self.params.track4_delay.value());
+        self.engine
+            .track(4)
+            .set_delay(self.params.track5_delay.value());
+        self.engine
+            .track(5)
+            .set_delay(self.params.track6_delay.value());
+        self.engine
+            .track(6)
+            .set_delay(self.params.track7_delay.value());
+        self.engine
+            .track(7)
+            .set_delay(self.params.track8_delay.value());
     }
 }
 

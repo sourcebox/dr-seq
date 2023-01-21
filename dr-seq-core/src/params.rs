@@ -60,7 +60,10 @@ pub struct AppParams {
 impl AppParams {
     /// Returns a new instance.
     pub fn new(update_engine: Arc<AtomicBool>) -> Self {
-        let delay_range = IntRange::Linear { min: -30, max: 30 };
+        let delay_range = IntRange::Linear {
+            min: -(crate::CLOCK_PPQ as i32) / 8,
+            max: (crate::CLOCK_PPQ as i32) / 8,
+        };
 
         Self {
             editor_state: editor::default_state(),
