@@ -1,3 +1,5 @@
+/* Page elements */
+
 :root {
     color: white;
     background-color: #333333;
@@ -8,9 +10,41 @@
     background-color: #cd9090;
 }
 
-button label {
-    color: blue;
+
+/* Parameter controls */
+
+param-slider {
+    color: black;
+    background-color: #999999;
 }
+
+param-slider :hover {
+    color: black;
+    background-color: #bbbbbb;
+}
+
+param-slider .fill {
+    color: black;
+    background-color: #ec6708;
+}
+
+param-button {
+    color: black;
+    background-color: #999999;
+}
+
+param-button :hover {
+    color: black;
+    background-color: #bbbbbb;
+}
+
+param-button :checked {
+    color: black;
+    background-color: #ec6708;
+}
+
+
+/* Grid with steps */
 
 .step {
     background-color: #666666;
@@ -24,13 +58,4 @@ button label {
 .step.active .content {
     background-color: #ec6708;
     border-radius: 50%;
-}
-
-.slider {
-    color: black;
-    background-color: green;
-}
-
-.slider:hover {
-    background-color: #03ca03;
 }

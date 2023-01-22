@@ -234,8 +234,7 @@ where
         .height(Pixels(20.0))
         .width(Pixels(70.0))
         .top(Stretch(0.5))
-        .bottom(Stretch(0.5))
-        .class("slider");
+        .bottom(Stretch(0.5));
 }
 
 /// Create a parameter button.
@@ -251,6 +250,5 @@ where
         .width(Pixels(20.0))
         .top(Stretch(0.5))
         .bottom(Stretch(0.5))
-        .font_size(1.0)
-        .class("button");
+        .font_size(1.0);
 }
