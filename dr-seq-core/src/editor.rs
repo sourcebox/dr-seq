@@ -7,7 +7,7 @@ use nih_plug_vizia::{assets, create_vizia_editor, ViziaState, ViziaTheming};
 use std::sync::atomic::Ordering;
 use std::sync::Arc;
 
-use crate::AppParams;
+use crate::{AppParams, TRACKS};
 
 #[derive(Debug)]
 enum AppEvent {
@@ -33,7 +33,7 @@ impl Model for Data {
 
 // Makes sense to also define this here, makes it a bit easier to keep track of
 pub(crate) fn default_state() -> Arc<ViziaState> {
-    ViziaState::from_size(800, 400)
+    ViziaState::from_size(800, 500)
 }
 
 pub(crate) fn create(
@@ -102,7 +102,7 @@ fn grid(cx: &mut Context) {
         Data::params.map(move |params| params.active_step.load(Ordering::Relaxed)),
         move |cx, param| {
             let active_step = param.get(cx);
-            for track in 0..8 {
+            for track in 0..TRACKS {
                 VStack::new(cx, |cx| {
                     HStack::new(cx, |cx| {
                         for step in 0..16 {
@@ -117,7 +117,8 @@ fn grid(cx: &mut Context) {
                                         Element::new(cx).class("content");
                                     })
                                     .size(Pixels(30.0))
-                                    .space(Pixels(2.0))
+                                    .right(Pixels(4.0))
+                                    .bottom(Pixels(8.0))
                                     .child_space(Pixels(3.0))
                                     .class("step")
                                     .on_press_down(move |eh| {
@@ -130,14 +131,15 @@ fn grid(cx: &mut Context) {
                                         cell = cell.class("active");
                                     }
                                     if step % 4 == 3 {
-                                        cell.right(Pixels(4.0));
+                                        cell.right(Pixels(8.0));
                                     }
                                 },
                             );
                         }
                     });
                 })
-                .height(Pixels(30.0));
+                .height(Pixels(30.0))
+                .top(Pixels(if track == TRACKS - 1 { 5.0 } else { 0.0 }));
             }
         },
     );
@@ -154,9 +156,9 @@ where
     VStack::new(cx, |cx| {
         ParamSlider::new(cx, params, params_to_param)
             .height(Pixels(20.0))
-            .width(Pixels(100.0))
-            .top(Pixels(8.0))
+            .width(Pixels(70.0))
+            .top(Pixels(6.0))
             .class("slider");
     })
-    .height(Pixels(34.0));
+    .height(Pixels(38.0));
 }

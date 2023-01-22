@@ -15,8 +15,11 @@ use dr_seq_engine::{
 };
 use params::AppParams;
 
-/// Number of tracks.
-const TRACKS: usize = 8;
+/// Total number of tracks. Last track is used for global accent.
+const TRACKS: usize = 9;
+
+/// Number of the accent track.
+const ACCENT_TRACK: u32 = (TRACKS - 1) as u32;
 
 /// Number of bars per track.
 const BARS: usize = 1;
@@ -82,8 +85,8 @@ impl Plugin for App {
             track.enable();
         }
 
-        // Used as accent track.
-        self.engine.track(7).disable();
+        // The accent track is disabled for playing and only used to store the steps.
+        self.engine.track(ACCENT_TRACK).disable();
 
         self.update_engine();
 
@@ -127,7 +130,13 @@ impl Plugin for App {
                         pitch,
                         vel,
                     } => {
-                        let accent = self.engine.track(7).pattern().bar(bar).step(step).enabled();
+                        let accent = self
+                            .engine
+                            .track(ACCENT_TRACK)
+                            .pattern()
+                            .bar(bar)
+                            .step(step)
+                            .enabled();
                         let event = NoteEvent::NoteOn {
                             timing,
                             voice_id: None,
@@ -184,7 +193,7 @@ impl Plugin for App {
 
 impl App {
     fn update_engine(&mut self) {
-        for (t, track) in self.engine.tracks().iter_mut().enumerate() {
+        for (t, track) in self.engine.tracks()[0..TRACKS - 1].iter_mut().enumerate() {
             for (s, step) in track.pattern().bar(0).steps().iter_mut().enumerate() {
                 let state = self.params.pattern.steps[t][s].load(Ordering::Relaxed);
                 if state {
@@ -226,7 +235,7 @@ impl App {
 
 impl ClapPlugin for App {
     const CLAP_ID: &'static str = "de.sourcebox.dr-seq";
-    const CLAP_DESCRIPTION: Option<&'static str> = Some("TR-style drum sequencer");
+    const CLAP_DESCRIPTION: Option<&'static str> = Some("Grid-based drum sequencer");
     const CLAP_MANUAL_URL: Option<&'static str> = Some(Self::URL);
     const CLAP_SUPPORT_URL: Option<&'static str> = None;
     const CLAP_FEATURES: &'static [ClapFeature] = &[ClapFeature::NoteEffect, ClapFeature::Utility];

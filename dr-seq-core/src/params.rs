@@ -8,7 +8,7 @@ use nih_plug::prelude::*;
 use nih_plug_vizia::ViziaState;
 use serde::{Deserialize, Serialize};
 
-use crate::editor;
+use crate::{editor, TRACKS};
 
 #[derive(Params)]
 pub struct AppParams {
@@ -119,7 +119,7 @@ impl AppParams {
 #[derive(Default, Serialize, Deserialize)]
 pub struct Pattern {
     /// Array of tracks with steps.
-    pub steps: [[AtomicBool; 16]; 8],
+    pub steps: [[AtomicBool; 16]; TRACKS],
 }
 
 impl<'a> PersistentField<'a, Pattern> for Pattern {
