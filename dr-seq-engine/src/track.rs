@@ -16,7 +16,7 @@ pub struct Track<const BARS: usize, const PPQ: u32> {
     /// Flag if track is enabled for playing.
     enabled: bool,
 
-    /// Play position as step number.
+    /// Last play position as step number over all bars.
     play_pos: Option<u32>,
 
     /// Swing offset in pulses.
@@ -137,6 +137,21 @@ impl<const BARS: usize, const PPQ: u32> Track<BARS, PPQ> {
     /// Returns a mutable reference to the pattern.
     pub fn pattern(&mut self) -> &mut Pattern<BARS> {
         &mut self.pattern
+    }
+
+    /// Returns the last play position as step number over all bars.
+    pub fn play_pos(&self) -> Option<u32> {
+        self.play_pos
+    }
+
+    /// Returns the last played bar number.
+    pub fn play_bar(&self) -> Option<u32> {
+        self.play_pos.map(|v| v / 16)
+    }
+
+    /// Returns the last played step number inside a bar.
+    pub fn play_step(&self) -> Option<u32> {
+        self.play_pos.map(|v| v % 16)
     }
 }
 
