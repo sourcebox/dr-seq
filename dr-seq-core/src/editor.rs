@@ -7,8 +7,23 @@ use nih_plug_vizia::{assets, create_vizia_editor, ViziaState, ViziaTheming};
 use std::sync::atomic::Ordering;
 use std::sync::Arc;
 
-use crate::config::{NAME, TRACKS};
+use crate::config::{ACCENT_TRACK, NAME, TRACKS};
 use crate::AppParams;
+
+/// Size of the grid cells.
+const GRID_CELL_SIZE: Units = Units::Pixels(25.0);
+
+/// Spacing of the grid cells.
+const GRID_CELL_SPACING: Units = Pixels(3.0);
+
+/// Row height of the grid, must be `GRID_CELL_SIZE` + 2 * `GRID_CELL_SPACING`.
+const GRID_ROW_HEIGHT: Units = Units::Pixels(31.0);
+
+/// Width of additional spacer after columns.
+const GRID_COL_SPACER_WIDTH: Units = Pixels(3.0);
+
+/// Height of additional spacer between rows.
+const GRID_ROW_SPACER_HEIGHT: Units = Pixels(3.0);
 
 #[derive(Debug)]
 enum AppEvent {
@@ -68,19 +83,48 @@ pub(crate) fn create(
 
         VStack::new(cx, move |cx| {
             HStack::new(cx, move |cx| {
-                VStack::new(cx, move |cx| {
-                    grid(cx);
-                });
+                grid(cx);
+
+                Element::new(cx).width(Pixels(10.0));
 
                 VStack::new(cx, move |cx| {
-                    delay_slider(cx, Data::params, |params| &params.track1_delay);
-                    delay_slider(cx, Data::params, |params| &params.track2_delay);
-                    delay_slider(cx, Data::params, |params| &params.track3_delay);
-                    delay_slider(cx, Data::params, |params| &params.track4_delay);
-                    delay_slider(cx, Data::params, |params| &params.track5_delay);
-                    delay_slider(cx, Data::params, |params| &params.track6_delay);
-                    delay_slider(cx, Data::params, |params| &params.track7_delay);
-                    delay_slider(cx, Data::params, |params| &params.track8_delay);
+                    VStack::new(cx, |cx| {
+                        param_slider(cx, Data::params, |params| &params.track1_delay);
+                    })
+                    .height(GRID_ROW_HEIGHT);
+                    VStack::new(cx, |cx| {
+                        param_slider(cx, Data::params, |params| &params.track2_delay);
+                    })
+                    .height(GRID_ROW_HEIGHT);
+                    VStack::new(cx, |cx| {
+                        param_slider(cx, Data::params, |params| &params.track3_delay);
+                    })
+                    .height(GRID_ROW_HEIGHT);
+                    VStack::new(cx, |cx| {
+                        param_slider(cx, Data::params, |params| &params.track4_delay);
+                    })
+                    .height(GRID_ROW_HEIGHT);
+                    VStack::new(cx, |cx| {
+                        param_slider(cx, Data::params, |params| &params.track5_delay);
+                    })
+                    .height(GRID_ROW_HEIGHT);
+                    VStack::new(cx, |cx| {
+                        param_slider(cx, Data::params, |params| &params.track6_delay);
+                    })
+                    .height(GRID_ROW_HEIGHT);
+                    VStack::new(cx, |cx| {
+                        param_slider(cx, Data::params, |params| &params.track7_delay);
+                    })
+                    .height(GRID_ROW_HEIGHT);
+                    VStack::new(cx, |cx| {
+                        param_slider(cx, Data::params, |params| &params.track8_delay);
+                    })
+                    .height(GRID_ROW_HEIGHT);
+                    Element::new(cx).top(GRID_ROW_SPACER_HEIGHT);
+                    VStack::new(cx, |cx| {
+                        param_slider(cx, Data::params, |params| &params.accent_velocity);
+                    })
+                    .height(GRID_ROW_HEIGHT);
                 });
             });
 
@@ -98,68 +142,79 @@ pub(crate) fn create(
 
 /// Create the grid.
 fn grid(cx: &mut Context) {
-    Binding::new(
-        cx,
-        Data::params.map(move |params| params.active_step.load(Ordering::Relaxed)),
-        move |cx, param| {
-            let active_step = param.get(cx);
-            for track in 0..TRACKS {
-                VStack::new(cx, |cx| {
-                    HStack::new(cx, |cx| {
-                        for step in 0..16 {
-                            Binding::new(
-                                cx,
-                                Data::params.map(move |params| {
-                                    params.pattern.steps[track][step].load(Ordering::Relaxed)
-                                }),
-                                move |cx, param| {
-                                    let cell_state = param.get(cx);
-                                    let mut cell = VStack::new(cx, |cx| {
-                                        Element::new(cx).class("content");
-                                    })
-                                    .size(Pixels(30.0))
-                                    .right(Pixels(4.0))
-                                    .bottom(Pixels(8.0))
-                                    .child_space(Pixels(3.0))
-                                    .class("step")
-                                    .on_press_down(move |eh| {
-                                        eh.emit(AppEvent::CellClick(track, step));
-                                    });
-                                    if step == active_step as usize {
-                                        cell = cell.class("current");
-                                    }
-                                    if cell_state {
-                                        cell = cell.class("active");
-                                    }
-                                    if step % 4 == 3 {
-                                        cell.right(Pixels(8.0));
-                                    }
-                                },
-                            );
-                        }
+    VStack::new(cx, move |cx| {
+        Binding::new(
+            cx,
+            Data::params.map(move |params| params.active_step.load(Ordering::Relaxed)),
+            move |cx, param| {
+                let active_step = param.get(cx);
+                for track in 0..TRACKS {
+                    if track == TRACKS - 1 {
+                        // Add some space before the accent track.
+                        Element::new(cx).top(GRID_ROW_SPACER_HEIGHT);
+                    }
+                    VStack::new(cx, |cx| {
+                        HStack::new(cx, |cx| {
+                            let label = if track == ACCENT_TRACK as usize {
+                                "Acc".to_owned()
+                            } else {
+                                format!("{}", track + 1)
+                            };
+                            Label::new(cx, label.as_str())
+                                .width(Pixels(30.0))
+                                .space(Stretch(0.5));
+                            for step in 0..16 {
+                                Binding::new(
+                                    cx,
+                                    Data::params.map(move |params| {
+                                        params.pattern.steps[track][step].load(Ordering::Relaxed)
+                                    }),
+                                    move |cx, param| {
+                                        let cell_state = param.get(cx);
+                                        let mut cell = VStack::new(cx, |cx| {
+                                            Element::new(cx).class("content");
+                                        })
+                                        .size(GRID_CELL_SIZE)
+                                        .space(GRID_CELL_SPACING)
+                                        .child_space(Pixels(3.0))
+                                        .class("step")
+                                        .on_press_down(move |eh| {
+                                            eh.emit(AppEvent::CellClick(track, step));
+                                        });
+                                        if step == active_step as usize {
+                                            cell = cell.class("current");
+                                        }
+                                        if cell_state {
+                                            cell.class("active");
+                                        }
+                                        if step % 4 == 3 && step != 15 {
+                                            // Add addtional space after 4 cells.
+                                            Element::new(cx).right(GRID_COL_SPACER_WIDTH);
+                                        }
+                                    },
+                                );
+                            }
+                        });
                     });
-                })
-                .height(Pixels(30.0))
-                .top(Pixels(if track == TRACKS - 1 { 5.0 } else { 0.0 }));
-            }
-        },
-    );
+                }
+            },
+        );
+    })
+    .id("grid");
 }
 
 /// Create a delay slider.
-fn delay_slider<L, Params, P, FMap>(cx: &mut Context, params: L, params_to_param: FMap)
+fn param_slider<L, Params, P, FMap>(cx: &mut Context, params: L, params_to_param: FMap)
 where
     L: Lens<Target = Params> + Clone,
     Params: 'static,
     P: nih_plug::prelude::Param + 'static,
     FMap: Fn(&Params) -> &P + Copy + 'static,
 {
-    VStack::new(cx, |cx| {
-        ParamSlider::new(cx, params, params_to_param)
-            .height(Pixels(20.0))
-            .width(Pixels(70.0))
-            .top(Pixels(6.0))
-            .class("slider");
-    })
-    .height(Pixels(38.0));
+    ParamSlider::new(cx, params, params_to_param)
+        .height(Pixels(20.0))
+        .width(Pixels(70.0))
+        .top(Stretch(0.5))
+        .bottom(Stretch(0.5))
+        .class("slider");
 }

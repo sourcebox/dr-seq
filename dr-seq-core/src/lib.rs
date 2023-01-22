@@ -104,6 +104,8 @@ impl Plugin for App {
 
         let clock = Clock::new(buffer, context.transport(), ppq);
 
+        let accent_velocity = self.params.accent_velocity.value() as f32 / 127.0;
+
         for (pulse_no, timing) in clock {
             self.params
                 .active_step
@@ -141,7 +143,7 @@ impl Plugin for App {
                                 Velocity::Weak => 50.0 / 127.0,
                                 _ => {
                                     if accent {
-                                        1.0
+                                        accent_velocity
                                     } else {
                                         100.0 / 127.0
                                     }
@@ -183,7 +185,7 @@ impl Plugin for App {
 
 impl App {
     fn update_engine(&mut self) {
-        for (t, track) in self.engine.tracks()[0..TRACKS - 1].iter_mut().enumerate() {
+        for (t, track) in self.engine.tracks()[0..TRACKS].iter_mut().enumerate() {
             for (s, step) in track.pattern().bar(0).steps().iter_mut().enumerate() {
                 let state = self.params.pattern.steps[t][s].load(Ordering::Relaxed);
                 if state {

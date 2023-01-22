@@ -60,6 +60,10 @@ pub struct AppParams {
     /// Track 8 delay.
     #[id = "track8-delay"]
     pub track8_delay: IntParam,
+
+    /// Accent velocity.
+    #[id = "accent-velocity"]
+    pub accent_velocity: IntParam,
 }
 
 impl AppParams {
@@ -113,6 +117,11 @@ impl AppParams {
                 let update_engine = update_engine.clone();
                 Arc::new(move |_| update_engine.store(true, Ordering::Release))
             }),
+            accent_velocity: IntParam::new(
+                "Accent Velocity",
+                127,
+                IntRange::Linear { min: 0, max: 127 },
+            ),
         }
     }
 }
