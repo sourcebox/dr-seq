@@ -8,7 +8,8 @@ use nih_plug::prelude::*;
 use nih_plug_vizia::ViziaState;
 use serde::{Deserialize, Serialize};
 
-use crate::{editor, TRACKS};
+use crate::config::{CLOCK_PPQ, TRACKS};
+use crate::editor;
 
 #[derive(Params)]
 pub struct AppParams {
@@ -65,8 +66,8 @@ impl AppParams {
     /// Returns a new instance.
     pub fn new(update_engine: Arc<AtomicBool>) -> Self {
         let delay_range = IntRange::Linear {
-            min: -(crate::CLOCK_PPQ as i32) / 8,
-            max: (crate::CLOCK_PPQ as i32) / 8,
+            min: -(CLOCK_PPQ as i32) / 8,
+            max: (CLOCK_PPQ as i32) / 8,
         };
 
         Self {

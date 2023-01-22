@@ -1,4 +1,5 @@
 mod clock;
+mod config;
 mod editor;
 mod params;
 
@@ -8,24 +9,13 @@ use std::sync::Arc;
 use nih_plug::prelude::*;
 
 use clock::Clock;
+use config::*;
 use dr_seq_engine::{
     event::TrackEvent,
     params::{Pitch, Velocity},
     Engine,
 };
 use params::AppParams;
-
-/// Total number of tracks. Last track is used for global accent.
-const TRACKS: usize = 9;
-
-/// Number of the accent track.
-const ACCENT_TRACK: u32 = (TRACKS - 1) as u32;
-
-/// Number of bars per track.
-const BARS: usize = 1;
-
-/// Clock pulses per quarter note.
-const CLOCK_PPQ: u32 = 384;
 
 pub struct App {
     /// Parameters shared with host.
@@ -50,10 +40,10 @@ impl Default for App {
 }
 
 impl Plugin for App {
-    const NAME: &'static str = "Dr. Seq";
-    const VENDOR: &'static str = "sourcebox";
-    const URL: &'static str = "https://sourcebox.de";
-    const EMAIL: &'static str = "info@sourcebox.de";
+    const NAME: &'static str = NAME;
+    const VENDOR: &'static str = VENDOR;
+    const URL: &'static str = URL;
+    const EMAIL: &'static str = EMAIL;
 
     const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
@@ -234,16 +224,16 @@ impl App {
 }
 
 impl ClapPlugin for App {
-    const CLAP_ID: &'static str = "de.sourcebox.dr-seq";
-    const CLAP_DESCRIPTION: Option<&'static str> = Some("Grid-based drum sequencer");
+    const CLAP_ID: &'static str = CLAP_ID;
+    const CLAP_DESCRIPTION: Option<&'static str> = CLAP_DESCRIPTION;
     const CLAP_MANUAL_URL: Option<&'static str> = Some(Self::URL);
     const CLAP_SUPPORT_URL: Option<&'static str> = None;
     const CLAP_FEATURES: &'static [ClapFeature] = &[ClapFeature::NoteEffect, ClapFeature::Utility];
 }
 
 impl Vst3Plugin for App {
-    const VST3_CLASS_ID: [u8; 16] = *b"sb-dr-seq-plugin";
-    const VST3_CATEGORIES: &'static str = "Instrument|Tools";
+    const VST3_CLASS_ID: [u8; 16] = VST3_CLASS_ID;
+    const VST3_CATEGORIES: &'static str = VST3_CATEGORIES;
 }
 
 nih_export_clap!(App);

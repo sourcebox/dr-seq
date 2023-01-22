@@ -7,7 +7,8 @@ use nih_plug_vizia::{assets, create_vizia_editor, ViziaState, ViziaTheming};
 use std::sync::atomic::Ordering;
 use std::sync::Arc;
 
-use crate::{AppParams, TRACKS};
+use crate::config::{NAME, TRACKS};
+use crate::AppParams;
 
 #[derive(Debug)]
 enum AppEvent {
@@ -55,7 +56,7 @@ pub(crate) fn create(
         ResizeHandle::new(cx);
 
         HStack::new(cx, |cx| {
-            Label::new(cx, "Dr. Seq")
+            Label::new(cx, NAME)
                 .font_family(vec![FamilyOwned::Name(String::from(
                     assets::NOTO_SANS_LIGHT,
                 ))])
