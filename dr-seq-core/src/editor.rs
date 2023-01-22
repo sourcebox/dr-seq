@@ -25,6 +25,9 @@ const GRID_COL_SPACER_WIDTH: Units = Pixels(3.0);
 /// Height of additional spacer between rows.
 const GRID_ROW_SPACER_HEIGHT: Units = Pixels(3.0);
 
+/// Width of spacer between various elements.
+const ELEMENT_SPACER_WIDTH: Units = Pixels(10.0);
+
 #[derive(Debug)]
 enum AppEvent {
     CellClick(usize, usize),
@@ -88,40 +91,56 @@ pub(crate) fn create(
                 Element::new(cx).width(Pixels(10.0));
 
                 VStack::new(cx, move |cx| {
-                    VStack::new(cx, |cx| {
+                    HStack::new(cx, |cx| {
+                        param_button(cx, Data::params, |params| &params.track1_enable);
+                        Element::new(cx).width(ELEMENT_SPACER_WIDTH);
                         param_slider(cx, Data::params, |params| &params.track1_delay);
                     })
                     .height(GRID_ROW_HEIGHT);
-                    VStack::new(cx, |cx| {
+                    HStack::new(cx, |cx| {
+                        param_button(cx, Data::params, |params| &params.track2_enable);
+                        Element::new(cx).width(ELEMENT_SPACER_WIDTH);
                         param_slider(cx, Data::params, |params| &params.track2_delay);
                     })
                     .height(GRID_ROW_HEIGHT);
-                    VStack::new(cx, |cx| {
+                    HStack::new(cx, |cx| {
+                        param_button(cx, Data::params, |params| &params.track3_enable);
+                        Element::new(cx).width(ELEMENT_SPACER_WIDTH);
                         param_slider(cx, Data::params, |params| &params.track3_delay);
                     })
                     .height(GRID_ROW_HEIGHT);
-                    VStack::new(cx, |cx| {
+                    HStack::new(cx, |cx| {
+                        param_button(cx, Data::params, |params| &params.track4_enable);
+                        Element::new(cx).width(ELEMENT_SPACER_WIDTH);
                         param_slider(cx, Data::params, |params| &params.track4_delay);
                     })
                     .height(GRID_ROW_HEIGHT);
-                    VStack::new(cx, |cx| {
+                    HStack::new(cx, |cx| {
+                        param_button(cx, Data::params, |params| &params.track5_enable);
+                        Element::new(cx).width(ELEMENT_SPACER_WIDTH);
                         param_slider(cx, Data::params, |params| &params.track5_delay);
                     })
                     .height(GRID_ROW_HEIGHT);
-                    VStack::new(cx, |cx| {
+                    HStack::new(cx, |cx| {
+                        param_button(cx, Data::params, |params| &params.track6_enable);
+                        Element::new(cx).width(ELEMENT_SPACER_WIDTH);
                         param_slider(cx, Data::params, |params| &params.track6_delay);
                     })
                     .height(GRID_ROW_HEIGHT);
-                    VStack::new(cx, |cx| {
+                    HStack::new(cx, |cx| {
+                        param_button(cx, Data::params, |params| &params.track7_enable);
+                        Element::new(cx).width(ELEMENT_SPACER_WIDTH);
                         param_slider(cx, Data::params, |params| &params.track7_delay);
                     })
                     .height(GRID_ROW_HEIGHT);
-                    VStack::new(cx, |cx| {
+                    HStack::new(cx, |cx| {
+                        param_button(cx, Data::params, |params| &params.track8_enable);
+                        Element::new(cx).width(ELEMENT_SPACER_WIDTH);
                         param_slider(cx, Data::params, |params| &params.track8_delay);
                     })
                     .height(GRID_ROW_HEIGHT);
                     Element::new(cx).top(GRID_ROW_SPACER_HEIGHT);
-                    VStack::new(cx, |cx| {
+                    HStack::new(cx, |cx| {
                         param_slider(cx, Data::params, |params| &params.accent_velocity);
                     })
                     .height(GRID_ROW_HEIGHT);
@@ -203,7 +222,7 @@ fn grid(cx: &mut Context) {
     .id("grid");
 }
 
-/// Create a delay slider.
+/// Create a parameter slider.
 fn param_slider<L, Params, P, FMap>(cx: &mut Context, params: L, params_to_param: FMap)
 where
     L: Lens<Target = Params> + Clone,
@@ -217,4 +236,21 @@ where
         .top(Stretch(0.5))
         .bottom(Stretch(0.5))
         .class("slider");
+}
+
+/// Create a parameter button.
+fn param_button<L, Params, P, FMap>(cx: &mut Context, params: L, params_to_param: FMap)
+where
+    L: Lens<Target = Params> + Clone,
+    Params: 'static,
+    P: nih_plug::prelude::Param + 'static,
+    FMap: Fn(&Params) -> &P + Copy + 'static,
+{
+    ParamButton::new(cx, params, params_to_param)
+        .height(Pixels(20.0))
+        .width(Pixels(20.0))
+        .top(Stretch(0.5))
+        .bottom(Stretch(0.5))
+        .font_size(1.0)
+        .class("button");
 }

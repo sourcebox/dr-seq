@@ -29,6 +29,38 @@ pub struct AppParams {
     #[id = "swing"]
     pub swing: IntParam,
 
+    /// Track 1 enable.
+    #[id = "track1-enable"]
+    pub track1_enable: BoolParam,
+
+    /// Track 2 enable.
+    #[id = "track2-enable"]
+    pub track2_enable: BoolParam,
+
+    /// Track 3 enable.
+    #[id = "track3-enable"]
+    pub track3_enable: BoolParam,
+
+    /// Track 4 enable.
+    #[id = "track4-enable"]
+    pub track4_enable: BoolParam,
+
+    /// Track 5 enable.
+    #[id = "track5-enable"]
+    pub track5_enable: BoolParam,
+
+    /// Track 6 enable.
+    #[id = "track6-enable"]
+    pub track6_enable: BoolParam,
+
+    /// Track 7 enable.
+    #[id = "track7-enable"]
+    pub track7_enable: BoolParam,
+
+    /// Track 8 enable.
+    #[id = "track8-enable"]
+    pub track8_enable: BoolParam,
+
     /// Track 1 delay.
     #[id = "track1-delay"]
     pub track1_delay: IntParam,
@@ -85,6 +117,74 @@ impl AppParams {
                     Arc::new(move |_| update_engine.store(true, Ordering::Release))
                 },
             ),
+
+            // Track enables
+            track1_enable: BoolParam::new("Track 1 Enable", true)
+                .with_callback({
+                    let update_engine = update_engine.clone();
+                    Arc::new(move |_| update_engine.store(true, Ordering::Release))
+                })
+                .with_value_to_string(Arc::new(|value| {
+                    String::from(if value { "on" } else { "off" })
+                })),
+            track2_enable: BoolParam::new("Track 2 Enable", true)
+                .with_callback({
+                    let update_engine = update_engine.clone();
+                    Arc::new(move |_| update_engine.store(true, Ordering::Release))
+                })
+                .with_value_to_string(Arc::new(|value| {
+                    String::from(if value { "on" } else { "off" })
+                })),
+            track3_enable: BoolParam::new("Track 3 Enable", true)
+                .with_callback({
+                    let update_engine = update_engine.clone();
+                    Arc::new(move |_| update_engine.store(true, Ordering::Release))
+                })
+                .with_value_to_string(Arc::new(|value| {
+                    String::from(if value { "on" } else { "off" })
+                })),
+            track4_enable: BoolParam::new("Track 4 Enable", true)
+                .with_callback({
+                    let update_engine = update_engine.clone();
+                    Arc::new(move |_| update_engine.store(true, Ordering::Release))
+                })
+                .with_value_to_string(Arc::new(|value| {
+                    String::from(if value { "on" } else { "off" })
+                })),
+            track5_enable: BoolParam::new("Track 5 Enable", true)
+                .with_callback({
+                    let update_engine = update_engine.clone();
+                    Arc::new(move |_| update_engine.store(true, Ordering::Release))
+                })
+                .with_value_to_string(Arc::new(|value| {
+                    String::from(if value { "on" } else { "off" })
+                })),
+            track6_enable: BoolParam::new("Track 6 Enable", true)
+                .with_callback({
+                    let update_engine = update_engine.clone();
+                    Arc::new(move |_| update_engine.store(true, Ordering::Release))
+                })
+                .with_value_to_string(Arc::new(|value| {
+                    String::from(if value { "on" } else { "off" })
+                })),
+            track7_enable: BoolParam::new("Track 7 Enable", true)
+                .with_callback({
+                    let update_engine = update_engine.clone();
+                    Arc::new(move |_| update_engine.store(true, Ordering::Release))
+                })
+                .with_value_to_string(Arc::new(|value| {
+                    String::from(if value { "on" } else { "off" })
+                })),
+            track8_enable: BoolParam::new("Track 8 Enable", true)
+                .with_callback({
+                    let update_engine = update_engine.clone();
+                    Arc::new(move |_| update_engine.store(true, Ordering::Release))
+                })
+                .with_value_to_string(Arc::new(|value| {
+                    String::from(if value { "on" } else { "off" })
+                })),
+
+            // Track delays
             track1_delay: IntParam::new("Track 1 Delay", 0, delay_range).with_callback({
                 let update_engine = update_engine.clone();
                 Arc::new(move |_| update_engine.store(true, Ordering::Release))
@@ -117,6 +217,7 @@ impl AppParams {
                 let update_engine = update_engine.clone();
                 Arc::new(move |_| update_engine.store(true, Ordering::Release))
             }),
+
             accent_velocity: IntParam::new(
                 "Accent Velocity",
                 127,

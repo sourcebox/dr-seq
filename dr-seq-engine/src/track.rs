@@ -109,6 +109,11 @@ impl<const BARS: usize, const PPQ: u32> Track<BARS, PPQ> {
         self.enabled = false;
     }
 
+    /// Sets the enabled state.
+    pub fn set_enabled(&mut self, enabled: bool) {
+        self.enabled = enabled;
+    }
+
     /// Returns if the track is enabled.
     pub fn enabled(&self) -> bool {
         self.enabled

@@ -71,14 +71,10 @@ impl Plugin for App {
         _buffer_config: &BufferConfig,
         _context: &mut impl InitContext<Self>,
     ) -> bool {
-        for track in self.engine.tracks() {
-            track.enable();
-        }
-
-        // The accent track is disabled for playing and only used to store the steps.
-        self.engine.track(ACCENT_TRACK).disable();
-
         self.update_engine();
+
+        // The accent track is always disabled for playing and only used to store the steps.
+        self.engine.track(ACCENT_TRACK).disable();
 
         true
     }
@@ -197,6 +193,31 @@ impl App {
         }
 
         self.engine.set_swing(self.params.swing.value() * 48 / 100);
+
+        self.engine
+            .track(0)
+            .set_enabled(self.params.track1_enable.value());
+        self.engine
+            .track(1)
+            .set_enabled(self.params.track2_enable.value());
+        self.engine
+            .track(2)
+            .set_enabled(self.params.track3_enable.value());
+        self.engine
+            .track(3)
+            .set_enabled(self.params.track4_enable.value());
+        self.engine
+            .track(4)
+            .set_enabled(self.params.track5_enable.value());
+        self.engine
+            .track(5)
+            .set_enabled(self.params.track6_enable.value());
+        self.engine
+            .track(6)
+            .set_enabled(self.params.track7_enable.value());
+        self.engine
+            .track(7)
+            .set_enabled(self.params.track8_enable.value());
 
         self.engine
             .track(0)
