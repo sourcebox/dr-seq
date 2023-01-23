@@ -13,17 +13,19 @@ use crate::editor;
 
 #[derive(Params)]
 pub struct AppParams {
+    /// State of the editor.
     #[persist = "editor-state"]
     pub editor_state: Arc<ViziaState>,
 
+    /// State of the pattern in the grid.
     #[persist = "pattern"]
     pub pattern: Pattern,
 
     /// Flag if pattern was changed in the editor.
     pub pattern_changed: AtomicBool,
 
-    /// Number of the active step.
-    pub active_step: AtomicI32,
+    /// Number of the current step.
+    pub current_step: AtomicI32,
 
     /// Swing.
     #[id = "swing"]
@@ -110,7 +112,7 @@ impl AppParams {
             editor_state: editor::default_state(),
             pattern: Pattern::default(),
             pattern_changed: AtomicBool::new(false),
-            active_step: AtomicI32::new(0),
+            current_step: AtomicI32::new(0),
             swing: IntParam::new("Swing", 0, IntRange::Linear { min: 0, max: 100 }).with_callback(
                 {
                     let update_engine = update_engine.clone();

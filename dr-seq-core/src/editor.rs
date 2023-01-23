@@ -30,6 +30,7 @@ const ELEMENT_SPACER_WIDTH: Units = Pixels(10.0);
 
 #[derive(Debug)]
 enum AppEvent {
+    /// Click on a cell with track and step.
     CellClick(usize, usize),
 }
 
@@ -164,7 +165,7 @@ fn grid(cx: &mut Context) {
     VStack::new(cx, move |cx| {
         Binding::new(
             cx,
-            Data::params.map(move |params| params.active_step.load(Ordering::Relaxed)),
+            Data::params.map(move |params| params.current_step.load(Ordering::Relaxed)),
             move |cx, param| {
                 let active_step = param.get(cx);
                 for track in 0..TRACKS {
