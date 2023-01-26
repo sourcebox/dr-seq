@@ -28,8 +28,8 @@ const GRID_ROW_SPACER_HEIGHT: Units = Pixels(3.0);
 /// Width of spacer between various elements.
 const ELEMENT_SPACER_WIDTH: Units = Pixels(10.0);
 
-#[derive(Debug)]
-enum AppEvent {
+#[derive(Debug, Clone)]
+pub enum EditorEvent {
     /// Click on a cell with track and step.
     CellClick(usize, usize),
 }
@@ -41,13 +41,11 @@ struct Data {
 
 impl Model for Data {
     fn event(&mut self, _cx: &mut EventContext, event: &mut Event) {
-        event.map(|app_event, _| match app_event {
-            AppEvent::CellClick(track, step) => {
-                let param = &self.params.pattern.steps[*track][*step];
-                param.store(!param.load(Ordering::Relaxed), Ordering::Relaxed);
-                self.params.pattern_changed.store(true, Ordering::Relaxed);
-            }
-        });
+        if let Ok(sender) = self.params.editor_event_sender.lock() {
+            event.map(|app_event: &EditorEvent, _| {
+                sender.send(app_event.clone()).ok();
+            });
+        };
     }
 }
 
@@ -56,6 +54,7 @@ pub(crate) fn default_state() -> Arc<ViziaState> {
     ViziaState::from_size(800, 500)
 }
 
+/// Create the editor.
 pub(crate) fn create(
     params: Arc<AppParams>,
     editor_state: Arc<ViziaState>,
@@ -199,7 +198,7 @@ fn grid(cx: &mut Context) {
                                         .child_space(Pixels(3.0))
                                         .class("step")
                                         .on_press_down(move |eh| {
-                                            eh.emit(AppEvent::CellClick(track, step));
+                                            eh.emit(EditorEvent::CellClick(track, step));
                                         });
                                         if step == active_step as usize {
                                             cell = cell.class("current");

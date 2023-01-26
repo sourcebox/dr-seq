@@ -4,6 +4,7 @@ mod editor;
 mod params;
 
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::mpsc;
 use std::sync::Arc;
 
 use nih_plug::prelude::*;
@@ -15,6 +16,7 @@ use dr_seq_engine::{
     params::{Pitch, Velocity},
     Engine,
 };
+use editor::EditorEvent;
 use params::AppParams;
 
 pub struct App {
@@ -24,6 +26,9 @@ pub struct App {
     /// Sequencer engine.
     engine: Engine<TRACKS, BARS, CLOCK_PPQ>,
 
+    /// Channel for receiving events from the editor.
+    editor_event_receiver: mpsc::Receiver<EditorEvent>,
+
     /// Flag to update the engine after a parameter has been changed.
     update_engine: Arc<AtomicBool>,
 }
@@ -31,9 +36,12 @@ pub struct App {
 impl Default for App {
     fn default() -> Self {
         let update_engine = Arc::new(AtomicBool::new(false));
+        let editor_channel: (mpsc::Sender<EditorEvent>, mpsc::Receiver<EditorEvent>) =
+            mpsc::channel();
         Self {
-            params: Arc::new(AppParams::new(update_engine.clone())),
+            params: Arc::new(AppParams::new(update_engine.clone(), editor_channel.0)),
             engine: Engine::new(),
+            editor_event_receiver: editor_channel.1,
             update_engine,
         }
     }
@@ -85,11 +93,16 @@ impl Plugin for App {
         _aux: &mut AuxiliaryBuffers,
         context: &mut impl ProcessContext<Self>,
     ) -> ProcessStatus {
-        // TODO: consolidate these checks.
-        if self.params.pattern_changed.load(Ordering::Relaxed) {
-            self.update_engine();
-            self.params.pattern_changed.store(false, Ordering::Relaxed);
+        if let Ok(event) = self.editor_event_receiver.try_recv() {
+            match event {
+                EditorEvent::CellClick(track, step) => {
+                    let param = &self.params.pattern.steps[track][step];
+                    param.store(!param.load(Ordering::Relaxed), Ordering::Relaxed);
+                    self.update_engine();
+                }
+            }
         }
+
         if self.update_engine.load(Ordering::Relaxed) {
             self.update_engine();
             self.update_engine.store(false, Ordering::Relaxed);
