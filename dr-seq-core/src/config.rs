@@ -1,16 +1,16 @@
 //! Configuration settings.
 
 /// Application name.
-pub const NAME: &'static str = "Dr. Seq";
+pub const NAME: &str = "Dr. Seq";
 
 /// Application vendor.
-pub const VENDOR: &'static str = "sourcebox";
+pub const VENDOR: &str = "sourcebox";
 
 /// Homepage URL.
-pub const URL: &'static str = "https://sourcebox.de";
+pub const URL: &str = "https://sourcebox.de";
 
 /// Email address.
-pub const EMAIL: &'static str = "info@sourcebox.de";
+pub const EMAIL: &str = "info@sourcebox.de";
 
 /// Total number of tracks. Last track is used for global accent.
 pub const TRACKS: usize = 9;
@@ -25,13 +25,13 @@ pub const BARS: usize = 1;
 pub const CLOCK_PPQ: u32 = 384;
 
 /// CLAP plugin id.
-pub const CLAP_ID: &'static str = "de.sourcebox.dr-seq";
+pub const CLAP_ID: &str = "de.sourcebox.dr-seq";
 
 /// CLAP plugin description.
-pub const CLAP_DESCRIPTION: Option<&'static str> = Some("Grid-based drum sequencer");
+pub const CLAP_DESCRIPTION: Option<&str> = Some("Grid-based drum sequencer");
 
 /// VST3 plugin class id.
 pub const VST3_CLASS_ID: [u8; 16] = *b"sb-dr-seq-plugin";
 
 /// VST3 plugin categories.
-pub const VST3_CATEGORIES: &'static str = "Instrument|Tools";
+pub const VST3_CATEGORIES: &str = "Instrument|Tools";
