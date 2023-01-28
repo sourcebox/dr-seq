@@ -95,8 +95,8 @@ impl Plugin for App {
     ) -> ProcessStatus {
         if let Ok(event) = self.editor_event_receiver.try_recv() {
             match event {
-                EditorEvent::CellClick(track, step) => {
-                    let param = &self.params.pattern.steps[track][step];
+                EditorEvent::CellClick(track, bar, step) => {
+                    let param = &self.params.pattern.steps[track][bar][step];
                     param.store(!param.load(Ordering::Relaxed), Ordering::Relaxed);
                     self.update_engine();
                 }
@@ -203,12 +203,14 @@ impl App {
     /// Update the engine with the parameters from the editor or host.
     fn update_engine(&mut self) {
         for (t, track) in self.engine.tracks()[0..TRACKS].iter_mut().enumerate() {
-            for (s, step) in track.pattern().bar(0).steps().iter_mut().enumerate() {
-                let state = self.params.pattern.steps[t][s].load(Ordering::Relaxed);
-                if state {
-                    step.enable();
-                } else {
-                    step.disable();
+            for b in 0..BARS {
+                for (s, step) in track.pattern().bar(b as u32).steps().iter_mut().enumerate() {
+                    let state = self.params.pattern.steps[t][b][s].load(Ordering::Relaxed);
+                    if state {
+                        step.enable();
+                    } else {
+                        step.disable();
+                    }
                 }
             }
         }

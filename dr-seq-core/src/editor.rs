@@ -30,8 +30,8 @@ const ELEMENT_SPACER_WIDTH: Units = Pixels(10.0);
 
 #[derive(Debug, Clone)]
 pub enum EditorEvent {
-    /// Click on a cell with track and step.
-    CellClick(usize, usize),
+    /// Click on a cell with track, bar and step.
+    CellClick(usize, usize, usize),
 }
 
 #[derive(Lens)]
@@ -161,6 +161,9 @@ pub(crate) fn create(
 
 /// Create the grid.
 fn grid(cx: &mut Context) {
+    // TODO: get real bar number
+    let bar = 0;
+
     VStack::new(cx, move |cx| {
         Binding::new(
             cx,
@@ -186,7 +189,8 @@ fn grid(cx: &mut Context) {
                                 Binding::new(
                                     cx,
                                     Data::params.map(move |params| {
-                                        params.pattern.steps[track][step].load(Ordering::Relaxed)
+                                        params.pattern.steps[track][bar][step]
+                                            .load(Ordering::Relaxed)
                                     }),
                                     move |cx, param| {
                                         let cell_state = param.get(cx);
@@ -198,7 +202,7 @@ fn grid(cx: &mut Context) {
                                         .child_space(Pixels(3.0))
                                         .class("step")
                                         .on_press_down(move |eh| {
-                                            eh.emit(EditorEvent::CellClick(track, step));
+                                            eh.emit(EditorEvent::CellClick(track, bar, step));
                                         });
                                         if step == active_step as usize {
                                             cell = cell.class("current");
