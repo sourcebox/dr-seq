@@ -1,6 +1,6 @@
 //! Plugin parameters.
 
-use std::sync::atomic::{AtomicBool, AtomicI32, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicI32, AtomicU32, Ordering};
 use std::sync::mpsc;
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -234,10 +234,49 @@ impl AppParams {
     }
 }
 
+/// Possible states of a step.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+pub enum StepState {
+    #[default]
+    /// Disabled.
+    Off,
+
+    /// Normal step with standard velocity.
+    Default,
+
+    /// Accented step.
+    Strong,
+
+    /// Low velocity step.
+    Weak,
+}
+
+impl From<StepState> for u32 {
+    fn from(value: StepState) -> Self {
+        match value {
+            StepState::Off => 0,
+            StepState::Default => 1,
+            StepState::Strong => 2,
+            StepState::Weak => 3,
+        }
+    }
+}
+
+impl From<u32> for StepState {
+    fn from(value: u32) -> Self {
+        match value {
+            1 => StepState::Default,
+            2 => StepState::Strong,
+            3 => StepState::Weak,
+            _ => StepState::Off,
+        }
+    }
+}
+
 #[derive(Default, Serialize, Deserialize)]
 pub struct Pattern {
     /// Array of tracks with steps.
-    pub steps: [[[AtomicBool; 16]; BARS]; TRACKS],
+    pub steps: [[[AtomicU32; 16]; BARS]; TRACKS],
 }
 
 impl<'a> PersistentField<'a, Pattern> for Pattern {

@@ -8,6 +8,7 @@ use std::sync::atomic::Ordering;
 use std::sync::Arc;
 
 use crate::config::{ACCENT_TRACK, NAME, TRACKS};
+use crate::params::StepState;
 use crate::AppParams;
 
 /// Size of the grid cells.
@@ -31,7 +32,7 @@ const ELEMENT_SPACER_WIDTH: Units = Pixels(10.0);
 #[derive(Debug, Clone)]
 pub enum EditorEvent {
     /// Click on a cell with track, bar and step.
-    CellClick(usize, usize, usize),
+    CellClick(usize, usize, usize, StepState),
 }
 
 #[derive(Lens)]
@@ -193,7 +194,7 @@ fn grid(cx: &mut Context) {
                                             .load(Ordering::Relaxed)
                                     }),
                                     move |cx, param| {
-                                        let cell_state = param.get(cx);
+                                        let state = StepState::from(param.get(cx));
                                         let mut cell = VStack::new(cx, |cx| {
                                             Element::new(cx).class("content");
                                         })
@@ -202,13 +203,46 @@ fn grid(cx: &mut Context) {
                                         .child_space(Pixels(3.0))
                                         .class("step")
                                         .on_press_down(move |eh| {
-                                            eh.emit(EditorEvent::CellClick(track, bar, step));
+                                            // TODO: use real shift key state when vizia
+                                            // offers it.
+                                            let shift = false;
+                                            let mut new_state = match state {
+                                                StepState::Off => {
+                                                    if shift {
+                                                        StepState::Weak
+                                                    } else {
+                                                        StepState::Default
+                                                    }
+                                                }
+                                                StepState::Default => {
+                                                    if shift {
+                                                        StepState::Weak
+                                                    } else {
+                                                        StepState::Off
+                                                    }
+                                                }
+                                                _ => StepState::Off,
+                                            };
+                                            if track == TRACKS - 1 && new_state != StepState::Off {
+                                                // Accent track has only on/off steps, so the on
+                                                // state is always `Default`.
+                                                new_state = StepState::Default;
+                                            }
+                                            eh.emit(EditorEvent::CellClick(
+                                                track, bar, step, new_state,
+                                            ));
                                         });
                                         if step == active_step as usize {
                                             cell = cell.class("current");
                                         }
-                                        if cell_state {
-                                            cell.class("active");
+                                        match state {
+                                            StepState::Default => {
+                                                cell.class("default");
+                                            }
+                                            StepState::Weak => {
+                                                cell.class("weak");
+                                            }
+                                            _ => {}
                                         }
                                         if step % 4 == 3 && step != 15 {
                                             // Add addtional space after 4 cells.

@@ -17,7 +17,7 @@ use dr_seq_engine::{
     Engine,
 };
 use editor::EditorEvent;
-use params::AppParams;
+use params::{AppParams, StepState};
 
 pub struct App {
     /// Parameters shared with host.
@@ -95,9 +95,9 @@ impl Plugin for App {
     ) -> ProcessStatus {
         if let Ok(event) = self.editor_event_receiver.try_recv() {
             match event {
-                EditorEvent::CellClick(track, bar, step) => {
+                EditorEvent::CellClick(track, bar, step, state) => {
                     let param = &self.params.pattern.steps[track][bar][step];
-                    param.store(!param.load(Ordering::Relaxed), Ordering::Relaxed);
+                    param.store(state.into(), Ordering::Relaxed);
                     self.update_engine();
                 }
             }
@@ -205,9 +205,15 @@ impl App {
         for (t, track) in self.engine.tracks()[0..TRACKS].iter_mut().enumerate() {
             for b in 0..BARS {
                 for (s, step) in track.pattern().bar(b as u32).steps().iter_mut().enumerate() {
-                    let state = self.params.pattern.steps[t][b][s].load(Ordering::Relaxed);
-                    if state {
+                    let state =
+                        StepState::from(self.params.pattern.steps[t][b][s].load(Ordering::Relaxed));
+                    if state != StepState::Off {
                         step.enable();
+                        step.set_velocity(match state {
+                            StepState::Strong => Velocity::Strong,
+                            StepState::Weak => Velocity::Weak,
+                            _ => Velocity::Default,
+                        });
                     } else {
                         step.disable();
                     }
