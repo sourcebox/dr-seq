@@ -24,7 +24,7 @@ pub struct AppParams {
     pub pattern: Pattern,
 
     /// Sender part of channel for events from editor to the engine.
-    pub editor_event_sender: Arc<Mutex<mpsc::Sender<EditorEvent>>>,
+    pub editor_event_sender: Mutex<mpsc::Sender<EditorEvent>>,
 
     /// Number of the current step.
     pub current_step: AtomicI32,
@@ -116,7 +116,7 @@ impl AppParams {
         Self {
             editor_state: editor::default_state(),
             pattern: Pattern::default(),
-            editor_event_sender: Arc::new(Mutex::new(editor_event_sender)),
+            editor_event_sender: Mutex::new(editor_event_sender),
             current_step: AtomicI32::new(0),
             swing: IntParam::new("Swing", 0, IntRange::Linear { min: 0, max: 100 }).with_callback(
                 {
