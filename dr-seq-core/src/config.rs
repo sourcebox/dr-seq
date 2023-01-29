@@ -1,5 +1,7 @@
 //! Configuration settings.
 
+use nih_plug::wrapper::clap::features::ClapFeature;
+
 /// Application name.
 pub const NAME: &str = "Dr. Seq";
 
@@ -29,6 +31,9 @@ pub const CLAP_ID: &str = "de.sourcebox.dr-seq";
 
 /// CLAP plugin description.
 pub const CLAP_DESCRIPTION: Option<&str> = Some("Grid-based drum sequencer");
+
+/// CLAP features list.
+pub const CLAP_FEATURES: &[ClapFeature] = &[ClapFeature::NoteEffect, ClapFeature::Utility];
 
 /// VST3 plugin class id.
 pub const VST3_CLASS_ID: [u8; 16] = *b"sb-dr-seq-plugin";

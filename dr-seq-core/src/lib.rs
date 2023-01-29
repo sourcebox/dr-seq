@@ -280,7 +280,7 @@ impl ClapPlugin for App {
     const CLAP_DESCRIPTION: Option<&'static str> = CLAP_DESCRIPTION;
     const CLAP_MANUAL_URL: Option<&'static str> = Some(Self::URL);
     const CLAP_SUPPORT_URL: Option<&'static str> = None;
-    const CLAP_FEATURES: &'static [ClapFeature] = &[ClapFeature::NoteEffect, ClapFeature::Utility];
+    const CLAP_FEATURES: &'static [ClapFeature] = CLAP_FEATURES;
 }
 
 impl Vst3Plugin for App {
