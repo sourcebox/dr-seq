@@ -1422,7 +1422,7 @@ dependencies = [
 [[package]]
 name = "nih_plug"
 version = "0.0.0"
-source = "git+https://github.com/robbert-vdh/nih-plug#32f981b1f65e2067cbbe50960fd041236a86a556"
+source = "git+https://github.com/robbert-vdh/nih-plug#0abfcb6045ee8185cc5e4b983f0c4f2327063066"
 dependencies = [
  "anyhow",
  "anymap",
@@ -1465,7 +1465,7 @@ source = "git+https://github.com/robbert-vdh/nih_plug_assets.git#a04e327923e120b
 [[package]]
 name = "nih_plug_derive"
 version = "0.1.0"
-source = "git+https://github.com/robbert-vdh/nih-plug#32f981b1f65e2067cbbe50960fd041236a86a556"
+source = "git+https://github.com/robbert-vdh/nih-plug#0abfcb6045ee8185cc5e4b983f0c4f2327063066"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1475,7 +1475,7 @@ dependencies = [
 [[package]]
 name = "nih_plug_vizia"
 version = "0.0.0"
-source = "git+https://github.com/robbert-vdh/nih-plug#32f981b1f65e2067cbbe50960fd041236a86a556"
+source = "git+https://github.com/robbert-vdh/nih-plug#0abfcb6045ee8185cc5e4b983f0c4f2327063066"
 dependencies = [
  "baseview",
  "crossbeam",
@@ -1488,7 +1488,7 @@ dependencies = [
 [[package]]
 name = "nih_plug_xtask"
 version = "0.1.0"
-source = "git+https://github.com/robbert-vdh/nih-plug#32f981b1f65e2067cbbe50960fd041236a86a556"
+source = "git+https://github.com/robbert-vdh/nih-plug#0abfcb6045ee8185cc5e4b983f0c4f2327063066"
 dependencies = [
  "anyhow",
  "goblin",

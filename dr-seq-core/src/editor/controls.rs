@@ -27,9 +27,9 @@ where
     FMap: Fn(&Params) -> &P + Copy + 'static,
 {
     ParamButton::new(cx, params, params_to_param)
+        .with_label("")
         .height(Pixels(20.0))
         .width(Pixels(20.0))
         .top(Stretch(0.5))
-        .bottom(Stretch(0.5))
-        .font_size(1.0);
+        .bottom(Stretch(0.5));
 }
