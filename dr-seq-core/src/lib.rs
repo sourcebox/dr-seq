@@ -64,6 +64,7 @@ impl Plugin for App {
     const SAMPLE_ACCURATE_AUTOMATION: bool = true;
 
     type BackgroundTask = ();
+    type SysExMessage = ();
 
     fn params(&self) -> Arc<dyn Params> {
         self.params.clone()
@@ -285,7 +286,7 @@ impl ClapPlugin for App {
 
 impl Vst3Plugin for App {
     const VST3_CLASS_ID: [u8; 16] = VST3_CLASS_ID;
-    const VST3_CATEGORIES: &'static str = VST3_CATEGORIES;
+    const VST3_SUBCATEGORIES: &'static [Vst3SubCategory] = VST3_SUBCATEGORIES;
 }
 
 nih_export_clap!(App);

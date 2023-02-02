@@ -1,6 +1,7 @@
 //! Configuration settings.
 
 use nih_plug::wrapper::clap::features::ClapFeature;
+use nih_plug::wrapper::vst3::subcategories::Vst3SubCategory;
 
 /// Application name.
 pub const NAME: &str = "Dr. Seq";
@@ -38,5 +39,6 @@ pub const CLAP_FEATURES: &[ClapFeature] = &[ClapFeature::NoteEffect, ClapFeature
 /// VST3 plugin class id.
 pub const VST3_CLASS_ID: [u8; 16] = *b"sb-dr-seq-plugin";
 
-/// VST3 plugin categories.
-pub const VST3_CATEGORIES: &str = "Instrument|Tools";
+/// VST3 plugin sub categories.
+pub const VST3_SUBCATEGORIES: &[Vst3SubCategory] =
+    &[Vst3SubCategory::Instrument, Vst3SubCategory::Tools];
