@@ -89,39 +89,37 @@ impl<const BARS: usize, const PPQ: u32> Track<BARS, PPQ> {
             }
         }
 
-        if self.enabled {
-            if self.play_pos.is_none() || play_pos != self.play_pos.unwrap() {
-                self.play_pos = Some(play_pos);
+        if self.enabled && (self.play_pos.is_none() || play_pos != self.play_pos.unwrap()) {
+            self.play_pos = Some(play_pos);
 
-                let step = self.pattern.bar(play_bar).step(play_step);
+            let step = self.pattern.bar(play_bar).step(play_step);
 
-                if step.enabled() {
-                    // If a note is still playing, it must be stopped before triggering a new one.
-                    if let Some(scheduled_note_off) = self.scheduled_note_off {
-                        self.event_queue
-                            .enqueue(TrackEvent::NoteOff {
-                                bar: play_bar,
-                                step: play_step,
-                                pitch: scheduled_note_off.1,
-                            })
-                            .ok();
-                        self.scheduled_note_off = None;
-                    }
-
-                    // Start a new note.
+            if step.enabled() {
+                // If a note is still playing, it must be stopped before triggering a new one.
+                if let Some(scheduled_note_off) = self.scheduled_note_off {
                     self.event_queue
-                        .enqueue(TrackEvent::NoteOn {
+                        .enqueue(TrackEvent::NoteOff {
                             bar: play_bar,
                             step: play_step,
-                            pitch: step.pitch(),
-                            vel: step.velocity(),
+                            pitch: scheduled_note_off.1,
                         })
                         .ok();
-
-                    // Schedule the note off for a 1/32 note length.
-                    let note_off_pulse = self.pulse_count + PPQ / 8;
-                    self.scheduled_note_off = Some((note_off_pulse, step.pitch()));
+                    self.scheduled_note_off = None;
                 }
+
+                // Start a new note.
+                self.event_queue
+                    .enqueue(TrackEvent::NoteOn {
+                        bar: play_bar,
+                        step: play_step,
+                        pitch: step.pitch(),
+                        vel: step.velocity(),
+                    })
+                    .ok();
+
+                // Schedule the note off for a 1/32 note length.
+                let note_off_pulse = self.pulse_count + PPQ / 8;
+                self.scheduled_note_off = Some((note_off_pulse, step.pitch()));
             }
         }
 
