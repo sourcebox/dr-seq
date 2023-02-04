@@ -133,6 +133,23 @@ impl<const BARS: usize, const PPQ: u32> Track<BARS, PPQ> {
         self.event_queue.dequeue()
     }
 
+    /// Flush sustaining notes.
+    pub fn flush(&mut self) {
+        if let Some(scheduled_note_off) = self.scheduled_note_off {
+            let play_pos = self.play_pos.unwrap_or_default();
+            let play_bar = play_pos / 16;
+            let play_step = play_pos % 16;
+            self.event_queue
+                .enqueue(TrackEvent::NoteOff {
+                    bar: play_bar,
+                    step: play_step,
+                    pitch: scheduled_note_off.1,
+                })
+                .ok();
+            self.scheduled_note_off = None;
+        }
+    }
+
     /// Enable the track.
     pub fn enable(&mut self) {
         self.enabled = true;

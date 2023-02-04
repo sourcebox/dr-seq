@@ -31,6 +31,9 @@ pub struct App {
 
     /// Flag to update the engine after a parameter has been changed.
     update_engine: Arc<AtomicBool>,
+
+    /// Flag if transport is playing.
+    playing: bool,
 }
 
 impl Default for App {
@@ -43,6 +46,7 @@ impl Default for App {
             engine: Engine::new(),
             editor_event_receiver: editor_channel.1,
             update_engine,
+            playing: false,
         }
     }
 }
@@ -107,6 +111,38 @@ impl Plugin for App {
         if self.update_engine.load(Ordering::Relaxed) {
             self.update_engine();
             self.update_engine.store(false, Ordering::Relaxed);
+        }
+
+        let playing = context.transport().playing;
+
+        if playing != self.playing {
+            self.playing = playing;
+            if !playing {
+                // When transport stops, any scheduled note offs should be sent immediately.
+                self.engine.flush();
+                while let Some(event) = self.engine.next_event() {
+                    let note = (36 + event.0) as u8;
+                    if let TrackEvent::NoteOff {
+                        bar: _,
+                        step: _,
+                        pitch,
+                    } = event.1
+                    {
+                        let event = NoteEvent::NoteOff {
+                            timing: 0,
+                            voice_id: None,
+                            channel: 0,
+                            note: match pitch {
+                                Pitch::Default => note,
+                                Pitch::Custom(pitch) => pitch as u8,
+                                _ => note,
+                            },
+                            velocity: 0.0,
+                        };
+                        context.send_event(event)
+                    }
+                }
+            }
         }
 
         let ppq = CLOCK_PPQ as f64;

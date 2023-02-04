@@ -56,6 +56,13 @@ impl<const TRACKS: usize, const BARS: usize, const PPQ: u32> Engine<TRACKS, BARS
         None
     }
 
+    /// Flush sustaining notes.
+    pub fn flush(&mut self) {
+        for track in self.tracks.as_mut() {
+            track.flush();
+        }
+    }
+
     /// Set the swing for all tracks.
     pub fn set_swing(&mut self, swing: i32) {
         for track in self.tracks.iter_mut() {
