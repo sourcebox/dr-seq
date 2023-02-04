@@ -128,12 +128,24 @@ pub(crate) fn create(
                         param_slider(cx, Data::params, |params| &params.track8_delay);
                     })
                     .height(GRID_ROW_HEIGHT);
-                    Element::new(cx).top(GRID_ROW_SPACER_HEIGHT);
-                    HStack::new(cx, |cx| {
-                        param_slider(cx, Data::params, |params| &params.accent_velocity);
-                    })
-                    .height(GRID_ROW_HEIGHT);
                 });
+
+                Element::new(cx).width(Pixels(20.0));
+
+                VStack::new(cx, |cx| {
+                    Label::new(cx, "Velocity");
+                    Element::new(cx).height(Pixels(10.0));
+                    Label::new(cx, "Default");
+                    param_slider(cx, Data::params, |params| &params.default_velocity);
+                    Element::new(cx).height(Pixels(10.0));
+                    Label::new(cx, "Accent");
+                    param_slider(cx, Data::params, |params| &params.accent_velocity);
+                    Element::new(cx).height(Pixels(10.0));
+                    Label::new(cx, "Weak");
+                    param_slider(cx, Data::params, |params| &params.weak_velocity);
+                })
+                .top(Pixels(5.0))
+                .height(Pixels(100.0));
             });
 
             VStack::new(cx, move |cx| {

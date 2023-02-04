@@ -97,9 +97,17 @@ pub struct AppParams {
     #[id = "track8-delay"]
     pub track8_delay: IntParam,
 
+    /// Default velocity for steps.
+    #[id = "default-velocity"]
+    pub default_velocity: IntParam,
+
     /// Accent velocity.
     #[id = "accent-velocity"]
     pub accent_velocity: IntParam,
+
+    /// Weak velocity.
+    #[id = "weak-velocity"]
+    pub weak_velocity: IntParam,
 }
 
 impl AppParams {
@@ -225,9 +233,16 @@ impl AppParams {
                 Arc::new(move |_| update_engine.store(true, Ordering::Release))
             }),
 
+            // Velocities
+            default_velocity: IntParam::new("Velocity", 100, IntRange::Linear { min: 0, max: 127 }),
             accent_velocity: IntParam::new(
                 "Accent Velocity",
                 127,
+                IntRange::Linear { min: 0, max: 127 },
+            ),
+            weak_velocity: IntParam::new(
+                "Weak Velocity",
+                50,
                 IntRange::Linear { min: 0, max: 127 },
             ),
         }
