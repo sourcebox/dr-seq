@@ -140,6 +140,10 @@ pub(crate) fn create(
                     Element::new(cx).height(Pixels(10.0));
                     Label::new(cx, "Accent");
                     param_slider(cx, Data::params, |params| &params.accent_velocity);
+                    ParamButton::new(cx, Data::params, |params| &params.accent_vel_mode)
+                        .height(Pixels(20.0))
+                        .top(Pixels(3.0))
+                        .with_label("abs");
                     Element::new(cx).height(Pixels(10.0));
                     Label::new(cx, "Weak");
                     param_slider(cx, Data::params, |params| &params.weak_velocity);

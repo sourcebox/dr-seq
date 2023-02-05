@@ -105,6 +105,10 @@ pub struct AppParams {
     #[id = "accent-velocity"]
     pub accent_velocity: IntParam,
 
+    /// Relative/absolute mode for accent velocity.
+    #[id = "accent-vel-mode"]
+    pub accent_vel_mode: BoolParam,
+
     /// Weak velocity.
     #[id = "weak-velocity"]
     pub weak_velocity: IntParam,
@@ -237,8 +241,11 @@ impl AppParams {
             default_velocity: IntParam::new("Velocity", 100, IntRange::Linear { min: 0, max: 127 }),
             accent_velocity: IntParam::new(
                 "Accent Velocity",
-                127,
+                27,
                 IntRange::Linear { min: 0, max: 127 },
+            ),
+            accent_vel_mode: BoolParam::new("Accent Vel Mode", false).with_value_to_string(
+                Arc::new(|value| String::from(if value { "abs" } else { "rel" })),
             ),
             weak_velocity: IntParam::new(
                 "Weak Velocity",
