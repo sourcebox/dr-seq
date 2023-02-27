@@ -59,7 +59,22 @@ impl Plugin for App {
 
     const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
+    #[cfg(not(feature = "dummy-audio"))]
     const AUDIO_IO_LAYOUTS: &'static [AudioIOLayout] = &[];
+
+    #[cfg(feature = "dummy-audio")]
+    const AUDIO_IO_LAYOUTS: &'static [AudioIOLayout] = &[
+        AudioIOLayout {
+            main_input_channels: None,
+            main_output_channels: NonZeroU32::new(2),
+            ..AudioIOLayout::const_default()
+        },
+        AudioIOLayout {
+            main_input_channels: None,
+            main_output_channels: NonZeroU32::new(1),
+            ..AudioIOLayout::const_default()
+        },
+    ];
 
     const MIDI_INPUT: MidiConfig = MidiConfig::MidiCCs;
     const MIDI_OUTPUT: MidiConfig = MidiConfig::MidiCCs;

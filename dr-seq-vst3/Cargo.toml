@@ -12,3 +12,6 @@ crate-type = ["cdylib"]
 [dependencies]
 nih_plug = { git = "https://github.com/robbert-vdh/nih-plug" }
 dr-seq-core = { path = "../dr-seq-core" }
+
+[features]
+dummy-audio = []
