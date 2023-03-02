@@ -38,9 +38,9 @@ impl Model for Data {
     }
 }
 
-// Makes sense to also define this here, makes it a bit easier to keep track of
+/// Returns the default state.
 pub(crate) fn default_state() -> Arc<ViziaState> {
-    ViziaState::from_size(800, 500)
+    ViziaState::from_size(800, 500, false)
 }
 
 /// Create the editor.
