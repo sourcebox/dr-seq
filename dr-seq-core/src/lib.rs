@@ -1,3 +1,7 @@
+//! Crate containing the core functionality of the plugin.
+
+#![warn(missing_docs)]
+
 mod clock;
 mod config;
 mod editor;
@@ -19,6 +23,7 @@ use dr_seq_engine::{
 use editor::EditorEvent;
 use params::{AppParams, StepState};
 
+/// Main plugin struct.
 pub struct App {
     /// Parameters shared with host.
     params: Arc<AppParams>,
