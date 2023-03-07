@@ -40,7 +40,7 @@ impl Model for Data {
 
 /// Returns the default state.
 pub(crate) fn default_state() -> Arc<ViziaState> {
-    ViziaState::from_size(800, 500, false)
+    ViziaState::new(|| (800, 500))
 }
 
 /// Create the editor.
