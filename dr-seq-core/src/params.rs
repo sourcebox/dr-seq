@@ -24,7 +24,7 @@ pub struct AppParams {
     pub pattern: Pattern,
 
     /// Sender part of channel for events from editor to the engine.
-    pub editor_event_sender: Mutex<mpsc::Sender<EditorEvent>>,
+    pub editor_event_sender: Mutex<mpsc::SyncSender<EditorEvent>>,
 
     /// Number of the current step.
     pub current_step: AtomicI32,
@@ -118,7 +118,7 @@ impl AppParams {
     /// Returns a new instance.
     pub fn new(
         update_engine: Arc<AtomicBool>,
-        editor_event_sender: mpsc::Sender<EditorEvent>,
+        editor_event_sender: mpsc::SyncSender<EditorEvent>,
     ) -> Self {
         let delay_range = IntRange::Linear {
             min: -(CLOCK_PPQ as i32) / 8,

@@ -44,8 +44,8 @@ pub struct App {
 impl Default for App {
     fn default() -> Self {
         let update_engine = Arc::new(AtomicBool::new(false));
-        let editor_channel: (mpsc::Sender<EditorEvent>, mpsc::Receiver<EditorEvent>) =
-            mpsc::channel();
+        let editor_channel: (mpsc::SyncSender<EditorEvent>, mpsc::Receiver<EditorEvent>) =
+            mpsc::sync_channel(64);
         Self {
             params: Arc::new(AppParams::new(update_engine.clone(), editor_channel.0)),
             engine: Engine::new(),
