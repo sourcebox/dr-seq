@@ -21,7 +21,12 @@ pub fn create(cx: &mut Context) {
                 Element::new(cx).top(GRID_ROW_SPACER_HEIGHT);
             }
 
-            create_track(cx, track, bar, Data::params.map(move |params| params.current_step.load(Ordering::Relaxed)));
+            create_track(
+                cx,
+                track,
+                bar,
+                Data::params.map(move |params| params.current_step.load(Ordering::Relaxed)),
+            );
         }
     })
     .id("grid");
@@ -48,9 +53,15 @@ fn create_track(cx: &mut Context, track: usize, bar: usize, current_step: impl L
 }
 
 /// Creates a single step.
-fn create_step(cx: &mut Context, track: usize, bar: usize, step: usize, current_step: impl Lens<Target = i32>) {
-    
-    let state_lens = Data::params.map(move |params| params.pattern.steps[track][bar][step as usize].load(Ordering::Relaxed));
+fn create_step(
+    cx: &mut Context,
+    track: usize,
+    bar: usize,
+    step: usize,
+    current_step: impl Lens<Target = i32>,
+) {
+    let state_lens = Data::params
+        .map(move |params| params.pattern.steps[track][bar][step].load(Ordering::Relaxed));
 
     VStack::new(cx, |cx| {
         Element::new(cx).class("content");
@@ -59,17 +70,27 @@ fn create_step(cx: &mut Context, track: usize, bar: usize, step: usize, current_
     .space(GRID_CELL_SPACING)
     .child_space(Pixels(3.0))
     .class("step")
-    .toggle_class("current", current_step.map(move |current| *current as usize == step))
-    .toggle_class("default", state_lens.clone().map(|state|{
-        let state = StepState::from(*state);
-        state == StepState::Default
-    }))
-    .toggle_class("weak", state_lens.clone().map(|state|{
-        let state = StepState::from(*state);
-        state == StepState::Weak
-    }))
-    .on_press_down(move |eh|{
-        let state_lens = Data::params.map(move |params| params.pattern.steps[track][bar][step as usize].load(Ordering::Relaxed));
+    .toggle_class(
+        "current",
+        current_step.map(move |current| *current as usize == step),
+    )
+    .toggle_class(
+        "default",
+        state_lens.clone().map(|state| {
+            let state = StepState::from(*state);
+            state == StepState::Default
+        }),
+    )
+    .toggle_class(
+        "weak",
+        state_lens.clone().map(|state| {
+            let state = StepState::from(*state);
+            state == StepState::Weak
+        }),
+    )
+    .on_press_down(move |eh| {
+        let state_lens = Data::params
+            .map(move |params| params.pattern.steps[track][bar][step].load(Ordering::Relaxed));
         if let Some(state) = state_lens.get_fallible(eh) {
             let state = StepState::from(state);
 
