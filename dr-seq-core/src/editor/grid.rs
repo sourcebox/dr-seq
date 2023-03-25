@@ -68,7 +68,13 @@ fn create_step(
     })
     .size(GRID_CELL_SIZE)
     .space(GRID_CELL_SPACING)
-    .child_space(Pixels(3.0))
+    .child_space(state_lens.clone().map(|state| {
+        if StepState::from(*state) == StepState::Weak {
+            Pixels(6.0)
+        } else {
+            Pixels(3.0)
+        }
+    }))
     .class("step")
     .toggle_class(
         "current",
