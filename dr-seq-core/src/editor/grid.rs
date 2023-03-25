@@ -94,6 +94,13 @@ fn create_step(
             state == StepState::Weak
         }),
     )
+    .toggle_class(
+        "strong",
+        state_lens.clone().map(|state| {
+            let state = StepState::from(*state);
+            state == StepState::Strong
+        }),
+    )
     .on_press_down(move |eh| {
         let state_lens = Data::params
             .map(move |params| params.pattern.steps[track][bar][step].load(Ordering::Relaxed));
@@ -101,11 +108,14 @@ fn create_step(
             let state = StepState::from(state);
 
             let shift = eh.modifiers().contains(Modifiers::SHIFT);
+            let alt = eh.modifiers().contains(Modifiers::ALT);
 
             let mut new_state = match state {
                 StepState::Off => {
                     if shift {
                         StepState::Weak
+                    } else if alt {
+                        StepState::Strong
                     } else {
                         StepState::Default
                     }
@@ -113,6 +123,8 @@ fn create_step(
                 StepState::Default => {
                     if shift {
                         StepState::Weak
+                    } else if alt {
+                        StepState::Strong
                     } else {
                         StepState::Off
                     }
@@ -122,8 +134,8 @@ fn create_step(
 
             if track == TRACKS - 1 && new_state != StepState::Off {
                 // Accent track has only on/off steps, so the on
-                // state is always `Default`.
-                new_state = StepState::Default;
+                // state is always `Strong`.
+                new_state = StepState::Strong;
             }
 
             eh.emit(EditorEvent::CellClick(track, bar, step, new_state));

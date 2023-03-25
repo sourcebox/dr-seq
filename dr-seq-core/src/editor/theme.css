@@ -64,3 +64,8 @@ param-button :checked {
     background-color: #ec6708;
     border-radius: 50%;
 }
+
+.step.strong .content {
+    background-color: #ff0000;
+    border-radius: 50%;
+}
