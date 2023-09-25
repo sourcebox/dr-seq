@@ -1,10 +1,6 @@
 [workspace]
-members = [
-    "dr-seq-engine",
-    "dr-seq-core",
-    "dr-seq-vst3",
-    "xtask"
-]
+resolver = "2"
+members = ["dr-seq-engine", "dr-seq-core", "dr-seq-vst3", "xtask"]
 
 [profile.release]
 lto = true

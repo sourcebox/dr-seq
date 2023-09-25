@@ -93,7 +93,7 @@ impl Plugin for App {
         self.params.clone()
     }
 
-    fn editor(&self, _async_executor: AsyncExecutor<Self>) -> Option<Box<dyn Editor>> {
+    fn editor(&mut self, _async_executor: AsyncExecutor<Self>) -> Option<Box<dyn Editor>> {
         editor::create(self.params.clone(), self.params.editor_state.clone())
     }
 
