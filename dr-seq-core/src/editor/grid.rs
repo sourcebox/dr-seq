@@ -46,7 +46,7 @@ fn create_track(cx: &mut Context, track: usize, bar: usize, current_step: impl L
                 .space(Stretch(0.5));
 
             for step in 0..16 {
-                create_step(cx, track, bar, step, current_step.clone());
+                create_step(cx, track, bar, step, current_step);
             }
         });
     });
@@ -68,7 +68,7 @@ fn create_step(
     })
     .size(GRID_CELL_SIZE)
     .space(GRID_CELL_SPACING)
-    .child_space(state_lens.clone().map(|state| {
+    .child_space(state_lens.map(|state| {
         if StepState::from(*state) == StepState::Weak {
             Pixels(6.0)
         } else {
@@ -82,21 +82,21 @@ fn create_step(
     )
     .toggle_class(
         "default",
-        state_lens.clone().map(|state| {
+        state_lens.map(|state| {
             let state = StepState::from(*state);
             state == StepState::Default
         }),
     )
     .toggle_class(
         "weak",
-        state_lens.clone().map(|state| {
+        state_lens.map(|state| {
             let state = StepState::from(*state);
             state == StepState::Weak
         }),
     )
     .toggle_class(
         "strong",
-        state_lens.clone().map(|state| {
+        state_lens.map(|state| {
             let state = StepState::from(*state);
             state == StepState::Strong
         }),

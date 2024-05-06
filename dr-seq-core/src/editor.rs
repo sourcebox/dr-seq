@@ -53,7 +53,7 @@ pub(crate) fn create(
         assets::register_noto_sans_thin(cx);
         assets::register_noto_sans_bold(cx);
 
-        cx.add_theme(include_str!("editor/theme.css"));
+        cx.add_stylesheet(include_str!("editor/theme.css")).ok();
 
         Data {
             params: params.clone(),
@@ -63,11 +63,7 @@ pub(crate) fn create(
         ResizeHandle::new(cx);
 
         HStack::new(cx, |cx| {
-            Label::new(cx, NAME)
-                .font_family(vec![FamilyOwned::Name(String::from(
-                    assets::NOTO_SANS_LIGHT,
-                ))])
-                .font_size(20.0);
+            Label::new(cx, NAME).font_size(20.0);
         })
         .child_space(Pixels(5.0))
         .height(Pixels(40.0))
