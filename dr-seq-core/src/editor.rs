@@ -145,8 +145,9 @@ pub(crate) fn create(
                     param_slider(cx, Data::params, |params| &params.weak_velocity);
                 })
                 .top(Pixels(5.0))
-                .height(Pixels(100.0));
-            });
+                .height(Pixels(250.0));
+            })
+            .height(Pixels(300.0));
 
             VStack::new(cx, move |cx| {
                 HStack::new(cx, move |cx| {

@@ -29,6 +29,8 @@ pub fn create(cx: &mut Context) {
             );
         }
     })
+    .width(Pixels(550.0))
+    .height(Pixels(310.0))
     .id("grid");
 }
 
