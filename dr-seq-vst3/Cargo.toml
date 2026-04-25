@@ -10,7 +10,7 @@ license = "GPL-3.0-or-later"
 crate-type = ["cdylib"]
 
 [dependencies]
-nih_plug = { git = "https://github.com/robbert-vdh/nih-plug" }
+nih_plug = { git = "https://github.com/BillyDM/nih-plug.git" }
 dr-seq-core = { path = "../dr-seq-core" }
 
 [features]

@@ -7,8 +7,8 @@ use std::sync::Mutex;
 
 use nih_plug::params::persist::PersistentField;
 use nih_plug::prelude::*;
-use nih_plug_vizia::ViziaState;
 use serde::{Deserialize, Serialize};
+use vizia_plug::ViziaState;
 
 use crate::config::{BARS, CLOCK_PPQ, TRACKS};
 use crate::editor::{self, EditorEvent};

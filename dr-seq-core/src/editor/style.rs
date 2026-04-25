@@ -1,6 +1,6 @@
 //! Common style settings.
 
-use nih_plug_vizia::vizia::prelude::*;
+use vizia_plug::vizia::prelude::*;
 
 /// Size of the grid cells.
 pub const GRID_CELL_SIZE: Units = Units::Pixels(25.0);

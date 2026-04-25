@@ -11,11 +11,11 @@ default-run = "dr-seq-core"
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-nih_plug = { git = "https://github.com/robbert-vdh/nih-plug", features = [
+nih_plug = { git = "https://github.com/BillyDM/nih-plug", features = [
     "assert_process_allocs",
     "standalone",
 ] }
-nih_plug_vizia = { git = "https://github.com/robbert-vdh/nih-plug" }
+vizia_plug = { git = "https://github.com/vizia/vizia-plug" }
 atomic_float = "1.0.0"
 serde = { version = "1.0.205", features = ["derive"] }
 dr-seq-engine = { path = "../dr-seq-engine" }
