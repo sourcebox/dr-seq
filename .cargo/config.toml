@@ -6,4 +6,3 @@
 # twice, we'll default to also running the xtask target in release mode.
 xtask = "run --package xtask --release --"
 xtask-debug = "run --package xtask --"
-bundle = "xtask bundle dr-seq-vst3"
