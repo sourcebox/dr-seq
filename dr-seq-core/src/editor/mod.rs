@@ -9,11 +9,11 @@ use std::sync::Arc;
 use nih_plug::prelude::Editor;
 use vizia_plug::vizia::prelude::*;
 use vizia_plug::widgets::*;
-use vizia_plug::{create_vizia_editor, ViziaState, ViziaTheming};
+use vizia_plug::{ViziaState, ViziaTheming, create_vizia_editor};
 
+use crate::AppParams;
 use crate::config::NAME;
 use crate::params::StepState;
-use crate::AppParams;
 use controls::*;
 use style::*;
 
@@ -39,7 +39,7 @@ pub(crate) fn create(
         // assets::register_noto_sans_thin(cx);
         // assets::register_noto_sans_bold(cx);
 
-        cx.add_stylesheet(include_str!("editor/theme.css")).ok();
+        cx.add_stylesheet(include_str!("theme.css")).ok();
 
         ResizeHandle::new(cx);
 
