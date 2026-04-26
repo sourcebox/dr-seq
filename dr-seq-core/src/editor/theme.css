@@ -10,7 +10,6 @@
     background-color: #cd9090;
 }
 
-
 /* Parameter controls */
 
 param-slider {
@@ -42,7 +41,6 @@ param-button :checked {
     color: black;
     background-color: #ec6708;
 }
-
 
 /* Grid with steps */
 

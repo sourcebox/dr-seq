@@ -7,18 +7,18 @@ mod config;
 mod editor;
 mod params;
 
+use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc;
-use std::sync::Arc;
 
 use nih_plug::prelude::*;
 
 use clock::Clock;
 use config::*;
 use dr_seq_engine::{
+    Engine,
     event::TrackEvent,
     params::{Pitch, Velocity},
-    Engine,
 };
 use editor::EditorEvent;
 use params::{AppParams, StepState};

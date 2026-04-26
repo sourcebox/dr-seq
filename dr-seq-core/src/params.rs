@@ -1,9 +1,9 @@
 //! Plugin parameters.
 
-use std::sync::atomic::{AtomicBool, AtomicI32, AtomicU32, Ordering};
-use std::sync::mpsc;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::atomic::{AtomicBool, AtomicI32, AtomicU32, Ordering};
+use std::sync::mpsc;
 
 use nih_plug::params::persist::PersistentField;
 use nih_plug::prelude::*;

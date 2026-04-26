@@ -1,15 +1,15 @@
 //! Grid with cells for each step.
 
-use std::sync::atomic::Ordering;
 use std::sync::Arc;
+use std::sync::atomic::Ordering;
 
 use vizia_plug::vizia::prelude::*;
 
-use super::style::*;
 use super::EditorEvent;
+use super::style::*;
+use crate::AppParams;
 use crate::config::*;
 use crate::params::StepState;
-use crate::AppParams;
 
 /// Creates the grid.
 pub fn create(cx: &mut Context, params: &Arc<AppParams>) {
