@@ -46,15 +46,18 @@ pub(crate) fn create(
         HStack::new(cx, |cx| {
             Label::new(cx, NAME).font_size(20.0);
         })
-        .padding(Pixels(5.0))
-        .height(Pixels(40.0))
         .id("header");
 
-        VStack::new(cx, |cx| {
-            HStack::new(cx, |cx| {
-                grid::create(cx, &params);
-
-                Element::new(cx).width(Pixels(10.0));
+        Grid::new(
+            cx,
+            vec![Pixels(510.0), Pixels(140.0), Pixels(120.0)],
+            vec![Pixels(310.0)],
+            |cx| {
+                VStack::new(cx, |cx| {
+                    grid::create(cx, &params);
+                })
+                .row_start(0)
+                .column_start(0);
 
                 VStack::new(cx, |cx| {
                     HStack::new(cx, |cx| {
@@ -105,9 +108,10 @@ pub(crate) fn create(
                         param_slider(cx, &params.track8_delay);
                     })
                     .height(GRID_ROW_HEIGHT);
-                });
-
-                Element::new(cx).width(Pixels(20.0));
+                })
+                .row_start(0)
+                .column_start(1)
+                .padding_top(Pixels(3.0));
 
                 VStack::new(cx, |cx| {
                     Label::new(cx, "Velocity");
@@ -125,19 +129,22 @@ pub(crate) fn create(
                     Label::new(cx, "Weak");
                     param_slider(cx, &params.weak_velocity);
                 })
-                .top(Pixels(5.0))
-                .height(Pixels(250.0));
-            })
-            .height(Pixels(300.0));
+                .row_start(0)
+                .column_start(2);
 
-            VStack::new(cx, |cx| {
-                HStack::new(cx, |cx| {
-                    Label::new(cx, "Swing").top(Pixels(5.0)).right(Pixels(10.0));
-                    ParamSlider::new(cx, &params.swing).class("slider");
-                });
-            })
-            .top(Pixels(20.0));
-        })
-        .space(Pixels(10.0));
+                VStack::new(cx, |cx| {
+                    HStack::new(cx, |cx| {
+                        Label::new(cx, "Swing")
+                            .padding_top(Pixels(3.0))
+                            .padding_right(Pixels(10.0));
+                        ParamSlider::new(cx, &params.swing).class("slider");
+                    });
+                })
+                .row_start(1)
+                .column_start(0)
+                .padding_top(Pixels(10.0));
+            },
+        )
+        .id("main");
     })
 }

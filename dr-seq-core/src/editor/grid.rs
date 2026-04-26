@@ -20,7 +20,8 @@ pub fn create(cx: &mut Context, params: &Arc<AppParams>) {
         for track in 0..TRACKS {
             if track == TRACKS - 1 {
                 // Add some space before the accent track.
-                Element::new(cx).top(GRID_ROW_SPACER_HEIGHT);
+                Element::new(cx).height(GRID_ROW_SPACER_HEIGHT);
+                Element::new(cx).height(GRID_ROW_SPACER_HEIGHT);
             }
 
             create_track(
@@ -32,8 +33,6 @@ pub fn create(cx: &mut Context, params: &Arc<AppParams>) {
             );
         }
     })
-    .width(Pixels(550.0))
-    .height(Pixels(310.0))
     .id("grid");
 }
 
@@ -127,6 +126,6 @@ fn create_step(
 
     if step % 4 == 3 && step != 15 {
         // Add addtional space after block of 4 cells.
-        Element::new(cx).right(GRID_COL_SPACER_WIDTH);
+        Element::new(cx).width(GRID_COL_SPACER_WIDTH);
     }
 }
