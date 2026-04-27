@@ -16,8 +16,8 @@ nih_plug = { git = "https://github.com/BillyDM/nih-plug", features = [
     "standalone",
 ] }
 vizia_plug = { git = "https://github.com/vizia/vizia-plug" }
-atomic_float = "1.0.0"
-serde = { version = "1.0.205", features = ["derive"] }
+atomic_float = "1.1.0"
+serde = { version = "1.0.228", features = ["derive"] }
 dr-seq-engine = { path = "../dr-seq-engine" }
 
 [features]
