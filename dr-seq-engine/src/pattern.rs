@@ -1,7 +1,5 @@
 //! Sequencer pattern module.
 
-use array_init::array_init;
-
 use crate::step::Step;
 
 /// Number of steps inside a bar.
@@ -20,7 +18,7 @@ pub struct Pattern<const BARS: usize> {
 impl<const BARS: usize> Default for Pattern<BARS> {
     fn default() -> Self {
         Self {
-            bars: array_init(|_| Bar::default()),
+            bars: core::array::from_fn(|_| Bar::default()),
             length_steps: 16,
         }
     }
@@ -68,7 +66,7 @@ impl Bar {
     /// Returns a new instance.
     pub fn new() -> Self {
         Self {
-            steps: array_init(|_| Step::default()),
+            steps: core::array::from_fn(|_| Step::default()),
         }
     }
 

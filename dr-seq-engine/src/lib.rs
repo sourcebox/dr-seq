@@ -7,8 +7,6 @@ pub mod pattern;
 pub mod step;
 pub mod track;
 
-use array_init::array_init;
-
 use crate::event::EngineEvent;
 use crate::track::Track;
 
@@ -25,7 +23,7 @@ pub struct Engine<const TRACKS: usize, const BARS: usize, const PPQ: u32> {
 impl<const TRACKS: usize, const BARS: usize, const PPQ: u32> Default for Engine<TRACKS, BARS, PPQ> {
     fn default() -> Self {
         Self {
-            tracks: array_init(|_| Track::default()),
+            tracks: core::array::from_fn(|_| Track::default()),
         }
     }
 }
@@ -34,7 +32,7 @@ impl<const TRACKS: usize, const BARS: usize, const PPQ: u32> Engine<TRACKS, BARS
     /// Returns a new instance.
     pub fn new() -> Self {
         Self {
-            tracks: array_init(|_| Track::new()),
+            tracks: core::array::from_fn(|_| Track::new()),
         }
     }
 
