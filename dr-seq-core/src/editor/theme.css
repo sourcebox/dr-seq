@@ -10,6 +10,7 @@
     background-color: #cd9090;
     height: 40px;
     padding: 5px;
+    font-size: 20px;
 }
 
 #main {
@@ -52,7 +53,10 @@ param-button :checked {
 
 .step {
     background-color: #666666;
-    border-radius: 3px;
+    corner-radius: 3px;
+    width: 25px;
+    height: 25px;
+    padding: 3px;
 }
 
 .step.current {
@@ -61,15 +65,19 @@ param-button :checked {
 
 .step.default .content {
     background-color: #ec6708;
-    border-radius: 50%;
+    corner-radius: 50%;
+}
+
+.step.weak {
+    padding: 6px;
 }
 
 .step.weak .content {
     background-color: #ec6708;
-    border-radius: 50%;
+    corner-radius: 50%;
 }
 
 .step.strong .content {
     background-color: #ff0000;
-    border-radius: 50%;
+    corner-radius: 50%;
 }

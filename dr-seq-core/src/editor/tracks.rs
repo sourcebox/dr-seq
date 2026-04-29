@@ -6,12 +6,11 @@ use std::sync::atomic::Ordering;
 use vizia_plug::vizia::prelude::*;
 
 use super::EditorEvent;
+use super::controls::*;
 use super::style::*;
 use crate::AppParams;
 use crate::config::*;
 use crate::params::StepState;
-
-use super::controls::*;
 
 /// Creates the tracks.
 pub fn create(cx: &mut Context, params: &Arc<AppParams>) {
@@ -101,13 +100,6 @@ fn create_step(
 
     VStack::new(cx, |cx| {
         Element::new(cx).class("content");
-    })
-    .size(GRID_CELL_SIZE)
-    .space(GRID_CELL_SPACING)
-    .padding(if step_state == StepState::Weak {
-        Pixels(6.0)
-    } else {
-        Pixels(3.0)
     })
     .class("step")
     .toggle_class("current", current_step as usize == step)

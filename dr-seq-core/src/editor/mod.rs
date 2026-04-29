@@ -40,7 +40,7 @@ pub fn create(params: Arc<AppParams>, editor_state: Arc<ViziaState>) -> Option<B
         ResizeHandle::new(cx);
 
         HStack::new(cx, |cx| {
-            Label::new(cx, NAME).font_size(20.0);
+            Label::new(cx, NAME);
         })
         .id("header");
 
