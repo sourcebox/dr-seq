@@ -2,12 +2,6 @@
 
 use vizia_plug::vizia::prelude::*;
 
-/// Size of the grid cells.
-pub const GRID_CELL_SIZE: Units = Units::Pixels(25.0);
-
-/// Spacing of the grid cells.
-pub const GRID_CELL_SPACING: Units = Pixels(3.0);
-
 /// Width of additional spacer after columns.
 pub const GRID_COL_SPACER_WIDTH: Units = Pixels(3.0);
 

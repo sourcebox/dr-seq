@@ -103,15 +103,18 @@ impl StepCell {
     /// Returns a new cell.
     fn new(cx: &mut Context, state: SyncSignal<u32>, accent_step: bool) -> Handle<'_, Self> {
         Self.build(cx, move |cx| {
-            let step_state = StepState::from(state.get());
             VStack::new(cx, |cx| {
                 Element::new(cx).class("content");
             })
             .class("step")
-            .toggle_class("normal", step_state == StepState::Normal)
-            .toggle_class("accent", step_state == StepState::Accent)
-            .toggle_class("weak", step_state == StepState::Weak)
-            .toggle_class("ghost", step_state == StepState::Ghost);
+            .bind(state, move |handle| {
+                let step_state = StepState::from(state.get());
+                handle
+                    .toggle_class("normal", step_state == StepState::Normal)
+                    .toggle_class("accent", step_state == StepState::Accent)
+                    .toggle_class("weak", step_state == StepState::Weak)
+                    .toggle_class("ghost", step_state == StepState::Ghost);
+            });
         })
         .on_mouse_down(move |eh, _| {
             let shift = eh.modifiers().contains(Modifiers::SHIFT);
@@ -149,6 +152,5 @@ impl StepCell {
 
             state.set(new_state.into());
         })
-        .bind(state, |mut handle| handle.needs_redraw())
     }
 }

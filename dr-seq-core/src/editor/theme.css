@@ -63,6 +63,10 @@ param-button :checked {
     background-color: #999999;
 }
 
+.step .content {
+    background-color: #666666;
+}
+
 .step.normal .content {
     background-color: #ec6708;
     corner-radius: 50%;
