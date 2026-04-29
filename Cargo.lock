@@ -1496,9 +1496,9 @@ dependencies = [
 
 [[package]]
 name = "js-sys"
-version = "0.3.95"
+version = "0.3.97"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2964e92d1d9dc3364cae4d718d93f227e3abb088e747d92e0395bfdedf1c12ca"
+checksum = "a1840c94c045fbcf8ba2812c95db44499f7c64910a912551aaaa541decebcacf"
 dependencies = [
  "cfg-if",
  "futures-util",
@@ -1675,8 +1675,8 @@ dependencies = [
 
 [[package]]
 name = "morphorm"
-version = "0.7.0"
-source = "git+https://github.com/vizia/morphorm.git?branch=direction#bab98473d928fa80133fa82febe810843bda155e"
+version = "0.8.0"
+source = "git+https://github.com/vizia/morphorm.git?rev=e7e5fe35e5f184500d3030287f948a4f4c7f57ae#e7e5fe35e5f184500d3030287f948a4f4c7f57ae"
 dependencies = [
  "smallvec",
 ]
@@ -1734,7 +1734,7 @@ dependencies = [
 [[package]]
 name = "nih_plug"
 version = "0.1.0"
-source = "git+https://github.com/BillyDM/nih-plug#d9377be3b6f7c380dc947d10389970b324f45e01"
+source = "git+https://github.com/BillyDM/nih-plug#683ec08cc87118b3c2e82250763e75aac9643e3f"
 dependencies = [
  "anyhow",
  "anymap3",
@@ -1771,7 +1771,7 @@ dependencies = [
 [[package]]
 name = "nih_plug_derive"
 version = "0.1.0"
-source = "git+https://github.com/BillyDM/nih-plug#d9377be3b6f7c380dc947d10389970b324f45e01"
+source = "git+https://github.com/BillyDM/nih-plug#683ec08cc87118b3c2e82250763e75aac9643e3f"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2508,9 +2508,9 @@ checksum = "dc897dd8d9e8bd1ed8cdad82b5966c3e0ecae09fb1907d58efaa013543185d0a"
 
 [[package]]
 name = "rtrb"
-version = "0.3.3"
+version = "0.3.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7204ed6420f698836b76d4d5c2ec5dec7585fd5c3a788fd1cde855d1de598239"
+checksum = "4ade083ccbb4bf536df69d1f6432cc23deb7acccff86b183f3923a6fd56a1153"
 
 [[package]]
 name = "rustc-demangle"
@@ -3167,8 +3167,8 @@ checksum = "ddd74a9687298c6858e9b88ec8935ec45d22e8fd5e6394fa1bd4e99a87789c76"
 
 [[package]]
 name = "vizia"
-version = "0.3.0"
-source = "git+https://github.com/vizia/vizia?rev=12ff2584#12ff2584898283c8596548c15ed09e8a4061baf4"
+version = "0.4.0"
+source = "git+https://github.com/vizia/vizia?rev=23e34039#23e3403906683cfe5c4a076659f768bcd3f8e26d"
 dependencies = [
  "skia-safe",
  "vizia_baseview",
@@ -3178,8 +3178,8 @@ dependencies = [
 
 [[package]]
 name = "vizia_baseview"
-version = "0.3.0"
-source = "git+https://github.com/vizia/vizia?rev=12ff2584#12ff2584898283c8596548c15ed09e8a4061baf4"
+version = "0.4.0"
+source = "git+https://github.com/vizia/vizia?rev=23e34039#23e3403906683cfe5c4a076659f768bcd3f8e26d"
 dependencies = [
  "baseview 0.1.0 (git+https://github.com/vizia/baseview.git?rev=77fec022db136fb771d5775ae13d088f4f166c04)",
  "gl",
@@ -3192,8 +3192,8 @@ dependencies = [
 
 [[package]]
 name = "vizia_core"
-version = "0.3.0"
-source = "git+https://github.com/vizia/vizia?rev=12ff2584#12ff2584898283c8596548c15ed09e8a4061baf4"
+version = "0.4.0"
+source = "git+https://github.com/vizia/vizia?rev=23e34039#23e3403906683cfe5c4a076659f768bcd3f8e26d"
 dependencies = [
  "accesskit",
  "bitflags 2.11.1",
@@ -3225,13 +3225,13 @@ dependencies = [
 
 [[package]]
 name = "vizia_id"
-version = "0.3.0"
-source = "git+https://github.com/vizia/vizia?rev=12ff2584#12ff2584898283c8596548c15ed09e8a4061baf4"
+version = "0.4.0"
+source = "git+https://github.com/vizia/vizia?rev=23e34039#23e3403906683cfe5c4a076659f768bcd3f8e26d"
 
 [[package]]
 name = "vizia_input"
-version = "0.3.0"
-source = "git+https://github.com/vizia/vizia?rev=12ff2584#12ff2584898283c8596548c15ed09e8a4061baf4"
+version = "0.4.0"
+source = "git+https://github.com/vizia/vizia?rev=23e34039#23e3403906683cfe5c4a076659f768bcd3f8e26d"
 dependencies = [
  "bitflags 2.11.1",
  "keyboard-types 0.7.0",
@@ -3241,7 +3241,7 @@ dependencies = [
 [[package]]
 name = "vizia_plug"
 version = "0.1.0"
-source = "git+https://github.com/vizia/vizia-plug#918f696fd2c5900680116e5e27637ed13aa3cd31"
+source = "git+https://github.com/vizia/vizia-plug#fdc01469b661bb5b0edfd12d96eb62b335321fa4"
 dependencies = [
  "crossbeam",
  "nih_plug",
@@ -3253,8 +3253,8 @@ dependencies = [
 
 [[package]]
 name = "vizia_reactive"
-version = "0.3.0"
-source = "git+https://github.com/vizia/vizia?rev=12ff2584#12ff2584898283c8596548c15ed09e8a4061baf4"
+version = "0.4.0"
+source = "git+https://github.com/vizia/vizia?rev=23e34039#23e3403906683cfe5c4a076659f768bcd3f8e26d"
 dependencies = [
  "parking_lot",
  "smallvec",
@@ -3262,16 +3262,16 @@ dependencies = [
 
 [[package]]
 name = "vizia_storage"
-version = "0.3.0"
-source = "git+https://github.com/vizia/vizia?rev=12ff2584#12ff2584898283c8596548c15ed09e8a4061baf4"
+version = "0.4.0"
+source = "git+https://github.com/vizia/vizia?rev=23e34039#23e3403906683cfe5c4a076659f768bcd3f8e26d"
 dependencies = [
  "vizia_id",
 ]
 
 [[package]]
 name = "vizia_style"
-version = "0.3.0"
-source = "git+https://github.com/vizia/vizia?rev=12ff2584#12ff2584898283c8596548c15ed09e8a4061baf4"
+version = "0.4.0"
+source = "git+https://github.com/vizia/vizia?rev=23e34039#23e3403906683cfe5c4a076659f768bcd3f8e26d"
 dependencies = [
  "bitflags 2.11.1",
  "cssparser",
@@ -3285,8 +3285,8 @@ dependencies = [
 
 [[package]]
 name = "vizia_window"
-version = "0.3.0"
-source = "git+https://github.com/vizia/vizia?rev=12ff2584#12ff2584898283c8596548c15ed09e8a4061baf4"
+version = "0.4.0"
+source = "git+https://github.com/vizia/vizia?rev=23e34039#23e3403906683cfe5c4a076659f768bcd3f8e26d"
 dependencies = [
  "bitflags 2.11.1",
  "vizia_input",
@@ -3294,8 +3294,8 @@ dependencies = [
 
 [[package]]
 name = "vizia_winit"
-version = "0.3.0"
-source = "git+https://github.com/vizia/vizia?rev=12ff2584#12ff2584898283c8596548c15ed09e8a4061baf4"
+version = "0.4.0"
+source = "git+https://github.com/vizia/vizia?rev=23e34039#23e3403906683cfe5c4a076659f768bcd3f8e26d"
 dependencies = [
  "copypasta",
  "gl",
@@ -3377,9 +3377,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen"
-version = "0.2.118"
+version = "0.2.120"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0bf938a0bacb0469e83c1e148908bd7d5a6010354cf4fb73279b7447422e3a89"
+checksum = "df52b6d9b87e0c74c9edfa1eb2d9bf85e5d63515474513aa50fa181b3c4f5db1"
 dependencies = [
  "cfg-if",
  "once_cell",
@@ -3390,9 +3390,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-futures"
-version = "0.4.68"
+version = "0.4.70"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f371d383f2fb139252e0bfac3b81b265689bf45b6874af544ffa4c975ac1ebf8"
+checksum = "af934872acec734c2d80e6617bbb5ff4f12b052dd8e6332b0817bce889516084"
 dependencies = [
  "js-sys",
  "wasm-bindgen",
@@ -3400,9 +3400,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-macro"
-version = "0.2.118"
+version = "0.2.120"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eeff24f84126c0ec2db7a449f0c2ec963c6a49efe0698c4242929da037ca28ed"
+checksum = "78b1041f495fb322e64aca85f5756b2172e35cd459376e67f2a6c9dffcedb103"
 dependencies = [
  "quote",
  "wasm-bindgen-macro-support",
@@ -3410,9 +3410,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-macro-support"
-version = "0.2.118"
+version = "0.2.120"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9d08065faf983b2b80a79fd87d8254c409281cf7de75fc4b773019824196c904"
+checksum = "9dcd0ff20416988a18ac686d4d4d0f6aae9ebf08a389ff5d29012b05af2a1b41"
 dependencies = [
  "bumpalo",
  "proc-macro2",
@@ -3423,18 +3423,18 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-shared"
-version = "0.2.118"
+version = "0.2.120"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5fd04d9e306f1907bd13c6361b5c6bfc7b3b3c095ed3f8a9246390f8dbdee129"
+checksum = "49757b3c82ebf16c57d69365a142940b384176c24df52a087fb748e2085359ea"
 dependencies = [
  "unicode-ident",
 ]
 
 [[package]]
 name = "web-sys"
-version = "0.3.95"
+version = "0.3.97"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f2dfbb17949fa2088e5d39408c48368947b86f7834484e87b73de55bc14d97d"
+checksum = "2eadbac71025cd7b0834f20d1fe8472e8495821b4e9801eb0a60bd1f19827602"
 dependencies = [
  "js-sys",
  "wasm-bindgen",
