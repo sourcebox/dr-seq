@@ -18,6 +18,10 @@ pub const EMAIL: &str = "info@sourcebox.de";
 /// Total number of tracks. Last track is used for global accent.
 pub const TRACKS: usize = 9;
 
+/// Labels for the tracks.
+pub const TRACK_LABELS: [&str; TRACKS] =
+    ["BD", "SD", "CHH", "PHH", "OHH", "WD", "MT", "SFX", "ACC"];
+
 /// Number of the accent track.
 pub const ACCENT_TRACK: u32 = (TRACKS - 1) as u32;
 

@@ -46,14 +46,7 @@ fn create_track(
 ) {
     VStack::new(cx, |cx| {
         HStack::new(cx, |cx| {
-            let label = if track == ACCENT_TRACK as usize {
-                "Acc".to_owned()
-            } else {
-                format!("{}", track + 1)
-            };
-            Label::new(cx, label)
-                .width(Pixels(30.0))
-                .space(Stretch(0.5));
+            Label::new(cx, TRACK_LABELS[track]).width(Pixels(45.0));
 
             for step in 0..16 {
                 create_step(cx, params, track, bar, step, current_step);
