@@ -43,7 +43,7 @@ fn create_track(
     params: &Arc<AppParams>,
     track: usize,
     bar: usize,
-    current_step: i32,
+    current_step: usize,
 ) {
     let enable_params = [
         &params.track1_enable,
@@ -93,7 +93,7 @@ fn create_step(
     track: usize,
     bar: usize,
     step: usize,
-    current_step: i32,
+    current_step: usize,
 ) {
     let step_state =
         StepState::from(params.pattern.steps[track][bar][step].load(Ordering::Relaxed));
@@ -102,7 +102,7 @@ fn create_step(
         Element::new(cx).class("content");
     })
     .class("step")
-    .toggle_class("current", current_step as usize == step)
+    .toggle_class("current", current_step == step)
     .toggle_class("default", step_state == StepState::Default)
     .toggle_class("weak", step_state == StepState::Weak)
     .toggle_class("strong", step_state == StepState::Strong)

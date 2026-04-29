@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 use std::sync::Mutex;
-use std::sync::atomic::{AtomicBool, AtomicI32, AtomicU32, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU32, AtomicUsize, Ordering};
 use std::sync::mpsc;
 
 use nih_plug::params::persist::PersistentField;
@@ -27,7 +27,7 @@ pub struct AppParams {
     pub editor_event_sender: Mutex<mpsc::SyncSender<EditorEvent>>,
 
     /// Number of the current step.
-    pub current_step: AtomicI32,
+    pub current_step: AtomicUsize,
 
     /// Swing.
     #[id = "swing"]
@@ -129,7 +129,7 @@ impl AppParams {
             editor_state: editor::default_state(),
             pattern: Pattern::default(),
             editor_event_sender: Mutex::new(editor_event_sender),
-            current_step: AtomicI32::new(0),
+            current_step: AtomicUsize::new(0),
             swing: IntParam::new("Swing", 0, IntRange::Linear { min: 0, max: 100 }).with_callback(
                 {
                     let update_engine = update_engine.clone();

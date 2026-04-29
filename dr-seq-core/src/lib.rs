@@ -180,7 +180,7 @@ impl Plugin for App {
         for (pulse_no, timing) in clock {
             // Get the current step from the pulse number and convert it into range 0-15
             // for showing it in the editor.
-            let current_step = pulse_no / (ppq / 4.0) as i32 % 16;
+            let current_step = (pulse_no / (ppq / 4.0) as i32 % 16) as usize;
             if current_step != self.params.current_step.load(Ordering::Relaxed) {
                 self.params
                     .current_step
