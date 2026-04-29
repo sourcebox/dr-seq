@@ -1,8 +1,8 @@
 //! Editor module using vizia.
 
 mod controls;
-mod grid;
 mod style;
+mod tracks;
 
 use std::sync::Arc;
 
@@ -15,7 +15,6 @@ use crate::AppParams;
 use crate::config::NAME;
 use crate::params::StepState;
 use controls::*;
-use style::*;
 
 #[derive(Debug, Clone)]
 pub enum EditorEvent {
@@ -24,15 +23,12 @@ pub enum EditorEvent {
 }
 
 /// Returns the default state.
-pub(crate) fn default_state() -> Arc<ViziaState> {
+pub fn default_state() -> Arc<ViziaState> {
     ViziaState::new(|| (800, 500))
 }
 
 /// Create the editor.
-pub(crate) fn create(
-    params: Arc<AppParams>,
-    editor_state: Arc<ViziaState>,
-) -> Option<Box<dyn Editor>> {
+pub fn create(params: Arc<AppParams>, editor_state: Arc<ViziaState>) -> Option<Box<dyn Editor>> {
     create_vizia_editor(editor_state, ViziaTheming::Custom, move |cx, _| {
         // TODO: check
         // assets::register_noto_sans_light(cx);
@@ -50,68 +46,14 @@ pub(crate) fn create(
 
         Grid::new(
             cx,
-            vec![Pixels(510.0), Pixels(140.0), Pixels(120.0)],
+            vec![Pixels(650.0), Pixels(120.0)],
             vec![Pixels(310.0)],
             |cx| {
                 VStack::new(cx, |cx| {
-                    grid::create(cx, &params);
+                    tracks::create(cx, &params);
                 })
                 .row_start(0)
                 .column_start(0);
-
-                VStack::new(cx, |cx| {
-                    HStack::new(cx, |cx| {
-                        param_button(cx, &params.track1_enable);
-                        Element::new(cx).width(ELEMENT_SPACER_WIDTH);
-                        param_slider(cx, &params.track1_delay);
-                    })
-                    .height(GRID_ROW_HEIGHT);
-                    HStack::new(cx, |cx| {
-                        param_button(cx, &params.track2_enable);
-                        Element::new(cx).width(ELEMENT_SPACER_WIDTH);
-                        param_slider(cx, &params.track2_delay);
-                    })
-                    .height(GRID_ROW_HEIGHT);
-                    HStack::new(cx, |cx| {
-                        param_button(cx, &params.track3_enable);
-                        Element::new(cx).width(ELEMENT_SPACER_WIDTH);
-                        param_slider(cx, &params.track3_delay);
-                    })
-                    .height(GRID_ROW_HEIGHT);
-                    HStack::new(cx, |cx| {
-                        param_button(cx, &params.track4_enable);
-                        Element::new(cx).width(ELEMENT_SPACER_WIDTH);
-                        param_slider(cx, &params.track4_delay);
-                    })
-                    .height(GRID_ROW_HEIGHT);
-                    HStack::new(cx, |cx| {
-                        param_button(cx, &params.track5_enable);
-                        Element::new(cx).width(ELEMENT_SPACER_WIDTH);
-                        param_slider(cx, &params.track5_delay);
-                    })
-                    .height(GRID_ROW_HEIGHT);
-                    HStack::new(cx, |cx| {
-                        param_button(cx, &params.track6_enable);
-                        Element::new(cx).width(ELEMENT_SPACER_WIDTH);
-                        param_slider(cx, &params.track6_delay);
-                    })
-                    .height(GRID_ROW_HEIGHT);
-                    HStack::new(cx, |cx| {
-                        param_button(cx, &params.track7_enable);
-                        Element::new(cx).width(ELEMENT_SPACER_WIDTH);
-                        param_slider(cx, &params.track7_delay);
-                    })
-                    .height(GRID_ROW_HEIGHT);
-                    HStack::new(cx, |cx| {
-                        param_button(cx, &params.track8_enable);
-                        Element::new(cx).width(ELEMENT_SPACER_WIDTH);
-                        param_slider(cx, &params.track8_delay);
-                    })
-                    .height(GRID_ROW_HEIGHT);
-                })
-                .row_start(0)
-                .column_start(1)
-                .padding_top(Pixels(3.0));
 
                 VStack::new(cx, |cx| {
                     Label::new(cx, "Velocity");
@@ -130,7 +72,7 @@ pub(crate) fn create(
                     param_slider(cx, &params.weak_velocity);
                 })
                 .row_start(0)
-                .column_start(2);
+                .column_start(1);
 
                 VStack::new(cx, |cx| {
                     HStack::new(cx, |cx| {

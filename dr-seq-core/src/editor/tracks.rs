@@ -1,4 +1,4 @@
-//! Grid with cells for each step.
+//! Tracks with cells for each step.
 
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
@@ -11,7 +11,9 @@ use crate::AppParams;
 use crate::config::*;
 use crate::params::StepState;
 
-/// Creates the grid.
+use super::controls::*;
+
+/// Creates the tracks.
 pub fn create(cx: &mut Context, params: &Arc<AppParams>) {
     // TODO: get real bar number
     let bar = 0;
@@ -20,8 +22,8 @@ pub fn create(cx: &mut Context, params: &Arc<AppParams>) {
         for track in 0..TRACKS {
             if track == TRACKS - 1 {
                 // Add some space before the accent track.
-                Element::new(cx).height(GRID_ROW_SPACER_HEIGHT);
-                Element::new(cx).height(GRID_ROW_SPACER_HEIGHT);
+                Element::new(cx).height(TRACK_ROW_SPACER_HEIGHT);
+                Element::new(cx).height(TRACK_ROW_SPACER_HEIGHT);
             }
 
             create_track(
@@ -33,7 +35,7 @@ pub fn create(cx: &mut Context, params: &Arc<AppParams>) {
             );
         }
     })
-    .id("grid");
+    .id("tracks");
 }
 
 /// Creates a single track.
@@ -44,12 +46,42 @@ fn create_track(
     bar: usize,
     current_step: i32,
 ) {
+    let enable_params = [
+        &params.track1_enable,
+        &params.track2_enable,
+        &params.track3_enable,
+        &params.track4_enable,
+        &params.track5_enable,
+        &params.track6_enable,
+        &params.track7_enable,
+        &params.track8_enable,
+    ];
+
+    let delay_params = [
+        &params.track1_delay,
+        &params.track2_delay,
+        &params.track3_delay,
+        &params.track4_delay,
+        &params.track5_delay,
+        &params.track6_delay,
+        &params.track7_delay,
+        &params.track8_delay,
+    ];
+
     VStack::new(cx, |cx| {
         HStack::new(cx, |cx| {
             Label::new(cx, TRACK_LABELS[track]).width(Pixels(45.0));
 
             for step in 0..16 {
                 create_step(cx, params, track, bar, step, current_step);
+            }
+
+            if track < TRACKS - 1 {
+                HStack::new(cx, |cx| {
+                    param_button(cx, enable_params[track]);
+                    Element::new(cx).width(ELEMENT_SPACER_WIDTH);
+                    param_slider(cx, delay_params[track]);
+                });
             }
         });
     });
