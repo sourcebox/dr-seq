@@ -50,7 +50,7 @@ pub fn create(params: Arc<AppParams>, editor_state: Arc<ViziaState>) -> Option<B
             vec![Pixels(310.0)],
             |cx| {
                 VStack::new(cx, |cx| {
-                    tracks::create(cx, &params);
+                    tracks::create(cx, params.clone());
                 })
                 .row_start(0)
                 .column_start(0);

@@ -1,6 +1,7 @@
 //! Tracks with cells for each step.
 
 use std::sync::Arc;
+use std::sync::atomic::AtomicU32;
 use std::sync::atomic::Ordering;
 
 use vizia_plug::vizia::prelude::*;
@@ -13,7 +14,7 @@ use crate::config::*;
 use crate::params::StepState;
 
 /// Creates the tracks.
-pub fn create(cx: &mut Context, params: &Arc<AppParams>) {
+pub fn create(cx: &mut Context, params: Arc<AppParams>) {
     // TODO: get real bar number
     let bar = 0;
 
@@ -27,7 +28,7 @@ pub fn create(cx: &mut Context, params: &Arc<AppParams>) {
 
             create_track(
                 cx,
-                params,
+                params.clone(),
                 track,
                 bar,
                 params.current_step.load(Ordering::Relaxed),
@@ -40,7 +41,7 @@ pub fn create(cx: &mut Context, params: &Arc<AppParams>) {
 /// Creates a single track.
 fn create_track(
     cx: &mut Context,
-    params: &Arc<AppParams>,
+    params: Arc<AppParams>,
     track: usize,
     bar: usize,
     current_step: usize,
@@ -67,15 +68,22 @@ fn create_track(
         &params.track8_delay,
     ];
 
+    let accent_track = track == TRACKS - 1;
+
     VStack::new(cx, |cx| {
         HStack::new(cx, |cx| {
             Label::new(cx, TRACK_LABELS[track]).width(Pixels(45.0));
 
             for step in 0..16 {
-                create_step(cx, params, track, bar, step, current_step);
+                StepCell::new(cx, SyncSignal::new(0), accent_track);
+
+                if step % 4 == 3 && step != 15 {
+                    // Add addtional space after block of 4 cells.
+                    Element::new(cx).width(GRID_COL_SPACER_WIDTH);
+                }
             }
 
-            if track < TRACKS - 1 {
+            if !accent_track {
                 HStack::new(cx, |cx| {
                     param_button(cx, enable_params[track]);
                     Element::new(cx).width(ELEMENT_SPACER_WIDTH);
@@ -86,64 +94,61 @@ fn create_track(
     });
 }
 
-/// Creates a single step.
-fn create_step(
-    cx: &mut Context,
-    params: &Arc<AppParams>,
-    track: usize,
-    bar: usize,
-    step: usize,
-    current_step: usize,
-) {
-    let step_state =
-        StepState::from(params.pattern.steps[track][bar][step].load(Ordering::Relaxed));
+/// Cell for a single step in the beat grid.
+struct StepCell;
 
-    VStack::new(cx, |cx| {
-        Element::new(cx).class("content");
-    })
-    .class("step")
-    .toggle_class("current", current_step == step)
-    .toggle_class("normal", step_state == StepState::Normal)
-    .toggle_class("accent", step_state == StepState::Accent)
-    .toggle_class("weak", step_state == StepState::Weak)
-    .toggle_class("ghost", step_state == StepState::Ghost)
-    .on_press_down(move |eh| {
-        let shift = eh.modifiers().contains(Modifiers::SHIFT);
-        let alt = eh.modifiers().contains(Modifiers::ALT);
+impl View for StepCell {}
 
-        let mut new_state = match step_state {
-            StepState::Off => {
-                if shift {
-                    StepState::Weak
-                } else if alt {
-                    StepState::Accent
-                } else {
-                    StepState::Normal
+impl StepCell {
+    /// Returns a new cell.
+    fn new(cx: &mut Context, state: SyncSignal<u32>, accent_step: bool) -> Handle<'_, Self> {
+        Self.build(cx, move |cx| {
+            let step_state = StepState::from(state.get());
+            VStack::new(cx, |cx| {
+                Element::new(cx).class("content");
+            })
+            .class("step")
+            .toggle_class("normal", step_state == StepState::Normal)
+            .toggle_class("accent", step_state == StepState::Accent)
+            .toggle_class("weak", step_state == StepState::Weak)
+            .toggle_class("ghost", step_state == StepState::Ghost);
+        })
+        .on_mouse_down(move |eh, _| {
+            let shift = eh.modifiers().contains(Modifiers::SHIFT);
+            let alt = eh.modifiers().contains(Modifiers::ALT);
+
+            let step_state = StepState::from(state.get());
+
+            let mut new_state = match step_state {
+                StepState::Off => {
+                    if shift {
+                        StepState::Weak
+                    } else if alt {
+                        StepState::Accent
+                    } else {
+                        StepState::Normal
+                    }
                 }
-            }
-            StepState::Normal => {
-                if shift {
-                    StepState::Weak
-                } else if alt {
-                    StepState::Accent
-                } else {
-                    StepState::Off
+                StepState::Normal => {
+                    if shift {
+                        StepState::Weak
+                    } else if alt {
+                        StepState::Accent
+                    } else {
+                        StepState::Off
+                    }
                 }
+                _ => StepState::Off,
+            };
+
+            if accent_step && new_state != StepState::Off {
+                // Accent track has only on/off steps, so the on
+                // state is always `Accent`.
+                new_state = StepState::Accent;
             }
-            _ => StepState::Off,
-        };
 
-        if track == TRACKS - 1 && new_state != StepState::Off {
-            // Accent track has only on/off steps, so the on
-            // state is always `Strong`.
-            new_state = StepState::Accent;
-        }
-
-        eh.emit(EditorEvent::CellClick(track, bar, step, new_state));
-    });
-
-    if step % 4 == 3 && step != 15 {
-        // Add addtional space after block of 4 cells.
-        Element::new(cx).width(GRID_COL_SPACER_WIDTH);
+            state.set(new_state.into());
+        })
+        .bind(state, |mut handle| handle.needs_redraw())
     }
 }
