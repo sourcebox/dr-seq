@@ -63,8 +63,13 @@ param-button :checked {
     background-color: #999999;
 }
 
-.step.default .content {
+.step.normal .content {
     background-color: #ec6708;
+    corner-radius: 50%;
+}
+
+.step.accent .content {
+    background-color: #ff0000;
     corner-radius: 50%;
 }
 
@@ -77,7 +82,11 @@ param-button :checked {
     corner-radius: 50%;
 }
 
-.step.strong .content {
-    background-color: #ff0000;
+.step.ghost {
+    padding: 6px;
+}
+
+.step.ghost .content {
+    background-color: #1133aa;
     corner-radius: 50%;
 }

@@ -97,11 +97,11 @@ pub struct AppParams {
     #[id = "track8-delay"]
     pub track8_delay: IntParam,
 
-    /// Default velocity for steps.
-    #[id = "default-velocity"]
-    pub default_velocity: IntParam,
+    /// Normal velocity for steps.
+    #[id = "normal-velocity"]
+    pub normal_velocity: IntParam,
 
-    /// Accent velocity.
+    /// Accent velocity for steps.
     #[id = "accent-velocity"]
     pub accent_velocity: IntParam,
 
@@ -109,9 +109,13 @@ pub struct AppParams {
     #[id = "accent-vel-mode"]
     pub accent_vel_mode: BoolParam,
 
-    /// Weak velocity.
+    /// Weak velocity for steps.
     #[id = "weak-velocity"]
     pub weak_velocity: IntParam,
+
+    /// Ghost velocity for steps.
+    #[id = "ghost-velocity"]
+    pub ghost_velocity: IntParam,
 }
 
 impl AppParams {
@@ -238,7 +242,7 @@ impl AppParams {
             }),
 
             // Velocities
-            default_velocity: IntParam::new("Velocity", 100, IntRange::Linear { min: 0, max: 127 }),
+            normal_velocity: IntParam::new("Velocity", 100, IntRange::Linear { min: 0, max: 127 }),
             accent_velocity: IntParam::new(
                 "Accent Velocity",
                 27,
@@ -249,7 +253,12 @@ impl AppParams {
             ),
             weak_velocity: IntParam::new(
                 "Weak Velocity",
-                50,
+                60,
+                IntRange::Linear { min: 0, max: 127 },
+            ),
+            ghost_velocity: IntParam::new(
+                "Ghost Velocity",
+                20,
                 IntRange::Linear { min: 0, max: 127 },
             ),
         }
@@ -264,22 +273,26 @@ pub enum StepState {
     Off,
 
     /// Normal step with standard velocity.
-    Default,
+    Normal,
 
     /// Accented step.
-    Strong,
+    Accent,
 
-    /// Low velocity step.
+    /// Lower velocity step.
     Weak,
+
+    /// Ghost note with low velocity.
+    Ghost,
 }
 
 impl From<StepState> for u32 {
     fn from(value: StepState) -> Self {
         match value {
             StepState::Off => 0,
-            StepState::Default => 1,
-            StepState::Strong => 2,
+            StepState::Normal => 1,
+            StepState::Accent => 2,
             StepState::Weak => 3,
+            StepState::Ghost => 4,
         }
     }
 }
@@ -287,9 +300,10 @@ impl From<StepState> for u32 {
 impl From<u32> for StepState {
     fn from(value: u32) -> Self {
         match value {
-            1 => StepState::Default,
-            2 => StepState::Strong,
+            1 => StepState::Normal,
+            2 => StepState::Accent,
             3 => StepState::Weak,
+            4 => StepState::Ghost,
             _ => StepState::Off,
         }
     }

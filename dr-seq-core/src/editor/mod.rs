@@ -58,8 +58,8 @@ pub fn create(params: Arc<AppParams>, editor_state: Arc<ViziaState>) -> Option<B
                 VStack::new(cx, |cx| {
                     Label::new(cx, "Velocity");
                     Element::new(cx).height(Pixels(10.0));
-                    Label::new(cx, "Default");
-                    param_slider(cx, &params.default_velocity);
+                    Label::new(cx, "Normal");
+                    param_slider(cx, &params.normal_velocity);
                     Element::new(cx).height(Pixels(10.0));
                     Label::new(cx, "Accent");
                     param_slider(cx, &params.accent_velocity);
@@ -70,6 +70,9 @@ pub fn create(params: Arc<AppParams>, editor_state: Arc<ViziaState>) -> Option<B
                     Element::new(cx).height(Pixels(10.0));
                     Label::new(cx, "Weak");
                     param_slider(cx, &params.weak_velocity);
+                    Element::new(cx).height(Pixels(10.0));
+                    Label::new(cx, "Ghost");
+                    param_slider(cx, &params.ghost_velocity);
                 })
                 .row_start(0)
                 .column_start(1);

@@ -168,7 +168,7 @@ impl Plugin for App {
         let clock = Clock::new(buffer, context.transport(), ppq);
 
         // Convert the velocity values from 0-127 into 0.0-1.0 range.
-        let default_velocity = self.params.default_velocity.value() as f32 / 127.0;
+        let default_velocity = self.params.normal_velocity.value() as f32 / 127.0;
         let accent_velocity = if self.params.accent_vel_mode.value() {
             self.params.accent_velocity.value() as f32 / 127.0
         } else {
@@ -272,7 +272,7 @@ impl App {
                     if state != StepState::Off {
                         step.enable();
                         step.set_velocity(match state {
-                            StepState::Strong => Velocity::Strong,
+                            StepState::Accent => Velocity::Strong,
                             StepState::Weak => Velocity::Weak,
                             _ => Velocity::Default,
                         });
