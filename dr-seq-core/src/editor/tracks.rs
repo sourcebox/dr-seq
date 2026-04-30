@@ -75,7 +75,8 @@ fn create_track(
             Label::new(cx, TRACK_LABELS[track]).width(Pixels(45.0));
 
             for step in 0..16 {
-                StepCell::new(cx, SyncSignal::new(0), accent_track);
+                let signal = SyncSignal::new(Arc::new(AtomicU32::new(0)));
+                StepCell::new(cx, signal, accent_track);
 
                 if step % 4 == 3 && step != 15 {
                     // Add addtional space after block of 4 cells.
@@ -101,14 +102,18 @@ impl View for StepCell {}
 
 impl StepCell {
     /// Returns a new cell.
-    fn new(cx: &mut Context, state: SyncSignal<u32>, accent_step: bool) -> Handle<'_, Self> {
+    fn new(
+        cx: &mut Context,
+        state: SyncSignal<Arc<AtomicU32>>,
+        accent_step: bool,
+    ) -> Handle<'_, Self> {
         Self.build(cx, move |cx| {
             VStack::new(cx, |cx| {
                 Element::new(cx).class("content");
             })
             .class("step")
             .bind(state, move |handle| {
-                let step_state = StepState::from(state.get());
+                let step_state = StepState::from(state.get().load(Ordering::Relaxed));
                 handle
                     .toggle_class("normal", step_state == StepState::Normal)
                     .toggle_class("accent", step_state == StepState::Accent)
@@ -120,7 +125,7 @@ impl StepCell {
             let shift = eh.modifiers().contains(Modifiers::SHIFT);
             let alt = eh.modifiers().contains(Modifiers::ALT);
 
-            let step_state = StepState::from(state.get());
+            let step_state = StepState::from(state.get().load(Ordering::Relaxed));
 
             let mut new_state = match step_state {
                 StepState::Off => {
@@ -150,7 +155,7 @@ impl StepCell {
                 new_state = StepState::Accent;
             }
 
-            state.set(new_state.into());
+            state.update(|s| s.store(new_state.into(), Ordering::Relaxed));
         })
     }
 }
