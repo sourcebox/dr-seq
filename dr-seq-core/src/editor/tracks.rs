@@ -79,7 +79,9 @@ fn create_track(
             let event_sender = params.editor_event_sender.lock().unwrap().clone();
 
             for step in 0..16 {
-                let signal = SyncSignal::new(Arc::new(AtomicU32::new(0)));
+                let signal = SyncSignal::new(Arc::new(AtomicU32::new(
+                    params.pattern.steps[track][bar][step].load(Ordering::Relaxed),
+                )));
                 StepCell::new(
                     cx,
                     signal,
