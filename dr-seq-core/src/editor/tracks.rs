@@ -1,8 +1,10 @@
 //! Tracks with cells for each step.
 
 use std::sync::Arc;
+use std::sync::Mutex;
 use std::sync::atomic::AtomicU32;
 use std::sync::atomic::Ordering;
+use std::sync::mpsc;
 
 use vizia_plug::vizia::prelude::*;
 
@@ -74,9 +76,19 @@ fn create_track(
         HStack::new(cx, |cx| {
             Label::new(cx, TRACK_LABELS[track]).width(Pixels(45.0));
 
+            let event_sender = params.editor_event_sender.lock().unwrap().clone();
+
             for step in 0..16 {
                 let signal = SyncSignal::new(Arc::new(AtomicU32::new(0)));
-                StepCell::new(cx, signal, accent_track);
+                StepCell::new(
+                    cx,
+                    signal,
+                    track,
+                    bar,
+                    step,
+                    accent_track,
+                    event_sender.clone(),
+                );
 
                 if step % 4 == 3 && step != 15 {
                     // Add addtional space after block of 4 cells.
@@ -105,7 +117,11 @@ impl StepCell {
     fn new(
         cx: &mut Context,
         state: SyncSignal<Arc<AtomicU32>>,
+        track: usize,
+        bar: usize,
+        step: usize,
         accent_step: bool,
+        event_sender: mpsc::SyncSender<EditorEvent>,
     ) -> Handle<'_, Self> {
         Self.build(cx, move |cx| {
             VStack::new(cx, |cx| {
@@ -156,6 +172,11 @@ impl StepCell {
             }
 
             state.update(|s| s.store(new_state.into(), Ordering::Relaxed));
+
+            // Send an event back to the engine.
+            event_sender
+                .send(EditorEvent::CellClick(track, bar, step, new_state))
+                .ok();
         })
     }
 }
