@@ -22,6 +22,9 @@ pub const TRACKS: usize = 9;
 pub const TRACK_LABELS: [&str; TRACKS] =
     ["BD", "SD", "CHH", "PHH", "OHH", "WD", "MT", "SFX", "ACC"];
 
+/// Notes send by the tracks.
+pub const TRACK_NOTES: [u8; TRACKS - 1] = [36, 38, 42, 44, 46, 48, 51, 49];
+
 /// Number of the accent track.
 pub const ACCENT_TRACK: u32 = (TRACKS - 1) as u32;
 

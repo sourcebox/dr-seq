@@ -1,7 +1,6 @@
 //! Tracks with cells for each step.
 
 use std::sync::Arc;
-use std::sync::Mutex;
 use std::sync::atomic::AtomicU32;
 use std::sync::atomic::Ordering;
 use std::sync::mpsc;

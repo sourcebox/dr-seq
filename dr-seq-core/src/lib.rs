@@ -140,7 +140,7 @@ impl Plugin for App {
                 // When transport stops, any scheduled note offs should be sent immediately.
                 self.engine.flush();
                 while let Some(event) = self.engine.next_event() {
-                    let note = (36 + event.0) as u8;
+                    let note = TRACK_NOTES[event.0 as usize];
                     if let TrackEvent::NoteOff {
                         bar: _,
                         step: _,
@@ -191,7 +191,7 @@ impl Plugin for App {
 
             // Turn engine events into corresponding MIDI messages.
             while let Some(event) = self.engine.next_event() {
-                let note = (36 + event.0) as u8;
+                let note = TRACK_NOTES[event.0 as usize];
                 match event.1 {
                     TrackEvent::NoteOn {
                         bar,
