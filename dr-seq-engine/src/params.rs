@@ -21,10 +21,13 @@ pub enum Velocity {
     Default,
 
     /// Accented step.
-    Strong,
+    Accent,
 
     /// Quiet step.
     Weak,
+
+    /// Ghost step.
+    Ghost,
 
     /// Individual setting.
     Custom(i32),
