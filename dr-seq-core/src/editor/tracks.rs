@@ -144,32 +144,21 @@ impl StepCell {
 
             let step_state = StepState::from(state.get().load(Ordering::Relaxed));
 
-            let mut new_state = match step_state {
-                StepState::Off => {
-                    if shift {
-                        StepState::Weak
-                    } else if alt {
-                        StepState::Accent
-                    } else {
-                        StepState::Normal
-                    }
-                }
-                StepState::Normal => {
-                    if shift {
-                        StepState::Weak
-                    } else if alt {
-                        StepState::Accent
-                    } else {
-                        StepState::Off
-                    }
-                }
-                _ => StepState::Off,
+            let mut new_state = match (shift, alt) {
+                (true, false) => StepState::Weak,
+                (true, true) => StepState::Ghost,
+                (false, true) => StepState::Accent,
+                _ => StepState::Normal,
             };
 
             if accent_step && new_state != StepState::Off {
                 // Accent track has only on/off steps, so the on
                 // state is always `Accent`.
                 new_state = StepState::Accent;
+            }
+
+            if new_state == step_state {
+                new_state = StepState::Off;
             }
 
             state.update(|s| s.store(new_state.into(), Ordering::Relaxed));
