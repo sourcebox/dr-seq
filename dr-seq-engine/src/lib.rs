@@ -1,72 +1,12 @@
 #![doc = include_str!("../README.md")]
 #![cfg_attr(not(test), no_std)]
 
-pub mod event;
-pub mod params;
-pub mod pattern;
-pub mod step;
-pub mod track;
+mod params;
+mod pattern;
+mod step;
+mod track;
 
-use crate::event::EngineEvent;
-use crate::track::Track;
-
-/// Sequencer engine.
-/// - `TRACKS` is the total number of tracks.
-/// - `PPQ` is the resolution in pulses per quarter note.
-#[derive(Debug)]
-pub struct Engine<const TRACKS: usize, const PPQ: u32> {
-    /// Individual tracks.
-    tracks: [Track<PPQ>; TRACKS],
-}
-
-impl<const TRACKS: usize, const PPQ: u32> Default for Engine<TRACKS, PPQ> {
-    fn default() -> Self {
-        Self {
-            tracks: core::array::from_fn(|_| Track::default()),
-        }
-    }
-}
-
-impl<const TRACKS: usize, const PPQ: u32> Engine<TRACKS, PPQ> {
-    /// Returns a new instance.
-    pub fn new() -> Self {
-        Self {
-            tracks: core::array::from_fn(|_| Track::new()),
-        }
-    }
-
-    /// Return next event.
-    pub fn next_event(&mut self) -> Option<EngineEvent> {
-        for (n, track) in self.tracks.iter_mut().enumerate() {
-            if let Some(event) = track.next_event() {
-                return Some(EngineEvent(n as u32, event));
-            }
-        }
-
-        None
-    }
-
-    /// Flush sustaining notes.
-    pub fn flush(&mut self) {
-        for track in self.tracks.as_mut() {
-            track.flush();
-        }
-    }
-
-    /// Set the swing for all tracks.
-    pub fn set_swing(&mut self, swing: i32) {
-        for track in self.tracks.iter_mut() {
-            track.set_swing(swing);
-        }
-    }
-
-    /// Returns a mutable reference to the tracks.
-    pub fn tracks(&mut self) -> &mut [Track<PPQ>] {
-        &mut self.tracks
-    }
-
-    /// Returns a mutable reference to a specific track.
-    pub fn track(&mut self, track_no: u32) -> &mut Track<PPQ> {
-        &mut self.tracks[track_no as usize]
-    }
-}
+pub use params::*;
+pub use pattern::*;
+pub use step::*;
+pub use track::*;

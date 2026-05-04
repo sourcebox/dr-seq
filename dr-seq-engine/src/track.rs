@@ -2,8 +2,7 @@
 
 use heapless::spsc::Queue;
 
-use crate::event::TrackEvent;
-use crate::params::Pitch;
+use crate::params::{Pitch, Velocity};
 use crate::pattern::Pattern;
 
 /// Capacity of the event queue.
@@ -188,6 +187,20 @@ impl<const PPQ: u32> Track<PPQ> {
     pub fn play_step(&self) -> Option<u32> {
         self.play_pos.map(|v| v % 16)
     }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[non_exhaustive]
+pub enum TrackEvent {
+    /// Start a note with pitch and velocity.
+    NoteOn {
+        step: u32,
+        pitch: Pitch,
+        vel: Velocity,
+    },
+
+    /// Stop a note with pitch.
+    NoteOff { step: u32, pitch: Pitch },
 }
 
 /// Event queue.

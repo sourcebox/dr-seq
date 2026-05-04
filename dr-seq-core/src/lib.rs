@@ -7,21 +7,16 @@ mod config;
 mod editor;
 mod params;
 
-use std::default;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc;
 
 use nih_plug::prelude::*;
 
+use dr_seq_engine::{Pattern, Pitch, Track, TrackEvent, Velocity};
+
 use clock::Clock;
 use config::*;
-use dr_seq_engine::{
-    Engine,
-    event::TrackEvent,
-    params::{Pitch, Velocity},
-    pattern::Pattern,
-};
 use editor::EditorEvent;
 use params::{AppParams, StepState};
 
@@ -29,9 +24,6 @@ use params::{AppParams, StepState};
 pub struct App {
     /// Parameters shared with host.
     params: Arc<AppParams>,
-
-    /// Sequencer engine.
-    engine: Engine<TRACKS, CLOCK_PPQ>,
 
     /// Channel for receiving events from the editor.
     editor_event_receiver: mpsc::Receiver<EditorEvent>,
@@ -41,6 +33,9 @@ pub struct App {
 
     /// Flag if transport is playing.
     playing: bool,
+
+    /// Individual tracks.
+    tracks: [Track<CLOCK_PPQ>; TRACKS],
 
     /// Patterns for the tracks.
     patterns: [Pattern<16>; TRACKS],
@@ -53,11 +48,11 @@ impl Default for App {
             mpsc::sync_channel(64);
         Self {
             params: Arc::new(AppParams::new(update_engine.clone(), editor_channel.0)),
-            engine: Engine::new(),
             editor_event_receiver: editor_channel.1,
             update_engine,
             playing: false,
-            patterns: core::array::from_fn(|_| Pattern::<16>::default()),
+            tracks: core::array::from_fn(|_| Track::<CLOCK_PPQ>::new()),
+            patterns: core::array::from_fn(|_| Pattern::<16>::new()),
         }
     }
 }
@@ -112,7 +107,7 @@ impl Plugin for App {
         self.update_engine();
 
         // The accent track is always disabled for playing and only used to store the steps.
-        self.engine.track(ACCENT_TRACK).disable();
+        self.tracks[ACCENT_TRACK as usize].disable();
 
         true
     }
@@ -144,22 +139,26 @@ impl Plugin for App {
             self.playing = playing;
             if !playing {
                 // When transport stops, any scheduled note offs should be sent immediately.
-                self.engine.flush();
-                while let Some(event) = self.engine.next_event() {
-                    let note = TRACK_NOTES[event.0 as usize];
-                    if let TrackEvent::NoteOff { step: _, pitch } = event.1 {
-                        let event = NoteEvent::NoteOff {
-                            timing: 0,
-                            voice_id: None,
-                            channel: 0,
-                            note: match pitch {
-                                Pitch::Default => note,
-                                Pitch::Custom(pitch) => pitch as u8,
-                                _ => note,
-                            },
-                            velocity: 0.0,
-                        };
-                        context.send_event(event)
+                for track in self.tracks.as_mut() {
+                    track.flush();
+                }
+                for (n, track) in self.tracks.as_mut().iter_mut().enumerate() {
+                    while let Some(event) = track.next_event() {
+                        let note = TRACK_NOTES[n];
+                        if let TrackEvent::NoteOff { step: _, pitch } = event {
+                            let event = NoteEvent::NoteOff {
+                                timing: 0,
+                                voice_id: None,
+                                channel: 0,
+                                note: match pitch {
+                                    Pitch::Default => note,
+                                    Pitch::Custom(pitch) => pitch as u8,
+                                    _ => note,
+                                },
+                                velocity: 0.0,
+                            };
+                            context.send_event(event)
+                        }
                     }
                 }
             }
@@ -189,55 +188,57 @@ impl Plugin for App {
                     .store(current_step, Ordering::Relaxed);
             }
 
-            for (n, track) in self.engine.tracks().iter_mut().enumerate() {
+            for (n, track) in self.tracks.iter_mut().enumerate() {
                 track.update(pulse_no, &self.patterns[n]);
             }
 
             // Turn engine events into corresponding MIDI messages.
-            while let Some(event) = self.engine.next_event() {
-                let note = TRACK_NOTES[event.0 as usize];
-                match event.1 {
-                    TrackEvent::NoteOn { step, pitch, vel } => {
-                        let accent = self.patterns[ACCENT_TRACK as usize].step(step).enabled();
-                        let event = NoteEvent::NoteOn {
-                            timing,
-                            voice_id: None,
-                            channel: 0,
-                            note: match pitch {
-                                Pitch::Default => note,
-                                Pitch::Custom(pitch) => pitch as u8,
-                                _ => note,
-                            },
-                            velocity: match vel {
-                                Velocity::Accent => accent_velocity,
-                                Velocity::Weak => weak_velocity,
-                                Velocity::Ghost => ghost_velocity,
-                                _ => {
-                                    if accent {
-                                        accent_velocity
-                                    } else {
-                                        default_velocity
+            for (n, track) in self.tracks.iter_mut().enumerate() {
+                while let Some(event) = track.next_event() {
+                    let note = TRACK_NOTES[n as usize];
+                    match event {
+                        TrackEvent::NoteOn { step, pitch, vel } => {
+                            let accent = self.patterns[ACCENT_TRACK as usize].step(step).enabled();
+                            let event = NoteEvent::NoteOn {
+                                timing,
+                                voice_id: None,
+                                channel: 0,
+                                note: match pitch {
+                                    Pitch::Default => note,
+                                    Pitch::Custom(pitch) => pitch as u8,
+                                    _ => note,
+                                },
+                                velocity: match vel {
+                                    Velocity::Accent => accent_velocity,
+                                    Velocity::Weak => weak_velocity,
+                                    Velocity::Ghost => ghost_velocity,
+                                    _ => {
+                                        if accent {
+                                            accent_velocity
+                                        } else {
+                                            default_velocity
+                                        }
                                     }
-                                }
-                            },
-                        };
-                        context.send_event(event);
+                                },
+                            };
+                            context.send_event(event);
+                        }
+                        TrackEvent::NoteOff { step: _, pitch } => {
+                            let event = NoteEvent::NoteOff {
+                                timing,
+                                voice_id: None,
+                                channel: 0,
+                                note: match pitch {
+                                    Pitch::Default => note,
+                                    Pitch::Custom(pitch) => pitch as u8,
+                                    _ => note,
+                                },
+                                velocity: 0.0,
+                            };
+                            context.send_event(event)
+                        }
+                        _ => {}
                     }
-                    TrackEvent::NoteOff { step: _, pitch } => {
-                        let event = NoteEvent::NoteOff {
-                            timing,
-                            voice_id: None,
-                            channel: 0,
-                            note: match pitch {
-                                Pitch::Default => note,
-                                Pitch::Custom(pitch) => pitch as u8,
-                                _ => note,
-                            },
-                            velocity: 0.0,
-                        };
-                        context.send_event(event)
-                    }
-                    _ => {}
                 }
             }
         }
@@ -270,59 +271,27 @@ impl App {
                     step.disable();
                 }
             }
+
+            self.tracks[t].set_swing(self.params.swing.value() * 48 / 100);
         }
 
-        self.engine.set_swing(self.params.swing.value() * 48 / 100);
+        self.tracks[0].set_enabled(self.params.track1_enable.value());
+        self.tracks[1].set_enabled(self.params.track2_enable.value());
+        self.tracks[2].set_enabled(self.params.track3_enable.value());
+        self.tracks[3].set_enabled(self.params.track4_enable.value());
+        self.tracks[4].set_enabled(self.params.track5_enable.value());
+        self.tracks[5].set_enabled(self.params.track6_enable.value());
+        self.tracks[6].set_enabled(self.params.track7_enable.value());
+        self.tracks[7].set_enabled(self.params.track8_enable.value());
 
-        self.engine
-            .track(0)
-            .set_enabled(self.params.track1_enable.value());
-        self.engine
-            .track(1)
-            .set_enabled(self.params.track2_enable.value());
-        self.engine
-            .track(2)
-            .set_enabled(self.params.track3_enable.value());
-        self.engine
-            .track(3)
-            .set_enabled(self.params.track4_enable.value());
-        self.engine
-            .track(4)
-            .set_enabled(self.params.track5_enable.value());
-        self.engine
-            .track(5)
-            .set_enabled(self.params.track6_enable.value());
-        self.engine
-            .track(6)
-            .set_enabled(self.params.track7_enable.value());
-        self.engine
-            .track(7)
-            .set_enabled(self.params.track8_enable.value());
-
-        self.engine
-            .track(0)
-            .set_delay(self.params.track1_delay.value());
-        self.engine
-            .track(1)
-            .set_delay(self.params.track2_delay.value());
-        self.engine
-            .track(2)
-            .set_delay(self.params.track3_delay.value());
-        self.engine
-            .track(3)
-            .set_delay(self.params.track4_delay.value());
-        self.engine
-            .track(4)
-            .set_delay(self.params.track5_delay.value());
-        self.engine
-            .track(5)
-            .set_delay(self.params.track6_delay.value());
-        self.engine
-            .track(6)
-            .set_delay(self.params.track7_delay.value());
-        self.engine
-            .track(7)
-            .set_delay(self.params.track8_delay.value());
+        self.tracks[0].set_delay(self.params.track1_delay.value());
+        self.tracks[1].set_delay(self.params.track2_delay.value());
+        self.tracks[2].set_delay(self.params.track3_delay.value());
+        self.tracks[3].set_delay(self.params.track4_delay.value());
+        self.tracks[4].set_delay(self.params.track5_delay.value());
+        self.tracks[5].set_delay(self.params.track6_delay.value());
+        self.tracks[6].set_delay(self.params.track7_delay.value());
+        self.tracks[7].set_delay(self.params.track8_delay.value());
     }
 }
 
