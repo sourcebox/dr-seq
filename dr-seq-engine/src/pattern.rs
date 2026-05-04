@@ -1,22 +1,22 @@
-//! Sequencer pattern module.
+//! Sequencer pattern.
 
 use crate::step::Step;
 
-/// Sequencer pattern with length of `NUM_STEPS`.
+/// Sequencer pattern with capacity of `CAPACITY`.
 #[derive(Debug, Clone)]
-pub struct Pattern<const NUM_STEPS: usize> {
+pub struct Pattern<const CAPACITY: usize> {
     /// Array of steps.
-    steps: [Step; NUM_STEPS],
+    steps: [Step; CAPACITY],
 
-    /// Length in steps.
-    length_steps: u32,
+    /// Active length in steps.
+    length: usize,
 }
 
 impl<const NUM_STEPS: usize> Default for Pattern<NUM_STEPS> {
     fn default() -> Self {
         Self {
             steps: core::array::from_fn(|_| Step::default()),
-            length_steps: 16,
+            length: 16,
         }
     }
 }
@@ -27,14 +27,19 @@ impl<const NUM_STEPS: usize> Pattern<NUM_STEPS> {
         Self::default()
     }
 
-    /// Returns the length in steps.
-    pub fn length_steps(&self) -> u32 {
-        self.length_steps
+    /// Returns the active length in steps.
+    pub fn len(&self) -> usize {
+        self.length
     }
 
-    /// Sets the length in steps.
-    pub fn set_length_steps(&mut self, steps: u32) {
-        self.length_steps = steps;
+    /// Sets the active length in steps.
+    pub fn set_len(&mut self, steps: usize) {
+        self.length = steps;
+    }
+
+    /// Returns the capacity in steps.
+    pub fn capacity(&self) -> usize {
+        NUM_STEPS
     }
 
     /// Returns a reference to the steps.
@@ -48,7 +53,7 @@ impl<const NUM_STEPS: usize> Pattern<NUM_STEPS> {
     }
 
     /// Returns a reference to a specific step.
-    pub fn step(&self, step_no: u32) -> &Step {
-        &self.steps[step_no as usize]
+    pub fn step(&self, step_no: usize) -> &Step {
+        &self.steps[step_no]
     }
 }

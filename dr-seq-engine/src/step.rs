@@ -1,4 +1,4 @@
-//! Sequencer step module.
+//! Sequencer step.
 
 use crate::params::{Pitch, Velocity};
 
@@ -25,12 +25,12 @@ impl Step {
         }
     }
 
-    /// Enable the step.
+    /// Enables the step.
     pub fn enable(&mut self) {
         self.enabled = true;
     }
 
-    /// Disable the step.
+    /// Disables the step.
     pub fn disable(&mut self) {
         self.enabled = false;
     }

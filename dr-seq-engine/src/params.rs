@@ -1,6 +1,6 @@
-//! Parameter types.
+//! Parameters.
 
-/// Pitch options.
+/// Pitch variants.
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 #[non_exhaustive]
 pub enum Pitch {
@@ -12,7 +12,7 @@ pub enum Pitch {
     Custom(i32),
 }
 
-/// Velocity options.
+/// Velocity variants.
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 #[non_exhaustive]
 pub enum Velocity {
@@ -20,15 +20,15 @@ pub enum Velocity {
     #[default]
     Default,
 
-    /// Accented step.
+    /// Accented velocity.
     Accent,
 
-    /// Quiet step.
+    /// Quiet velocity.
     Weak,
 
-    /// Ghost step.
+    /// Ghost velocity.
     Ghost,
 
     /// Individual setting.
-    Custom(i32),
+    Custom(u8),
 }
