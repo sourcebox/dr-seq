@@ -18,8 +18,8 @@ use controls::*;
 
 #[derive(Debug, Clone)]
 pub enum EditorEvent {
-    /// Click on a cell with track, bar and step.
-    CellClick(usize, usize, usize, StepState),
+    /// Click on a cell with track and step.
+    CellClick(usize, usize, StepState),
 }
 
 /// Returns the default state.

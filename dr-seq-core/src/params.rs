@@ -10,7 +10,7 @@ use nih_plug::prelude::*;
 use serde::{Deserialize, Serialize};
 use vizia_plug::ViziaState;
 
-use crate::config::{BARS, CLOCK_PPQ, TRACKS};
+use crate::config::{CLOCK_PPQ, TRACKS};
 use crate::editor::{self, EditorEvent};
 
 #[derive(Params)]
@@ -312,16 +312,14 @@ impl From<u32> for StepState {
 #[derive(Default, Serialize, Deserialize)]
 pub struct Pattern {
     /// Array of tracks with steps.
-    pub steps: [[[AtomicU32; 16]; BARS]; TRACKS],
+    pub steps: [[AtomicU32; 16]; TRACKS],
 }
 
 impl<'a> PersistentField<'a, Pattern> for Pattern {
     fn set(&self, new_value: Pattern) {
         for (track, new_track) in self.steps.iter().zip(new_value.steps) {
             for (step, new_step) in track.iter().zip(new_track) {
-                for s in step.iter().zip(new_step) {
-                    s.0.store(s.1.load(Ordering::Relaxed), Ordering::Relaxed)
-                }
+                step.store(new_step.load(Ordering::Relaxed), Ordering::Relaxed)
             }
         }
     }

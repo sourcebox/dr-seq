@@ -29,7 +29,7 @@ pub struct App {
     params: Arc<AppParams>,
 
     /// Sequencer engine.
-    engine: Engine<TRACKS, BARS, CLOCK_PPQ>,
+    engine: Engine<TRACKS, CLOCK_PPQ>,
 
     /// Channel for receiving events from the editor.
     editor_event_receiver: mpsc::Receiver<EditorEvent>,
@@ -119,8 +119,8 @@ impl Plugin for App {
     ) -> ProcessStatus {
         if let Ok(event) = self.editor_event_receiver.try_recv() {
             match event {
-                EditorEvent::CellClick(track, bar, step, state) => {
-                    let param = &self.params.pattern.steps[track][bar][step];
+                EditorEvent::CellClick(track, step, state) => {
+                    let param = &self.params.pattern.steps[track][step];
                     param.store(state.into(), Ordering::Relaxed);
                     self.update_engine();
                 }
@@ -141,12 +141,7 @@ impl Plugin for App {
                 self.engine.flush();
                 while let Some(event) = self.engine.next_event() {
                     let note = TRACK_NOTES[event.0 as usize];
-                    if let TrackEvent::NoteOff {
-                        bar: _,
-                        step: _,
-                        pitch,
-                    } = event.1
-                    {
+                    if let TrackEvent::NoteOff { step: _, pitch } = event.1 {
                         let event = NoteEvent::NoteOff {
                             timing: 0,
                             voice_id: None,
@@ -194,17 +189,11 @@ impl Plugin for App {
             while let Some(event) = self.engine.next_event() {
                 let note = TRACK_NOTES[event.0 as usize];
                 match event.1 {
-                    TrackEvent::NoteOn {
-                        bar,
-                        step,
-                        pitch,
-                        vel,
-                    } => {
+                    TrackEvent::NoteOn { step, pitch, vel } => {
                         let accent = self
                             .engine
                             .track(ACCENT_TRACK)
                             .pattern()
-                            .bar(bar)
                             .step(step)
                             .enabled();
                         let event = NoteEvent::NoteOn {
@@ -231,11 +220,7 @@ impl Plugin for App {
                         };
                         context.send_event(event);
                     }
-                    TrackEvent::NoteOff {
-                        bar: _,
-                        step: _,
-                        pitch,
-                    } => {
+                    TrackEvent::NoteOff { step: _, pitch } => {
                         let event = NoteEvent::NoteOff {
                             timing,
                             voice_id: None,
@@ -267,21 +252,19 @@ impl App {
     /// Update the engine with the parameters from the editor or host.
     fn update_engine(&mut self) {
         for (t, track) in self.engine.tracks()[0..TRACKS].iter_mut().enumerate() {
-            for b in 0..BARS {
-                for (s, step) in track.pattern().bar(b as u32).steps().iter_mut().enumerate() {
-                    let state =
-                        StepState::from(self.params.pattern.steps[t][b][s].load(Ordering::Relaxed));
-                    if state != StepState::Off {
-                        step.enable();
-                        step.set_velocity(match state {
-                            StepState::Accent => Velocity::Accent,
-                            StepState::Weak => Velocity::Weak,
-                            StepState::Ghost => Velocity::Ghost,
-                            _ => Velocity::Default,
-                        });
-                    } else {
-                        step.disable();
-                    }
+            for (s, step) in track.pattern().steps_mut().iter_mut().enumerate() {
+                let state =
+                    StepState::from(self.params.pattern.steps[t][s].load(Ordering::Relaxed));
+                if state != StepState::Off {
+                    step.enable();
+                    step.set_velocity(match state {
+                        StepState::Accent => Velocity::Accent,
+                        StepState::Weak => Velocity::Weak,
+                        StepState::Ghost => Velocity::Ghost,
+                        _ => Velocity::Default,
+                    });
+                } else {
+                    step.disable();
                 }
             }
         }

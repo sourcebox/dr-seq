@@ -16,9 +16,6 @@ use crate::params::StepState;
 
 /// Creates the tracks.
 pub fn create(cx: &mut Context, params: Arc<AppParams>) {
-    // TODO: get real bar number
-    let bar = 0;
-
     VStack::new(cx, move |cx| {
         for track in 0..TRACKS {
             if track == TRACKS - 1 {
@@ -31,7 +28,6 @@ pub fn create(cx: &mut Context, params: Arc<AppParams>) {
                 cx,
                 params.clone(),
                 track,
-                bar,
                 params.current_step.load(Ordering::Relaxed),
             );
         }
@@ -40,13 +36,7 @@ pub fn create(cx: &mut Context, params: Arc<AppParams>) {
 }
 
 /// Creates a single track.
-fn create_track(
-    cx: &mut Context,
-    params: Arc<AppParams>,
-    track: usize,
-    bar: usize,
-    current_step: usize,
-) {
+fn create_track(cx: &mut Context, params: Arc<AppParams>, track: usize, current_step: usize) {
     let enable_params = [
         &params.track1_enable,
         &params.track2_enable,
@@ -79,17 +69,9 @@ fn create_track(
 
             for step in 0..16 {
                 let signal = SyncSignal::new(Arc::new(AtomicU32::new(
-                    params.pattern.steps[track][bar][step].load(Ordering::Relaxed),
+                    params.pattern.steps[track][step].load(Ordering::Relaxed),
                 )));
-                StepCell::new(
-                    cx,
-                    signal,
-                    track,
-                    bar,
-                    step,
-                    accent_track,
-                    event_sender.clone(),
-                );
+                StepCell::new(cx, signal, track, step, accent_track, event_sender.clone());
 
                 if step % 4 == 3 && step != 15 {
                     // Add addtional space after block of 4 cells.
@@ -119,7 +101,6 @@ impl StepCell {
         cx: &mut Context,
         state: SyncSignal<Arc<AtomicU32>>,
         track: usize,
-        bar: usize,
         step: usize,
         accent_step: bool,
         event_sender: mpsc::SyncSender<EditorEvent>,
@@ -165,7 +146,7 @@ impl StepCell {
 
             // Send an event back to the engine.
             event_sender
-                .send(EditorEvent::CellClick(track, bar, step, new_state))
+                .send(EditorEvent::CellClick(track, step, new_state))
                 .ok();
         })
     }

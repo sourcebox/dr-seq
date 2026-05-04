@@ -12,15 +12,14 @@ use crate::track::Track;
 
 /// Sequencer engine.
 /// - `TRACKS` is the total number of tracks.
-/// - `BARS` is the max number of bars in each pattern.
 /// - `PPQ` is the resolution in pulses per quarter note.
 #[derive(Debug)]
-pub struct Engine<const TRACKS: usize, const BARS: usize, const PPQ: u32> {
+pub struct Engine<const TRACKS: usize, const PPQ: u32> {
     /// Individual tracks.
-    tracks: [Track<BARS, PPQ>; TRACKS],
+    tracks: [Track<PPQ>; TRACKS],
 }
 
-impl<const TRACKS: usize, const BARS: usize, const PPQ: u32> Default for Engine<TRACKS, BARS, PPQ> {
+impl<const TRACKS: usize, const PPQ: u32> Default for Engine<TRACKS, PPQ> {
     fn default() -> Self {
         Self {
             tracks: core::array::from_fn(|_| Track::default()),
@@ -28,7 +27,7 @@ impl<const TRACKS: usize, const BARS: usize, const PPQ: u32> Default for Engine<
     }
 }
 
-impl<const TRACKS: usize, const BARS: usize, const PPQ: u32> Engine<TRACKS, BARS, PPQ> {
+impl<const TRACKS: usize, const PPQ: u32> Engine<TRACKS, PPQ> {
     /// Returns a new instance.
     pub fn new() -> Self {
         Self {
@@ -69,12 +68,12 @@ impl<const TRACKS: usize, const BARS: usize, const PPQ: u32> Engine<TRACKS, BARS
     }
 
     /// Returns a mutable reference to the tracks.
-    pub fn tracks(&mut self) -> &mut [Track<BARS, PPQ>] {
+    pub fn tracks(&mut self) -> &mut [Track<PPQ>] {
         &mut self.tracks
     }
 
     /// Returns a mutable reference to a specific track.
-    pub fn track(&mut self, track_no: u32) -> &mut Track<BARS, PPQ> {
+    pub fn track(&mut self, track_no: u32) -> &mut Track<PPQ> {
         &mut self.tracks[track_no as usize]
     }
 }

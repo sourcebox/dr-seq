@@ -10,14 +10,13 @@ use crate::pattern::Pattern;
 pub const EVENT_QUEUE_CAPACITY: usize = 16;
 
 /// Sequencer track.
-/// - `BARS` is the max number of bars in each pattern.
 /// - `PPQ` is the resolution in pulses per quarter note.
 #[derive(Default, Debug)]
-pub struct Track<const BARS: usize, const PPQ: u32> {
+pub struct Track<const PPQ: u32> {
     /// Flag if track is enabled for playing.
     enabled: bool,
 
-    /// Last play position as step number over all bars.
+    /// Last play position as step number.
     play_pos: Option<u32>,
 
     /// Swing offset in pulses.
@@ -27,7 +26,7 @@ pub struct Track<const BARS: usize, const PPQ: u32> {
     delay: i32,
 
     /// Pattern containing step information.
-    pattern: Pattern<BARS>,
+    pattern: Pattern<16>,
 
     /// Monotonic pulse count. Used for note off scheduling.
     pulse_count: u32,
@@ -39,7 +38,7 @@ pub struct Track<const BARS: usize, const PPQ: u32> {
     event_queue: EventQueue,
 }
 
-impl<const BARS: usize, const PPQ: u32> Clone for Track<BARS, PPQ> {
+impl<const PPQ: u32> Clone for Track<PPQ> {
     /// Clones the track data but creates a new event queue.
     fn clone(&self) -> Self {
         Self {
@@ -55,7 +54,7 @@ impl<const BARS: usize, const PPQ: u32> Clone for Track<BARS, PPQ> {
     }
 }
 
-impl<const BARS: usize, const PPQ: u32> Track<BARS, PPQ> {
+impl<const PPQ: u32> Track<PPQ> {
     /// Returns a new instance.
     pub fn new() -> Self {
         Self::default()
@@ -72,7 +71,6 @@ impl<const BARS: usize, const PPQ: u32> Track<BARS, PPQ> {
 
         // Do some calculations to determine where we are.
         let play_pos = (pulse_no / (PPQ as i32 / 4) % self.pattern.length_steps() as i32) as u32;
-        let play_bar = play_pos / 16;
         let play_step = play_pos % 16;
 
         // Check if a previously started note has reached its length.
@@ -80,7 +78,6 @@ impl<const BARS: usize, const PPQ: u32> Track<BARS, PPQ> {
             if self.pulse_count == scheduled_note_off.0 {
                 self.event_queue
                     .enqueue(TrackEvent::NoteOff {
-                        bar: play_bar,
                         step: play_step,
                         pitch: scheduled_note_off.1,
                     })
@@ -92,14 +89,13 @@ impl<const BARS: usize, const PPQ: u32> Track<BARS, PPQ> {
         if self.enabled && (self.play_pos.is_none() || play_pos != self.play_pos.unwrap()) {
             self.play_pos = Some(play_pos);
 
-            let step = self.pattern.bar(play_bar).step(play_step);
+            let step = self.pattern.step(play_step);
 
             if step.enabled() {
                 // If a note is still playing, it must be stopped before triggering a new one.
                 if let Some(scheduled_note_off) = self.scheduled_note_off {
                     self.event_queue
                         .enqueue(TrackEvent::NoteOff {
-                            bar: play_bar,
                             step: play_step,
                             pitch: scheduled_note_off.1,
                         })
@@ -110,7 +106,6 @@ impl<const BARS: usize, const PPQ: u32> Track<BARS, PPQ> {
                 // Start a new note.
                 self.event_queue
                     .enqueue(TrackEvent::NoteOn {
-                        bar: play_bar,
                         step: play_step,
                         pitch: step.pitch(),
                         vel: step.velocity(),
@@ -137,11 +132,9 @@ impl<const BARS: usize, const PPQ: u32> Track<BARS, PPQ> {
     pub fn flush(&mut self) {
         if let Some(scheduled_note_off) = self.scheduled_note_off {
             let play_pos = self.play_pos.unwrap_or_default();
-            let play_bar = play_pos / 16;
             let play_step = play_pos % 16;
             self.event_queue
                 .enqueue(TrackEvent::NoteOff {
-                    bar: play_bar,
                     step: play_step,
                     pitch: scheduled_note_off.1,
                 })
@@ -191,21 +184,16 @@ impl<const BARS: usize, const PPQ: u32> Track<BARS, PPQ> {
     }
 
     /// Returns a mutable reference to the pattern.
-    pub fn pattern(&mut self) -> &mut Pattern<BARS> {
+    pub fn pattern(&mut self) -> &mut Pattern<16> {
         &mut self.pattern
     }
 
-    /// Returns the last play position as step number over all bars.
+    /// Returns the last play position as step number.
     pub fn play_pos(&self) -> Option<u32> {
         self.play_pos
     }
 
-    /// Returns the last played bar number.
-    pub fn play_bar(&self) -> Option<u32> {
-        self.play_pos.map(|v| v / 16)
-    }
-
-    /// Returns the last played step number inside a bar.
+    /// Returns the last played step number.
     pub fn play_step(&self) -> Option<u32> {
         self.play_pos.map(|v| v % 16)
     }

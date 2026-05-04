@@ -28,9 +28,6 @@ pub const TRACK_NOTES: [u8; TRACKS - 1] = [36, 38, 42, 44, 46, 48, 51, 49];
 /// Number of the accent track.
 pub const ACCENT_TRACK: u32 = (TRACKS - 1) as u32;
 
-/// Number of bars per track.
-pub const BARS: usize = 1;
-
 /// Clock pulses per quarter note.
 pub const CLOCK_PPQ: u32 = 384;
 

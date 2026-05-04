@@ -2,42 +2,29 @@
 
 use crate::step::Step;
 
-/// Number of steps inside a bar.
-const NUM_STEPS: usize = 16;
-
-/// Sequencer pattern with length of `BARS`.
+/// Sequencer pattern with length of `NUM_STEPS`.
 #[derive(Debug, Clone)]
-pub struct Pattern<const BARS: usize> {
-    /// Array of bars.
-    bars: [Bar; BARS],
+pub struct Pattern<const NUM_STEPS: usize> {
+    /// Array of steps.
+    steps: [Step; NUM_STEPS],
 
     /// Length in steps.
     length_steps: u32,
 }
 
-impl<const BARS: usize> Default for Pattern<BARS> {
+impl<const NUM_STEPS: usize> Default for Pattern<NUM_STEPS> {
     fn default() -> Self {
         Self {
-            bars: core::array::from_fn(|_| Bar::default()),
+            steps: core::array::from_fn(|_| Step::default()),
             length_steps: 16,
         }
     }
 }
 
-impl<const BARS: usize> Pattern<BARS> {
+impl<const NUM_STEPS: usize> Pattern<NUM_STEPS> {
     /// Returns a new instance.
     pub fn new() -> Self {
         Self::default()
-    }
-
-    /// Returns the length in bars.
-    pub fn length_bars(&self) -> u32 {
-        self.length_steps / 16
-    }
-
-    /// Sets the length in bars.
-    pub fn set_length_bars(&mut self, bars: u32) {
-        self.length_steps = bars * 16;
     }
 
     /// Returns the length in steps.
@@ -50,33 +37,18 @@ impl<const BARS: usize> Pattern<BARS> {
         self.length_steps = steps;
     }
 
-    /// Returns a mutable reference to a specific bar.
-    pub fn bar(&mut self, bar_no: u32) -> &mut Bar {
-        &mut self.bars[bar_no as usize]
-    }
-}
-
-#[derive(Debug, Default, Clone)]
-pub struct Bar {
-    /// Array of steps.
-    steps: [Step; NUM_STEPS],
-}
-
-impl Bar {
-    /// Returns a new instance.
-    pub fn new() -> Self {
-        Self {
-            steps: core::array::from_fn(|_| Step::default()),
-        }
+    /// Returns a reference to the steps.
+    pub fn steps(&mut self) -> &[Step] {
+        &self.steps
     }
 
     /// Returns a mutable reference to the steps.
-    pub fn steps(&mut self) -> &mut [Step] {
+    pub fn steps_mut(&mut self) -> &mut [Step] {
         &mut self.steps
     }
 
-    /// Returns a mutable reference to a specific step.
-    pub fn step(&mut self, step_no: u32) -> &mut Step {
-        &mut self.steps[step_no as usize]
+    /// Returns a reference to a specific step.
+    pub fn step(&self, step_no: u32) -> &Step {
+        &self.steps[step_no as usize]
     }
 }
