@@ -115,7 +115,7 @@ impl Track {
             }
         }
 
-        // Pulse count is allowed to overflow explicitely.
+        // Pulse count is allowed to overflow explicitly.
         // But it can take a while until that happens.
         self.pulse_count = self.pulse_count.wrapping_add(1);
     }

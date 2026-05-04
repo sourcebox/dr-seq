@@ -74,7 +74,7 @@ fn create_track(cx: &mut Context, params: Arc<AppParams>, track: usize, current_
                 StepCell::new(cx, signal, track, step, accent_track, event_sender.clone());
 
                 if step % 4 == 3 && step != 15 {
-                    // Add addtional space after block of 4 cells.
+                    // Add additional space after block of 4 cells.
                     Element::new(cx).width(GRID_COL_SPACER_WIDTH);
                 }
             }

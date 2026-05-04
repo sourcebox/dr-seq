@@ -15,7 +15,7 @@ Grid-based drum sequencer plugin as MIDI FX in CLAP/VST3 format.
 
 ## Building
 
-The [just command runner](https://crates.io/crates/just) wraps some `cargo` commands for convinience.
+The [just command runner](https://crates.io/crates/just) wraps some `cargo` commands for convenience.
 
 - `just run` runs the standalone application.
 - `just bundle` creates the plugin bundles in `target/bundled`.
