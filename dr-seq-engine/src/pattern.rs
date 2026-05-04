@@ -43,7 +43,7 @@ impl<const NUM_STEPS: usize> Pattern<NUM_STEPS> {
     }
 
     /// Returns a reference to the steps.
-    pub fn steps(&mut self) -> &[Step] {
+    pub fn steps(&self) -> &[Step] {
         &self.steps
     }
 

@@ -189,7 +189,7 @@ impl Plugin for App {
             }
 
             for (n, track) in self.tracks.iter_mut().enumerate() {
-                track.update(pulse_no, CLOCK_PPQ, &self.patterns[n]);
+                track.update(pulse_no, CLOCK_PPQ, &self.patterns[n].steps());
             }
 
             // Turn engine events into corresponding MIDI messages.

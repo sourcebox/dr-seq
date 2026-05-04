@@ -3,7 +3,7 @@
 use heapless::spsc::Queue;
 
 use crate::params::{Pitch, Velocity};
-use crate::pattern::Pattern;
+use crate::step::Step;
 
 /// Capacity of the event queue.
 pub const EVENT_QUEUE_CAPACITY: usize = 16;
@@ -58,7 +58,7 @@ impl Track {
     }
 
     /// Updates the track when a clock pulse occurs.
-    pub fn update(&mut self, pulse_no: u32, ppq: u32, pattern: &Pattern<16>) {
+    pub fn update(&mut self, pulse_no: u32, ppq: u32, steps: &[Step]) {
         let mut pulse_no = pulse_no as i32 - self.delay;
 
         // Apply swing value to each 2nd step.
@@ -67,8 +67,8 @@ impl Track {
         }
 
         // Do some calculations to determine where we are.
-        let play_pos = (pulse_no / (ppq as i32 / 4) % pattern.len() as i32) as usize;
-        let play_step = play_pos % pattern.len();
+        let play_pos = (pulse_no / (ppq as i32 / 4) % steps.len() as i32) as usize;
+        let play_step = play_pos % steps.len();
 
         // Check if a previously started note has reached its length.
         if let Some(scheduled_note_off) = self.scheduled_note_off {
@@ -86,7 +86,7 @@ impl Track {
         if self.enabled && (self.play_pos.is_none() || play_pos != self.play_pos.unwrap()) {
             self.play_pos = Some(play_pos);
 
-            let step = pattern.step(play_step as usize);
+            let step = &steps[play_step];
 
             if step.enabled() {
                 // If a note is still playing, it must be stopped before triggering a new one.
