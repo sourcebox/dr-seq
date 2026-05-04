@@ -25,9 +25,6 @@ pub struct Track<const PPQ: u32> {
     /// Delay in pulses.
     delay: i32,
 
-    /// Pattern containing step information.
-    pattern: Pattern<16>,
-
     /// Monotonic pulse count. Used for note off scheduling.
     pulse_count: u32,
 
@@ -46,7 +43,6 @@ impl<const PPQ: u32> Clone for Track<PPQ> {
             play_pos: None,
             swing: self.swing,
             delay: self.delay,
-            pattern: self.pattern.clone(),
             pulse_count: 0,
             scheduled_note_off: None,
             event_queue: EventQueue::new(),
@@ -60,8 +56,8 @@ impl<const PPQ: u32> Track<PPQ> {
         Self::default()
     }
 
-    /// Process a clock pulse.
-    pub fn clock(&mut self, pulse_no: i32) {
+    /// Update the track when a clock pulse occurs.
+    pub fn update(&mut self, pulse_no: i32, pattern: &Pattern<16>) {
         let mut pulse_no = pulse_no - self.delay;
 
         // Apply swing value to each 2nd step.
@@ -70,7 +66,7 @@ impl<const PPQ: u32> Track<PPQ> {
         }
 
         // Do some calculations to determine where we are.
-        let play_pos = (pulse_no / (PPQ as i32 / 4) % self.pattern.length_steps() as i32) as u32;
+        let play_pos = (pulse_no / (PPQ as i32 / 4) % pattern.length_steps() as i32) as u32;
         let play_step = play_pos % 16;
 
         // Check if a previously started note has reached its length.
@@ -89,7 +85,7 @@ impl<const PPQ: u32> Track<PPQ> {
         if self.enabled && (self.play_pos.is_none() || play_pos != self.play_pos.unwrap()) {
             self.play_pos = Some(play_pos);
 
-            let step = self.pattern.step(play_step);
+            let step = pattern.step(play_step);
 
             if step.enabled() {
                 // If a note is still playing, it must be stopped before triggering a new one.
@@ -181,11 +177,6 @@ impl<const PPQ: u32> Track<PPQ> {
     /// Returns the track delay in pulses.
     pub fn delay(&self) -> i32 {
         self.delay
-    }
-
-    /// Returns a mutable reference to the pattern.
-    pub fn pattern(&mut self) -> &mut Pattern<16> {
-        &mut self.pattern
     }
 
     /// Returns the last play position as step number.

@@ -35,13 +35,6 @@ impl<const TRACKS: usize, const PPQ: u32> Engine<TRACKS, PPQ> {
         }
     }
 
-    /// Process a clock pulse.
-    pub fn clock(&mut self, pulse_no: i32) {
-        for track in self.tracks.as_mut() {
-            track.clock(pulse_no);
-        }
-    }
-
     /// Return next event.
     pub fn next_event(&mut self) -> Option<EngineEvent> {
         for (n, track) in self.tracks.iter_mut().enumerate() {

@@ -7,6 +7,7 @@ mod config;
 mod editor;
 mod params;
 
+use std::default;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc;
@@ -19,6 +20,7 @@ use dr_seq_engine::{
     Engine,
     event::TrackEvent,
     params::{Pitch, Velocity},
+    pattern::Pattern,
 };
 use editor::EditorEvent;
 use params::{AppParams, StepState};
@@ -39,6 +41,9 @@ pub struct App {
 
     /// Flag if transport is playing.
     playing: bool,
+
+    /// Patterns for the tracks.
+    patterns: [Pattern<16>; TRACKS],
 }
 
 impl Default for App {
@@ -52,6 +57,7 @@ impl Default for App {
             editor_event_receiver: editor_channel.1,
             update_engine,
             playing: false,
+            patterns: core::array::from_fn(|_| Pattern::<16>::default()),
         }
     }
 }
@@ -183,19 +189,16 @@ impl Plugin for App {
                     .store(current_step, Ordering::Relaxed);
             }
 
-            self.engine.clock(pulse_no);
+            for (n, track) in self.engine.tracks().iter_mut().enumerate() {
+                track.update(pulse_no, &self.patterns[n]);
+            }
 
             // Turn engine events into corresponding MIDI messages.
             while let Some(event) = self.engine.next_event() {
                 let note = TRACK_NOTES[event.0 as usize];
                 match event.1 {
                     TrackEvent::NoteOn { step, pitch, vel } => {
-                        let accent = self
-                            .engine
-                            .track(ACCENT_TRACK)
-                            .pattern()
-                            .step(step)
-                            .enabled();
+                        let accent = self.patterns[ACCENT_TRACK as usize].step(step).enabled();
                         let event = NoteEvent::NoteOn {
                             timing,
                             voice_id: None,
@@ -251,8 +254,8 @@ impl Plugin for App {
 impl App {
     /// Update the engine with the parameters from the editor or host.
     fn update_engine(&mut self) {
-        for (t, track) in self.engine.tracks()[0..TRACKS].iter_mut().enumerate() {
-            for (s, step) in track.pattern().steps_mut().iter_mut().enumerate() {
+        for t in 0..TRACKS {
+            for (s, step) in self.patterns[t].steps_mut().iter_mut().enumerate() {
                 let state =
                     StepState::from(self.params.pattern.steps[t][s].load(Ordering::Relaxed));
                 if state != StepState::Off {
