@@ -5,13 +5,15 @@ use heapless::spsc::Queue;
 use crate::params::{Pitch, Velocity};
 use crate::pattern::Pattern;
 
+/// Event queue.
+pub type EventQueue = Queue<TrackEvent, EVENT_QUEUE_CAPACITY>;
+
 /// Capacity of the event queue.
 pub const EVENT_QUEUE_CAPACITY: usize = 16;
 
 /// Sequencer track.
-/// - `PPQ` is the resolution in pulses per quarter note.
 #[derive(Default, Debug)]
-pub struct Track<const PPQ: u32> {
+pub struct Track {
     /// Flag if track is enabled for playing.
     enabled: bool,
 
@@ -34,7 +36,7 @@ pub struct Track<const PPQ: u32> {
     event_queue: EventQueue,
 }
 
-impl<const PPQ: u32> Clone for Track<PPQ> {
+impl Clone for Track {
     /// Clones the track data but creates a new event queue.
     fn clone(&self) -> Self {
         Self {
@@ -49,23 +51,23 @@ impl<const PPQ: u32> Clone for Track<PPQ> {
     }
 }
 
-impl<const PPQ: u32> Track<PPQ> {
+impl Track {
     /// Returns a new instance.
     pub fn new() -> Self {
         Self::default()
     }
 
-    /// Update the track when a clock pulse occurs.
-    pub fn update(&mut self, pulse_no: i32, pattern: &Pattern<16>) {
-        let mut pulse_no = pulse_no - self.delay;
+    /// Updates the track when a clock pulse occurs.
+    pub fn update(&mut self, pulse_no: u32, ppq: u32, pattern: &Pattern<16>) {
+        let mut pulse_no = pulse_no as i32 - self.delay;
 
         // Apply swing value to each 2nd step.
-        if pulse_no / (PPQ as i32 / 4) % 2 == 1 {
+        if pulse_no / (ppq as i32 / 4) % 2 == 1 {
             pulse_no -= self.swing;
         }
 
         // Do some calculations to determine where we are.
-        let play_pos = (pulse_no / (PPQ as i32 / 4) % pattern.length_steps() as i32) as u32;
+        let play_pos = (pulse_no / (ppq as i32 / 4) % pattern.length_steps() as i32) as u32;
         let play_step = play_pos % 16;
 
         // Check if a previously started note has reached its length.
@@ -108,7 +110,7 @@ impl<const PPQ: u32> Track<PPQ> {
                     .ok();
 
                 // Schedule the note off for a 1/32 note length.
-                let note_off_pulse = self.pulse_count + PPQ / 8;
+                let note_off_pulse = self.pulse_count + ppq / 8;
                 self.scheduled_note_off = Some((note_off_pulse, step.pitch()));
             }
         }
@@ -118,12 +120,12 @@ impl<const PPQ: u32> Track<PPQ> {
         self.pulse_count = self.pulse_count.wrapping_add(1);
     }
 
-    /// Return next event.
+    /// Returns the next event.
     pub fn next_event(&mut self) -> Option<TrackEvent> {
         self.event_queue.dequeue()
     }
 
-    /// Flush sustaining notes.
+    /// Flushes sustained notes.
     pub fn flush(&mut self) {
         if let Some(scheduled_note_off) = self.scheduled_note_off {
             let play_pos = self.play_pos.unwrap_or_default();
@@ -202,6 +204,3 @@ pub enum TrackEvent {
     /// Stop a note with pitch.
     NoteOff { step: u32, pitch: Pitch },
 }
-
-/// Event queue.
-type EventQueue = Queue<TrackEvent, EVENT_QUEUE_CAPACITY>;

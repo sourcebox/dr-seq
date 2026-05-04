@@ -35,7 +35,7 @@ pub struct App {
     playing: bool,
 
     /// Individual tracks.
-    tracks: [Track<CLOCK_PPQ>; TRACKS],
+    tracks: [Track; TRACKS],
 
     /// Patterns for the tracks.
     patterns: [Pattern<16>; TRACKS],
@@ -51,7 +51,7 @@ impl Default for App {
             editor_event_receiver: editor_channel.1,
             update_engine,
             playing: false,
-            tracks: core::array::from_fn(|_| Track::<CLOCK_PPQ>::new()),
+            tracks: core::array::from_fn(|_| Track::new()),
             patterns: core::array::from_fn(|_| Pattern::<16>::new()),
         }
     }
@@ -181,7 +181,7 @@ impl Plugin for App {
         for (pulse_no, timing) in clock {
             // Get the current step from the pulse number and convert it into range 0-15
             // for showing it in the editor.
-            let current_step = (pulse_no / (ppq / 4.0) as i32 % 16) as usize;
+            let current_step = (pulse_no / (ppq / 4.0) as u32 % 16) as usize;
             if current_step != self.params.current_step.load(Ordering::Relaxed) {
                 self.params
                     .current_step
@@ -189,7 +189,7 @@ impl Plugin for App {
             }
 
             for (n, track) in self.tracks.iter_mut().enumerate() {
-                track.update(pulse_no, &self.patterns[n]);
+                track.update(pulse_no, CLOCK_PPQ, &self.patterns[n]);
             }
 
             // Turn engine events into corresponding MIDI messages.

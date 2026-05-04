@@ -42,7 +42,7 @@ impl Clock {
 
 impl Iterator for Clock {
     /// Tuple of (pulse number, timing).
-    type Item = (i32, u32);
+    type Item = (u32, u32);
 
     /// Returns the next value.
     fn next(&mut self) -> Option<Self::Item> {
@@ -60,7 +60,7 @@ impl Iterator for Clock {
                 .round() as u32;
 
             if next_pulse_delta < self.buffer_length as u32 {
-                let pulse = (pos_pulses.ceil() as i32, next_pulse_delta);
+                let pulse = (pos_pulses.ceil() as u32, next_pulse_delta);
 
                 // Prepare next pulse.
                 self.pos_pulses = Some(pos_pulses + 1.0);
