@@ -198,6 +198,25 @@ impl Plugin for App {
                 ..Default::default()
             };
 
+            // The HACK mangler re-sorts the order of the steps.
+            if self.params.mangler_hack.value() {
+                track_options.resort_fn = Some(|step| {
+                    let base = step / 8 * 8;
+                    let sub = step % 8;
+                    base + match sub {
+                        0 => 0,
+                        1 => 3,
+                        2 => 1,
+                        3 => 7,
+                        4 => 2,
+                        5 => 6,
+                        6 => 4,
+                        7 => 5,
+                        _ => 0,
+                    }
+                });
+            }
+
             let sole_enabled = self.params.mangler_sole.value();
             let mut skip_notes = false;
 

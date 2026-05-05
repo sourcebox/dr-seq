@@ -60,8 +60,14 @@ impl Track {
         // Do some calculations to determine where we are.
         let mut play_step = pulse_no / (ppq as usize / 4) % steps.len();
 
+        // Apply reverse option.
         if options.reverse {
             play_step = steps.len() - 1 - play_step;
+        }
+
+        // Apply re-sort function.
+        if let Some(f) = options.resort_fn {
+            play_step = f(play_step);
         }
 
         // Check if a previously started note has reached its length.
@@ -140,7 +146,7 @@ impl Track {
 }
 
 /// Options for playback.
-#[derive(Debug, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Default, Clone)]
 pub struct TrackOptions {
     /// Enable the playback.
     pub enable: bool,
@@ -153,6 +159,9 @@ pub struct TrackOptions {
 
     /// Reverse the playback direction.
     pub reverse: bool,
+
+    /// Re-sort the steps.
+    pub resort_fn: Option<fn(usize) -> usize>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

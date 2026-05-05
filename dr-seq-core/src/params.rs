@@ -128,6 +128,10 @@ pub struct AppParams {
     /// SOLE mangler, isolates a single step.
     #[id = "mangler-sole"]
     pub mangler_sole: BoolParam,
+
+    /// HACK mangler, re-sorts the steps.
+    #[id = "mangler-hack"]
+    pub mangler_hack: BoolParam,
 }
 
 impl AppParams {
@@ -278,6 +282,7 @@ impl AppParams {
             mangler_fast: BoolParam::new("FAST", false),
             mangler_mirror: BoolParam::new("MIRROR", false),
             mangler_sole: BoolParam::new("SOLE", false),
+            mangler_hack: BoolParam::new("HACK", false),
         }
     }
 }
