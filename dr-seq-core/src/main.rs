@@ -1,3 +1,5 @@
+//! Standalone version of the plugin.
+
 use nih_plug::prelude::*;
 
 use dr_seq_core::App;

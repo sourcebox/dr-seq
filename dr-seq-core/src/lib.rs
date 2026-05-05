@@ -1,7 +1,5 @@
 //! Crate containing the core functionality of the plugin.
 
-#![warn(missing_docs)]
-
 mod clock;
 mod config;
 mod editor;

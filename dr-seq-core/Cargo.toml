@@ -22,3 +22,6 @@ dr-seq-engine = { path = "../dr-seq-engine" }
 
 [features]
 dummy-audio = []
+
+[lints.rust]
+missing_docs = "warn"
