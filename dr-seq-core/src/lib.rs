@@ -106,9 +106,6 @@ impl Plugin for App {
     ) -> bool {
         self.update_engine();
 
-        // The accent track is always disabled for playing and only used to store the steps.
-        self.tracks[ACCENT_TRACK as usize].disable();
-
         true
     }
 
@@ -195,12 +192,36 @@ impl Plugin for App {
                 CLOCK_PPQ
             };
 
-            let track_options = TrackOptions {
+            let mut track_options = TrackOptions {
+                swing: self.params.swing.value() * 48 / 100,
                 reverse: self.params.mangler_mirror.value(),
                 ..Default::default()
             };
 
             for (n, track) in self.tracks.iter_mut().enumerate() {
+                track_options.enable = match n {
+                    0 => self.params.track1_enable.value(),
+                    1 => self.params.track2_enable.value(),
+                    2 => self.params.track3_enable.value(),
+                    3 => self.params.track4_enable.value(),
+                    4 => self.params.track5_enable.value(),
+                    5 => self.params.track6_enable.value(),
+                    6 => self.params.track7_enable.value(),
+                    7 => self.params.track8_enable.value(),
+                    _ => false,
+                };
+                track_options.delay = match n {
+                    0 => self.params.track1_delay.value(),
+                    1 => self.params.track2_delay.value(),
+                    2 => self.params.track3_delay.value(),
+                    3 => self.params.track4_delay.value(),
+                    4 => self.params.track5_delay.value(),
+                    5 => self.params.track6_delay.value(),
+                    6 => self.params.track7_delay.value(),
+                    7 => self.params.track8_delay.value(),
+                    _ => 0,
+                };
+
                 track.update(
                     pulse_no,
                     track_ppq,
@@ -288,27 +309,7 @@ impl App {
                     step.disable();
                 }
             }
-
-            self.tracks[t].set_swing(self.params.swing.value() * 48 / 100);
         }
-
-        self.tracks[0].set_enabled(self.params.track1_enable.value());
-        self.tracks[1].set_enabled(self.params.track2_enable.value());
-        self.tracks[2].set_enabled(self.params.track3_enable.value());
-        self.tracks[3].set_enabled(self.params.track4_enable.value());
-        self.tracks[4].set_enabled(self.params.track5_enable.value());
-        self.tracks[5].set_enabled(self.params.track6_enable.value());
-        self.tracks[6].set_enabled(self.params.track7_enable.value());
-        self.tracks[7].set_enabled(self.params.track8_enable.value());
-
-        self.tracks[0].set_delay(self.params.track1_delay.value());
-        self.tracks[1].set_delay(self.params.track2_delay.value());
-        self.tracks[2].set_delay(self.params.track3_delay.value());
-        self.tracks[3].set_delay(self.params.track4_delay.value());
-        self.tracks[4].set_delay(self.params.track5_delay.value());
-        self.tracks[5].set_delay(self.params.track6_delay.value());
-        self.tracks[6].set_delay(self.params.track7_delay.value());
-        self.tracks[7].set_delay(self.params.track8_delay.value());
     }
 }
 

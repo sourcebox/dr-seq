@@ -14,17 +14,8 @@ type EventQueue = Queue<TrackEvent, EVENT_QUEUE_CAPACITY>;
 /// Sequencer track.
 #[derive(Default, Debug)]
 pub struct Track {
-    /// Flag if track is enabled for playing.
-    enabled: bool,
-
     /// Last played step number.
     play_step: Option<usize>,
-
-    /// Swing offset in pulses.
-    swing: i32,
-
-    /// Delay in pulses.
-    delay: i32,
 
     /// Monotonic pulse count. Used for note off scheduling.
     pulse_count: u32,
@@ -40,10 +31,7 @@ impl Clone for Track {
     /// Clones the track data but creates a new event queue.
     fn clone(&self) -> Self {
         Self {
-            enabled: false,
             play_step: None,
-            swing: self.swing,
-            delay: self.delay,
             pulse_count: 0,
             scheduled_note_off: None,
             event_queue: EventQueue::new(),
@@ -59,11 +47,11 @@ impl Track {
 
     /// Updates the track when a clock pulse occurs.
     pub fn update(&mut self, pulse_no: u32, ppq: u32, steps: &[Step], options: &TrackOptions) {
-        let mut pulse_no = pulse_no as i32 - self.delay;
+        let mut pulse_no = pulse_no as i32 - options.delay;
 
         // Apply swing value to each 2nd step.
         if pulse_no / (ppq as i32 / 4) % 2 == 1 {
-            pulse_no -= self.swing;
+            pulse_no -= options.swing;
         }
 
         // Make sure pulse no is always positive.
@@ -89,7 +77,7 @@ impl Track {
             }
         }
 
-        if self.enabled && (self.play_step.is_none() || play_step != self.play_step.unwrap()) {
+        if options.enable && (self.play_step.is_none() || play_step != self.play_step.unwrap()) {
             self.play_step = Some(play_step);
 
             let step = &steps[play_step];
@@ -145,46 +133,6 @@ impl Track {
         }
     }
 
-    /// Enable the track.
-    pub fn enable(&mut self) {
-        self.enabled = true;
-    }
-
-    /// Disable the track.
-    pub fn disable(&mut self) {
-        self.enabled = false;
-    }
-
-    /// Sets the enabled state.
-    pub fn set_enabled(&mut self, enabled: bool) {
-        self.enabled = enabled;
-    }
-
-    /// Returns if the track is enabled.
-    pub fn enabled(&self) -> bool {
-        self.enabled
-    }
-
-    /// Sets the swing in pulses.
-    pub fn set_swing(&mut self, swing: i32) {
-        self.swing = swing;
-    }
-
-    /// Returns the swing in pulses.
-    pub fn swing(&mut self) -> i32 {
-        self.swing
-    }
-
-    /// Sets the track delay in pulses.
-    pub fn set_delay(&mut self, delay: i32) {
-        self.delay = delay;
-    }
-
-    /// Returns the track delay in pulses.
-    pub fn delay(&self) -> i32 {
-        self.delay
-    }
-
     /// Returns the last played step number.
     pub fn play_step(&self) -> Option<usize> {
         self.play_step
@@ -194,6 +142,15 @@ impl Track {
 /// Options for playback.
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct TrackOptions {
+    /// Enable the playback.
+    pub enable: bool,
+
+    /// Swing offset in pulses.
+    pub swing: i32,
+
+    /// Time delay in pulses.
+    pub delay: i32,
+
     /// Reverse the playback direction.
     pub reverse: bool,
 }
