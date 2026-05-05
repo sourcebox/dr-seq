@@ -35,7 +35,7 @@ pub fn create(params: Arc<AppParams>, editor_state: Arc<ViziaState>) -> Option<B
         // assets::register_noto_sans_thin(cx);
         // assets::register_noto_sans_bold(cx);
 
-        cx.add_stylesheet(include_str!("theme.css")).ok();
+        cx.add_stylesheet(include_str!("style.css")).ok();
 
         ResizeHandle::new(cx);
 
