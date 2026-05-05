@@ -13,7 +13,7 @@ use std::sync::mpsc;
 
 use nih_plug::prelude::*;
 
-use dr_seq_engine::{Pattern, Pitch, Track, TrackEvent, TrackOptions, Velocity};
+use dr_seq_engine::{Pattern, Pitch, Track, TrackEvent, TrackParams, Velocity};
 
 use clock::Clock;
 use config::*;
@@ -192,7 +192,7 @@ impl Plugin for App {
                 CLOCK_PPQ
             };
 
-            let mut track_options = TrackOptions {
+            let mut track_params = TrackParams {
                 swing: self.params.swing.value() * 48 / 100,
                 shift: if self.params.mangler_swag.value() {
                     1
@@ -205,7 +205,7 @@ impl Plugin for App {
 
             // The HACK mangler re-sorts the order of the steps.
             if self.params.mangler_hack.value() {
-                track_options.resort_fn = Some(|step| {
+                track_params.resort_fn = Some(|step| {
                     let base = step / 8 * 8;
                     let sub = step % 8;
                     base + match sub {
@@ -226,7 +226,7 @@ impl Plugin for App {
             let mut skip_notes = false;
 
             for (n, track) in self.tracks.iter_mut().enumerate() {
-                track_options.enable = match n {
+                track_params.enable = match n {
                     0 => self.params.track1_enable.value(),
                     1 => self.params.track2_enable.value(),
                     2 => self.params.track3_enable.value(),
@@ -237,7 +237,7 @@ impl Plugin for App {
                     7 => self.params.track8_enable.value(),
                     _ => false,
                 };
-                track_options.delay = match n {
+                track_params.delay = match n {
                     0 => self.params.track1_delay.value(),
                     1 => self.params.track2_delay.value(),
                     2 => self.params.track3_delay.value(),
@@ -253,7 +253,7 @@ impl Plugin for App {
                     pulse_no,
                     track_ppq,
                     &self.patterns[n].steps(),
-                    &track_options,
+                    &track_params,
                 );
 
                 while let Some(event) = track.next_event() {

@@ -46,18 +46,18 @@ impl Track {
     }
 
     /// Updates the track when a clock pulse occurs.
-    pub fn update(&mut self, pulse_no: u32, ppq: u32, steps: &[Step], options: &TrackOptions) {
-        let mut pulse_no = pulse_no as i32 - options.delay;
+    pub fn update(&mut self, pulse_no: u32, ppq: u32, steps: &[Step], params: &TrackParams) {
+        let mut pulse_no = pulse_no as i32 - params.delay;
 
         // Apply swing value to each 2nd step.
         if pulse_no / (ppq as i32 / 4) % 2 == 1 {
-            pulse_no -= options.swing;
+            pulse_no -= params.swing;
         }
 
         // Make sure pulse no is always positive.
         let pulse_no = pulse_no.max(0) as usize;
 
-        let mut shift = options.shift;
+        let mut shift = params.shift;
         while shift < 0 {
             shift += steps.len() as i32;
         }
@@ -66,12 +66,12 @@ impl Track {
         let mut play_step = (pulse_no / (ppq as usize / 4) + shift as usize) % steps.len();
 
         // Apply reverse option.
-        if options.reverse {
+        if params.reverse {
             play_step = steps.len() - 1 - play_step;
         }
 
         // Apply re-sort function.
-        if let Some(f) = options.resort_fn {
+        if let Some(f) = params.resort_fn {
             play_step = f(play_step);
         }
 
@@ -88,7 +88,7 @@ impl Track {
             }
         }
 
-        if options.enable && (self.play_step.is_none() || play_step != self.play_step.unwrap()) {
+        if params.enable && (self.play_step.is_none() || play_step != self.play_step.unwrap()) {
             self.play_step = Some(play_step);
 
             let step = &steps[play_step];
@@ -150,9 +150,9 @@ impl Track {
     }
 }
 
-/// Options for playback.
+/// Track playback parameters.
 #[derive(Debug, Default, Clone)]
-pub struct TrackOptions {
+pub struct TrackParams {
     /// Enable the playback.
     pub enable: bool,
 
