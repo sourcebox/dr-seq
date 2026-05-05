@@ -45,6 +45,11 @@ impl<const NUM_STEPS: usize> Pattern<NUM_STEPS> {
         NUM_STEPS
     }
 
+    /// Returns if the pattern is empty.
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
     /// Returns a reference to the steps.
     pub fn steps(&self) -> &[Step] {
         &self.steps

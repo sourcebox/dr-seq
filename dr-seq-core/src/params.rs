@@ -256,10 +256,9 @@ impl AppParams {
                 let update_engine = update_engine.clone();
                 Arc::new(move |_| update_engine.store(true, Ordering::Release))
             }),
-            track8_delay: IntParam::new("Track 8 Delay", 0, delay_range).with_callback({
-                let update_engine = update_engine;
-                Arc::new(move |_| update_engine.store(true, Ordering::Release))
-            }),
+            track8_delay: IntParam::new("Track 8 Delay", 0, delay_range).with_callback(Arc::new(
+                move |_| update_engine.store(true, Ordering::Release),
+            )),
 
             // Velocities
             normal_velocity: IntParam::new("Velocity", 100, IntRange::Linear { min: 0, max: 127 }),

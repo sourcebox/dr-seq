@@ -76,16 +76,16 @@ impl Track {
         }
 
         // Check if a previously started note has reached its length.
-        if let Some(scheduled_note_off) = self.scheduled_note_off {
-            if self.pulse_count == scheduled_note_off.0 {
-                self.event_queue
-                    .enqueue(TrackEvent::NoteOff {
-                        step: play_step,
-                        pitch: scheduled_note_off.1,
-                    })
-                    .ok();
-                self.scheduled_note_off = None;
-            }
+        if let Some(scheduled_note_off) = self.scheduled_note_off
+            && self.pulse_count == scheduled_note_off.0
+        {
+            self.event_queue
+                .enqueue(TrackEvent::NoteOff {
+                    step: play_step,
+                    pitch: scheduled_note_off.1,
+                })
+                .ok();
+            self.scheduled_note_off = None;
         }
 
         if params.enable && (self.play_step.is_none() || play_step != self.play_step.unwrap()) {

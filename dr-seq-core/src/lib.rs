@@ -249,16 +249,11 @@ impl Plugin for App {
                     _ => 0,
                 };
 
-                track.update(
-                    pulse_no,
-                    track_ppq,
-                    &self.patterns[n].steps(),
-                    &track_params,
-                );
+                track.update(pulse_no, track_ppq, self.patterns[n].steps(), &track_params);
 
                 while let Some(event) = track.next_event() {
                     // Turn track events into corresponding MIDI messages.
-                    let note = TRACK_NOTES[n as usize];
+                    let note = TRACK_NOTES[n];
                     match event {
                         TrackEvent::NoteOn { step, pitch, vel } => {
                             let accent = self.patterns[ACCENT_TRACK as usize].step(step).enabled();
