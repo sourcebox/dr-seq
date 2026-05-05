@@ -47,7 +47,7 @@ pub fn create(params: Arc<AppParams>, editor_state: Arc<ViziaState>) -> Option<B
         Grid::new(
             cx,
             vec![Pixels(650.0), Pixels(120.0)],
-            vec![Pixels(310.0)],
+            vec![Pixels(310.0), Pixels(50.0)],
             |cx| {
                 VStack::new(cx, |cx| {
                     tracks::create(cx, params.clone());
@@ -86,6 +86,18 @@ pub fn create(params: Arc<AppParams>, editor_state: Arc<ViziaState>) -> Option<B
                     });
                 })
                 .row_start(1)
+                .column_start(0)
+                .padding_top(Pixels(10.0));
+
+                VStack::new(cx, |cx| {
+                    HStack::new(cx, |cx| {
+                        Label::new(cx, "Manglers")
+                            .padding_top(Pixels(5.0))
+                            .padding_right(Pixels(10.0));
+                        ParamButton::new(cx, &params.mangler_fast);
+                    });
+                })
+                .row_start(2)
                 .column_start(0)
                 .padding_top(Pixels(10.0));
             },

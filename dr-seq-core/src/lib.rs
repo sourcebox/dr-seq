@@ -188,8 +188,15 @@ impl Plugin for App {
                     .store(current_step, Ordering::Relaxed);
             }
 
+            // The FAST mangler doubles the speed by halving the ppq.
+            let track_ppq = if self.params.mangler_fast.value() {
+                CLOCK_PPQ / 2
+            } else {
+                CLOCK_PPQ
+            };
+
             for (n, track) in self.tracks.iter_mut().enumerate() {
-                track.update(pulse_no, CLOCK_PPQ, &self.patterns[n].steps());
+                track.update(pulse_no, track_ppq, &self.patterns[n].steps());
             }
 
             // Turn engine events into corresponding MIDI messages.

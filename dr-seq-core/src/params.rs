@@ -116,6 +116,10 @@ pub struct AppParams {
     /// Ghost velocity for steps.
     #[id = "ghost-velocity"]
     pub ghost_velocity: IntParam,
+
+    /// FAST mangler, doubles the speed.
+    #[id = "mangler-fast"]
+    pub mangler_fast: BoolParam,
 }
 
 impl AppParams {
@@ -261,6 +265,9 @@ impl AppParams {
                 20,
                 IntRange::Linear { min: 0, max: 127 },
             ),
+
+            // Manglers
+            mangler_fast: BoolParam::new("FAST", false),
         }
     }
 }
