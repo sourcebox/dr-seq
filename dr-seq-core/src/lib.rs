@@ -198,6 +198,9 @@ impl Plugin for App {
                 ..Default::default()
             };
 
+            let sole_enabled = self.params.mangler_sole.value();
+            let mut skip_notes = false;
+
             for (n, track) in self.tracks.iter_mut().enumerate() {
                 track_options.enable = match n {
                     0 => self.params.track1_enable.value(),
@@ -228,11 +231,9 @@ impl Plugin for App {
                     &self.patterns[n].steps(),
                     &track_options,
                 );
-            }
 
-            // Turn engine events into corresponding MIDI messages.
-            for (n, track) in self.tracks.iter_mut().enumerate() {
                 while let Some(event) = track.next_event() {
+                    // Turn track events into corresponding MIDI messages.
                     let note = TRACK_NOTES[n as usize];
                     match event {
                         TrackEvent::NoteOn { step, pitch, vel } => {
@@ -259,7 +260,12 @@ impl Plugin for App {
                                     }
                                 },
                             };
-                            context.send_event(event);
+                            if !skip_notes {
+                                context.send_event(event);
+                                if sole_enabled {
+                                    skip_notes = true;
+                                }
+                            }
                         }
                         TrackEvent::NoteOff { step: _, pitch } => {
                             let event = NoteEvent::NoteOff {

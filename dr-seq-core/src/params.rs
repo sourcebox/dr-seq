@@ -124,6 +124,10 @@ pub struct AppParams {
     /// MIRROR mangler, reverses the playback.
     #[id = "mangler-mirror"]
     pub mangler_mirror: BoolParam,
+
+    /// SOLE mangler, isolates a single step.
+    #[id = "mangler-sole"]
+    pub mangler_sole: BoolParam,
 }
 
 impl AppParams {
@@ -273,6 +277,7 @@ impl AppParams {
             // Manglers
             mangler_fast: BoolParam::new("FAST", false),
             mangler_mirror: BoolParam::new("MIRROR", false),
+            mangler_sole: BoolParam::new("SOLE", false),
         }
     }
 }
