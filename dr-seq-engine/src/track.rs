@@ -17,8 +17,8 @@ pub struct Track {
     /// Flag if track is enabled for playing.
     enabled: bool,
 
-    /// Last play position as step number.
-    play_pos: Option<usize>,
+    /// Last played step number.
+    play_step: Option<usize>,
 
     /// Swing offset in pulses.
     swing: i32,
@@ -41,7 +41,7 @@ impl Clone for Track {
     fn clone(&self) -> Self {
         Self {
             enabled: false,
-            play_pos: None,
+            play_step: None,
             swing: self.swing,
             delay: self.delay,
             pulse_count: 0,
@@ -66,9 +66,11 @@ impl Track {
             pulse_no -= self.swing;
         }
 
+        // Make sure pulse no is always positive.
+        let pulse_no = pulse_no.max(0) as usize;
+
         // Do some calculations to determine where we are.
-        let play_pos = (pulse_no / (ppq as i32 / 4) % steps.len() as i32) as usize;
-        let mut play_step = play_pos % steps.len();
+        let mut play_step = pulse_no / (ppq as usize / 4) % steps.len();
 
         if options.reverse {
             play_step = steps.len() - 1 - play_step;
@@ -87,8 +89,8 @@ impl Track {
             }
         }
 
-        if self.enabled && (self.play_pos.is_none() || play_pos != self.play_pos.unwrap()) {
-            self.play_pos = Some(play_pos);
+        if self.enabled && (self.play_step.is_none() || play_step != self.play_step.unwrap()) {
+            self.play_step = Some(play_step);
 
             let step = &steps[play_step];
 
@@ -132,10 +134,10 @@ impl Track {
     /// Flushes sustained notes.
     pub fn flush(&mut self) {
         if let Some(scheduled_note_off) = self.scheduled_note_off {
-            let play_pos = self.play_pos.unwrap_or_default();
+            let play_step = self.play_step.unwrap_or_default();
             self.event_queue
                 .enqueue(TrackEvent::NoteOff {
-                    step: play_pos,
+                    step: play_step,
                     pitch: scheduled_note_off.1,
                 })
                 .ok();
@@ -183,9 +185,9 @@ impl Track {
         self.delay
     }
 
-    /// Returns the last play position as step number.
-    pub fn play_pos(&self) -> Option<usize> {
-        self.play_pos
+    /// Returns the last played step number.
+    pub fn play_step(&self) -> Option<usize> {
+        self.play_step
     }
 }
 
