@@ -120,6 +120,10 @@ pub struct AppParams {
     /// FAST mangler, doubles the speed.
     #[id = "mangler-fast"]
     pub mangler_fast: BoolParam,
+
+    /// MIRROR mangler, reverses the playback.
+    #[id = "mangler-mirror"]
+    pub mangler_mirror: BoolParam,
 }
 
 impl AppParams {
@@ -268,6 +272,7 @@ impl AppParams {
 
             // Manglers
             mangler_fast: BoolParam::new("FAST", false),
+            mangler_mirror: BoolParam::new("MIRROR", false),
         }
     }
 }

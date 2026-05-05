@@ -58,7 +58,7 @@ impl Track {
     }
 
     /// Updates the track when a clock pulse occurs.
-    pub fn update(&mut self, pulse_no: u32, ppq: u32, steps: &[Step]) {
+    pub fn update(&mut self, pulse_no: u32, ppq: u32, steps: &[Step], options: &TrackOptions) {
         let mut pulse_no = pulse_no as i32 - self.delay;
 
         // Apply swing value to each 2nd step.
@@ -68,7 +68,11 @@ impl Track {
 
         // Do some calculations to determine where we are.
         let play_pos = (pulse_no / (ppq as i32 / 4) % steps.len() as i32) as usize;
-        let play_step = play_pos % steps.len();
+        let mut play_step = play_pos % steps.len();
+
+        if options.reverse {
+            play_step = steps.len() - 1 - play_step;
+        }
 
         // Check if a previously started note has reached its length.
         if let Some(scheduled_note_off) = self.scheduled_note_off {
@@ -183,6 +187,13 @@ impl Track {
     pub fn play_pos(&self) -> Option<usize> {
         self.play_pos
     }
+}
+
+/// Options for playback.
+#[derive(Debug, Default, Clone, PartialEq, Eq)]
+pub struct TrackOptions {
+    /// Reverse the playback direction.
+    pub reverse: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -13,7 +13,7 @@ use std::sync::mpsc;
 
 use nih_plug::prelude::*;
 
-use dr_seq_engine::{Pattern, Pitch, Track, TrackEvent, Velocity};
+use dr_seq_engine::{Pattern, Pitch, Track, TrackEvent, TrackOptions, Velocity};
 
 use clock::Clock;
 use config::*;
@@ -195,8 +195,18 @@ impl Plugin for App {
                 CLOCK_PPQ
             };
 
+            let track_options = TrackOptions {
+                reverse: self.params.mangler_mirror.value(),
+                ..Default::default()
+            };
+
             for (n, track) in self.tracks.iter_mut().enumerate() {
-                track.update(pulse_no, track_ppq, &self.patterns[n].steps());
+                track.update(
+                    pulse_no,
+                    track_ppq,
+                    &self.patterns[n].steps(),
+                    &track_options,
+                );
             }
 
             // Turn engine events into corresponding MIDI messages.
