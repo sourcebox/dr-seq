@@ -46,7 +46,7 @@ pub fn create(params: Arc<AppParams>, editor_state: Arc<ViziaState>) -> Option<B
 
         Grid::new(
             cx,
-            vec![Pixels(650.0), Pixels(120.0)],
+            vec![Pixels(640.0), Pixels(120.0)],
             vec![Pixels(310.0), Pixels(50.0)],
             |cx| {
                 VStack::new(cx, |cx| {
@@ -61,18 +61,21 @@ pub fn create(params: Arc<AppParams>, editor_state: Arc<ViziaState>) -> Option<B
                     Label::new(cx, "Normal");
                     param_slider(cx, &params.normal_velocity);
                     Element::new(cx).height(Pixels(10.0));
-                    Label::new(cx, "Accent");
-                    param_slider(cx, &params.accent_velocity);
-                    ParamButton::new(cx, &params.accent_vel_mode)
-                        .height(Pixels(20.0))
-                        .top(Pixels(3.0))
-                        .with_label("abs");
-                    Element::new(cx).height(Pixels(10.0));
                     Label::new(cx, "Weak");
                     param_slider(cx, &params.weak_velocity);
                     Element::new(cx).height(Pixels(10.0));
                     Label::new(cx, "Ghost");
                     param_slider(cx, &params.ghost_velocity);
+                    Element::new(cx).height(Pixels(20.0));
+                    Label::new(cx, "Accent");
+                    HStack::new(cx, |cx| {
+                        param_slider(cx, &params.accent_velocity);
+                        Element::new(cx).width(Pixels(3.0));
+                        ParamButton::new(cx, &params.accent_vel_mode)
+                            .height(Pixels(20.0))
+                            .top(Pixels(3.0))
+                            .with_label("abs");
+                    });
                 })
                 .row_start(0)
                 .column_start(1);

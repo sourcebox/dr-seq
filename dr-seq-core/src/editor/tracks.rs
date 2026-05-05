@@ -72,6 +72,7 @@ fn create_track(cx: &mut Context, params: Arc<AppParams>, track: usize, current_
                     params.pattern.steps[track][step].load(Ordering::Relaxed),
                 )));
                 StepCell::new(cx, signal, track, step, accent_track, event_sender.clone());
+                Element::new(cx).width(Pixels(3.0));
 
                 if step % 4 == 3 && step != 15 {
                     // Add additional space after block of 4 cells.
@@ -81,10 +82,12 @@ fn create_track(cx: &mut Context, params: Arc<AppParams>, track: usize, current_
 
             if !accent_track {
                 HStack::new(cx, |cx| {
+                    Element::new(cx).width(ELEMENT_SPACER_WIDTH);
                     param_button(cx, enable_params[track]);
                     Element::new(cx).width(ELEMENT_SPACER_WIDTH);
                     param_slider(cx, delay_params[track]);
-                });
+                })
+                .padding_top(Pixels(3.0));
             }
         });
     });
