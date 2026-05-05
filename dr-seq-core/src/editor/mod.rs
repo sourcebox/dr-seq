@@ -94,9 +94,11 @@ pub fn create(params: Arc<AppParams>, editor_state: Arc<ViziaState>) -> Option<B
                         Label::new(cx, "Manglers")
                             .padding_top(Pixels(5.0))
                             .padding_right(Pixels(10.0));
+                        ParamButton::new(cx, &params.mangler_mirror);
+                        Element::new(cx).width(Pixels(5.0));
                         ParamButton::new(cx, &params.mangler_fast);
                         Element::new(cx).width(Pixels(5.0));
-                        ParamButton::new(cx, &params.mangler_mirror);
+                        ParamButton::new(cx, &params.mangler_swag);
                         Element::new(cx).width(Pixels(5.0));
                         ParamButton::new(cx, &params.mangler_sole);
                         Element::new(cx).width(Pixels(5.0));

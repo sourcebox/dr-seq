@@ -194,6 +194,11 @@ impl Plugin for App {
 
             let mut track_options = TrackOptions {
                 swing: self.params.swing.value() * 48 / 100,
+                shift: if self.params.mangler_swag.value() {
+                    1
+                } else {
+                    0
+                },
                 reverse: self.params.mangler_mirror.value(),
                 ..Default::default()
             };

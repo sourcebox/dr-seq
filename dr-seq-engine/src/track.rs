@@ -57,8 +57,13 @@ impl Track {
         // Make sure pulse no is always positive.
         let pulse_no = pulse_no.max(0) as usize;
 
+        let mut shift = options.shift;
+        while shift < 0 {
+            shift += steps.len() as i32;
+        }
+
         // Do some calculations to determine where we are.
-        let mut play_step = pulse_no / (ppq as usize / 4) % steps.len();
+        let mut play_step = (pulse_no / (ppq as usize / 4) + shift as usize) % steps.len();
 
         // Apply reverse option.
         if options.reverse {
@@ -157,10 +162,13 @@ pub struct TrackOptions {
     /// Time delay in pulses.
     pub delay: i32,
 
+    /// Steps shift.
+    pub shift: i32,
+
     /// Reverse the playback direction.
     pub reverse: bool,
 
-    /// Re-sort the steps.
+    /// Function to re-sort the steps.
     pub resort_fn: Option<fn(usize) -> usize>,
 }
 
