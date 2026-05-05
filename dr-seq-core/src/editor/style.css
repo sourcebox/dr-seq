@@ -24,7 +24,7 @@ param-slider {
     background-color: #999999;
 }
 
-param-slider :hover {
+param-slider:hover {
     color: black;
     background-color: #bbbbbb;
 }
@@ -39,12 +39,12 @@ param-button {
     background-color: #999999;
 }
 
-param-button :hover {
+param-button:hover {
     color: black;
     background-color: #bbbbbb;
 }
 
-param-button :checked {
+param-button:checked {
     color: black;
     background-color: #ec6708;
 }
