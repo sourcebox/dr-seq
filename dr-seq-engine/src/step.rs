@@ -1,9 +1,12 @@
 //! Sequencer step.
 
+use serde::{Deserialize, Serialize};
+
 use crate::params::{Pitch, Velocity};
 
 /// Sequencer step.
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+#[serde(default)]
 pub struct Step {
     /// Flag if step is enabled for playing.
     enabled: bool,

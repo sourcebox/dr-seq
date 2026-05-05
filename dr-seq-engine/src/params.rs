@@ -1,7 +1,9 @@
 //! Parameters.
 
+use serde::{Deserialize, Serialize};
+
 /// Pitch variants.
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub enum Pitch {
     /// Default setting.
@@ -13,7 +15,7 @@ pub enum Pitch {
 }
 
 /// Velocity variants.
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[non_exhaustive]
 pub enum Velocity {
     /// Normal velocity.

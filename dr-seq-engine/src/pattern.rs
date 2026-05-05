@@ -1,11 +1,14 @@
 //! Sequencer pattern.
 
+use serde::{Deserialize, Serialize};
+
 use crate::step::Step;
 
 /// Sequencer pattern with capacity of `CAPACITY`.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Pattern<const CAPACITY: usize> {
     /// Array of steps.
+    #[serde(with = "serde_arrays")]
     steps: [Step; CAPACITY],
 
     /// Active length in steps.
