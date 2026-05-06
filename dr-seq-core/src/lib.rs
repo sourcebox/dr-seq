@@ -37,6 +37,9 @@ pub struct App {
 
     /// Patterns for the tracks.
     patterns: [Pattern<16>; TRACKS],
+
+    /// Step repeats for the tracks.
+    step_repeats: [bool; TRACKS],
 }
 
 impl Default for App {
@@ -51,6 +54,7 @@ impl Default for App {
             playing: false,
             tracks: core::array::from_fn(|_| Track::new()),
             patterns: core::array::from_fn(|_| Pattern::<16>::new()),
+            step_repeats: [false; TRACKS],
         }
     }
 }
@@ -221,6 +225,7 @@ impl Plugin for App {
             }
 
             let sole_enabled = self.params.mangler_sole.value();
+            let flame_enabled = self.params.mangler_flame.value();
             let mut skip_notes = false;
 
             for (n, track) in self.tracks.iter_mut().enumerate() {
@@ -246,6 +251,12 @@ impl Plugin for App {
                     7 => self.params.track8_delay.value(),
                     _ => 0,
                 };
+                track_params.repeat = flame_enabled && self.step_repeats[n];
+
+                if !track_params.enable {
+                    // Clear step repeats on disabled tracks.
+                    self.step_repeats[n] = false;
+                }
 
                 track.update(pulse_no, track_ppq, self.patterns[n].steps(), &track_params);
 
@@ -282,6 +293,9 @@ impl Plugin for App {
                                 if sole_enabled {
                                     skip_notes = true;
                                 }
+                                if flame_enabled {
+                                    self.step_repeats[n] = true;
+                                }
                             }
                         }
                         TrackEvent::NoteOff { step: _, pitch } => {
@@ -300,6 +314,17 @@ impl Plugin for App {
                         }
                         _ => {}
                     }
+                }
+            }
+
+            // Make sure only one track has repeat enabled.
+            let repeat_priority = [1, 2, 3, 4, 5, 6, 0, 7];
+            let mut disable_repeat = false;
+            for n in repeat_priority {
+                if disable_repeat {
+                    self.step_repeats[n] = false;
+                } else if self.step_repeats[n] {
+                    disable_repeat = true;
                 }
             }
         }

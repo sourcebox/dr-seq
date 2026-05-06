@@ -133,6 +133,10 @@ pub struct AppParams {
     #[id = "mangler-sole"]
     pub mangler_sole: BoolParam,
 
+    /// FLAME mangler, repeats a step.
+    #[id = "mangler-flame"]
+    pub mangler_flame: BoolParam,
+
     /// HACK mangler, re-sorts the steps.
     #[id = "mangler-hack"]
     pub mangler_hack: BoolParam,
@@ -286,6 +290,7 @@ impl AppParams {
             mangler_fast: BoolParam::new("FAST", false),
             mangler_swag: BoolParam::new("SWAG", false),
             mangler_sole: BoolParam::new("SOLE", false),
+            mangler_flame: BoolParam::new("FLAME", false),
             mangler_hack: BoolParam::new("HACK", false),
         }
     }

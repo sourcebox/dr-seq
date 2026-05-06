@@ -89,9 +89,16 @@ impl Track {
         }
 
         if params.enable && (self.play_step.is_none() || play_step != self.play_step.unwrap()) {
-            self.play_step = Some(play_step);
+            let mut step = &steps[play_step as usize];
 
-            let step = &steps[play_step as usize];
+            if params.repeat
+                && !step.enabled()
+                && let Some(last_step) = self.play_step()
+            {
+                step = &steps[last_step as usize];
+            }
+
+            self.play_step = Some(play_step);
 
             if step.enabled() {
                 // If a note is still playing, it must be stopped before triggering a new one.
@@ -167,6 +174,9 @@ pub struct TrackParams {
 
     /// Reverse the playback direction.
     pub reverse: bool,
+
+    /// Repeat the last step once.
+    pub repeat: bool,
 
     /// Function to re-sort the steps.
     pub resort_fn: Option<fn(u32) -> u32>,
