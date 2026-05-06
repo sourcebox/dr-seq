@@ -12,7 +12,7 @@ pub struct Pattern<const CAPACITY: usize> {
     steps: [Step; CAPACITY],
 
     /// Active length in steps.
-    length: usize,
+    length: u32,
 }
 
 impl<const NUM_STEPS: usize> Default for Pattern<NUM_STEPS> {
@@ -31,23 +31,18 @@ impl<const NUM_STEPS: usize> Pattern<NUM_STEPS> {
     }
 
     /// Returns the active length in steps.
-    pub fn len(&self) -> usize {
+    pub fn length(&self) -> u32 {
         self.length
     }
 
     /// Sets the active length in steps.
-    pub fn set_len(&mut self, steps: usize) {
+    pub fn set_length(&mut self, steps: u32) {
         self.length = steps;
     }
 
     /// Returns the capacity in steps.
     pub fn capacity(&self) -> usize {
         NUM_STEPS
-    }
-
-    /// Returns if the pattern is empty.
-    pub fn is_empty(&self) -> bool {
-        self.len() == 0
     }
 
     /// Returns a reference to the steps.
@@ -61,7 +56,7 @@ impl<const NUM_STEPS: usize> Pattern<NUM_STEPS> {
     }
 
     /// Returns a reference to a specific step.
-    pub fn step(&self, step_no: usize) -> &Step {
-        &self.steps[step_no]
+    pub fn step(&self, step_no: u32) -> &Step {
+        &self.steps[step_no as usize]
     }
 }
