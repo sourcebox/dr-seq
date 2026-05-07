@@ -11,7 +11,7 @@ use std::sync::mpsc;
 
 use nih_plug::prelude::*;
 
-use dr_seq_engine::{Pattern, Pitch, Track, TrackEvent, TrackParams, Velocity};
+use dr_seq_engine::{Pattern, Pitch, StepEvent, Track, TrackEvent, TrackParams, Velocity};
 
 use clock::Clock;
 use config::*;
@@ -144,7 +144,7 @@ impl Plugin for App {
                 for (n, track) in self.tracks.as_mut().iter_mut().enumerate() {
                     while let Some(event) = track.next_event() {
                         let note = TRACK_NOTES[n];
-                        if let TrackEvent::NoteOff { step: _, pitch } = event {
+                        if let TrackEvent::StepEvent(_, StepEvent::NoteOff { pitch }) = event {
                             let event = NoteEvent::NoteOff {
                                 timing: 0,
                                 voice_id: None,
@@ -264,7 +264,7 @@ impl Plugin for App {
                     // Turn track events into corresponding MIDI messages.
                     let note = TRACK_NOTES[n];
                     match event {
-                        TrackEvent::NoteOn { step, pitch, vel } => {
+                        TrackEvent::StepEvent(step, StepEvent::NoteOn { pitch, vel }) => {
                             let accent = self.patterns[ACCENT_TRACK as usize].step(step).enabled();
                             let event = NoteEvent::NoteOn {
                                 timing,
@@ -298,7 +298,7 @@ impl Plugin for App {
                                 }
                             }
                         }
-                        TrackEvent::NoteOff { step: _, pitch } => {
+                        TrackEvent::StepEvent(_, StepEvent::NoteOff { pitch }) => {
                             let event = NoteEvent::NoteOff {
                                 timing,
                                 voice_id: None,

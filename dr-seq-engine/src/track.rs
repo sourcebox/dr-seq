@@ -2,8 +2,8 @@
 
 use heapless::spsc::Queue;
 
-use crate::params::{Pitch, Velocity};
-use crate::step::Step;
+use crate::params::Pitch;
+use crate::step::{Step, StepEvent};
 
 /// Capacity of the event queue.
 pub const EVENT_QUEUE_CAPACITY: usize = 16;
@@ -79,11 +79,11 @@ impl Track {
         if let Some(scheduled_note_off) = self.scheduled_note_off
             && self.pulse_count == scheduled_note_off.0
         {
+            let step_event = StepEvent::NoteOff {
+                pitch: scheduled_note_off.1,
+            };
             self.event_queue
-                .enqueue(TrackEvent::NoteOff {
-                    step: play_step,
-                    pitch: scheduled_note_off.1,
-                })
+                .enqueue(TrackEvent::StepEvent(play_step, step_event))
                 .ok();
             self.scheduled_note_off = None;
         }
@@ -103,22 +103,22 @@ impl Track {
             if step.enabled() {
                 // If a note is still playing, it must be stopped before triggering a new one.
                 if let Some(scheduled_note_off) = self.scheduled_note_off {
+                    let step_event = StepEvent::NoteOff {
+                        pitch: scheduled_note_off.1,
+                    };
                     self.event_queue
-                        .enqueue(TrackEvent::NoteOff {
-                            step: play_step,
-                            pitch: scheduled_note_off.1,
-                        })
+                        .enqueue(TrackEvent::StepEvent(play_step, step_event))
                         .ok();
                     self.scheduled_note_off = None;
                 }
 
                 // Start a new note.
+                let step_event = StepEvent::NoteOn {
+                    pitch: step.pitch(),
+                    vel: step.velocity(),
+                };
                 self.event_queue
-                    .enqueue(TrackEvent::NoteOn {
-                        step: play_step,
-                        pitch: step.pitch(),
-                        vel: step.velocity(),
-                    })
+                    .enqueue(TrackEvent::StepEvent(play_step, step_event))
                     .ok();
 
                 // Schedule the note off for a 1/32 note length.
@@ -141,11 +141,11 @@ impl Track {
     pub fn flush(&mut self) {
         if let Some(scheduled_note_off) = self.scheduled_note_off {
             let play_step = self.play_step.unwrap_or_default();
+            let step_event = StepEvent::NoteOff {
+                pitch: scheduled_note_off.1,
+            };
             self.event_queue
-                .enqueue(TrackEvent::NoteOff {
-                    step: play_step,
-                    pitch: scheduled_note_off.1,
-                })
+                .enqueue(TrackEvent::StepEvent(play_step, step_event))
                 .ok();
             self.scheduled_note_off = None;
         }
@@ -186,24 +186,6 @@ pub struct TrackParams {
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[non_exhaustive]
 pub enum TrackEvent {
-    /// Start a note with pitch and velocity.
-    NoteOn {
-        /// Step number that generated the note.
-        step: u32,
-
-        /// Pitch of the note.
-        pitch: Pitch,
-
-        /// Velocity of the note.
-        vel: Velocity,
-    },
-
-    /// Stop a note with pitch.
-    NoteOff {
-        /// Step number that generated the note.
-        step: u32,
-
-        /// Pitch of the note.
-        pitch: Pitch,
-    },
+    /// Event for a step.
+    StepEvent(u32, StepEvent),
 }
