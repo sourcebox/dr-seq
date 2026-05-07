@@ -100,7 +100,10 @@ impl Track {
 
             self.play_step = Some(play_step);
 
-            if step.enabled() {
+            // Get the event and emit it.
+            if step.enabled()
+                && let Some(step_event) = step.event().clone()
+            {
                 // If a note is still playing, it must be stopped before triggering a new one.
                 if let Some(scheduled_note_off) = self.scheduled_note_off {
                     let step_event = StepEvent::NoteOff {
@@ -112,18 +115,18 @@ impl Track {
                     self.scheduled_note_off = None;
                 }
 
-                // Start a new note.
-                let step_event = StepEvent::NoteOn {
-                    pitch: step.pitch(),
-                    vel: step.velocity(),
-                };
+                // Enqueue the event.
                 self.event_queue
-                    .enqueue(TrackEvent::StepEvent(play_step, step_event))
+                    .enqueue(TrackEvent::StepEvent(play_step, step_event.clone()))
                     .ok();
 
-                // Schedule the note off for a 1/32 note length.
-                let note_off_pulse = self.pulse_count + ppq / 8;
-                self.scheduled_note_off = Some((note_off_pulse, step.pitch()));
+                // If the event is a note on, then a corresponding note off
+                // is scheduled for later processing.
+                if let StepEvent::NoteOn { pitch, .. } = step_event {
+                    // Schedule the note off for a 1/32 note length.
+                    let note_off_pulse = self.pulse_count + ppq / 8;
+                    self.scheduled_note_off = Some((note_off_pulse, pitch));
+                }
             }
         }
 

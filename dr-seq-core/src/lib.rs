@@ -347,12 +347,15 @@ impl App {
                     StepState::from(self.params.pattern.steps[t][s].load(Ordering::Relaxed));
                 if state != StepState::Off {
                     step.enable();
-                    step.set_velocity(match state {
-                        StepState::Accent => Velocity::Accent,
-                        StepState::Weak => Velocity::Weak,
-                        StepState::Ghost => Velocity::Ghost,
-                        _ => Velocity::Default,
-                    });
+                    step.set_event(Some(StepEvent::NoteOn {
+                        pitch: Pitch::Default,
+                        vel: match state {
+                            StepState::Accent => Velocity::Accent,
+                            StepState::Weak => Velocity::Weak,
+                            StepState::Ghost => Velocity::Ghost,
+                            _ => Velocity::Default,
+                        },
+                    }));
                 } else {
                     step.disable();
                 }
