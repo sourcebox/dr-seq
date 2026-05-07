@@ -195,7 +195,7 @@ impl Plugin for App {
             };
 
             let mut track_params = TrackParams {
-                swing: self.params.swing.value() * 48 / 100,
+                swing: self.params.swing.value() * CLOCK_PPQ as i32 / 8 / 100,
                 shift: if self.params.mangler_swag.value() {
                     1
                 } else {
