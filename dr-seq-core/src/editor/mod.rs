@@ -20,6 +20,9 @@ use controls::*;
 pub enum EditorEvent {
     /// Click on a cell with track and step.
     CellClick(usize, usize, StepState),
+
+    /// Load a preset.
+    LoadPreset(u32),
 }
 
 /// Returns the default state.
@@ -30,11 +33,6 @@ pub fn default_state() -> Arc<ViziaState> {
 /// Create the editor.
 pub fn create(params: Arc<AppParams>, editor_state: Arc<ViziaState>) -> Option<Box<dyn Editor>> {
     create_vizia_editor(editor_state, ViziaTheming::Custom, move |cx, _| {
-        // TODO: check
-        // assets::register_noto_sans_light(cx);
-        // assets::register_noto_sans_thin(cx);
-        // assets::register_noto_sans_bold(cx);
-
         cx.add_stylesheet(include_str!("style.css")).ok();
 
         ResizeHandle::new(cx);
@@ -86,6 +84,19 @@ pub fn create(params: Arc<AppParams>, editor_state: Arc<ViziaState>) -> Option<B
                             .padding_top(Pixels(3.0))
                             .padding_right(Pixels(10.0));
                         ParamSlider::new(cx, &params.swing).class("slider");
+                        Element::new(cx).width(Pixels(20.0));
+                        Label::new(cx, "Presets")
+                            .padding_top(Pixels(5.0))
+                            .padding_right(Pixels(10.0));
+                        for n in 0..6 {
+                            let event_sender = params.editor_event_sender.lock().unwrap().clone();
+                            Button::new(cx, |cx| Label::new(cx, format!("{n}"))).on_press(
+                                move |_| {
+                                    event_sender.send(EditorEvent::LoadPreset(n)).ok();
+                                },
+                            );
+                            Element::new(cx).width(Pixels(5.0));
+                        }
                     });
                 })
                 .row_start(1)

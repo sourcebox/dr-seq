@@ -4,6 +4,7 @@ mod clock;
 mod config;
 mod editor;
 mod params;
+mod presets;
 
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -17,6 +18,7 @@ use clock::Clock;
 use config::*;
 use editor::EditorEvent;
 use params::{AppParams, StepState};
+use presets::load_preset;
 
 /// Main plugin struct.
 pub struct App {
@@ -123,6 +125,10 @@ impl Plugin for App {
                     let param = &self.params.pattern.steps[track][step];
                     param.store(state.into(), Ordering::Relaxed);
                     self.update_engine();
+                }
+                EditorEvent::LoadPreset(preset_no) => {
+                    load_preset(preset_no, self.params.clone());
+                    self.update_engine.store(true, Ordering::Relaxed);
                 }
             }
         }
