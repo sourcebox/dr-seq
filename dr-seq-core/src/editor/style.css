@@ -17,6 +17,18 @@
     padding: 20px;
 }
 
+/* Common elements */
+
+button {
+    color: black;
+    background-color: #999999;
+}
+
+button:hover {
+    color: black;
+    background-color: #bbbbbb;
+}
+
 /* Parameter controls */
 
 param-slider {

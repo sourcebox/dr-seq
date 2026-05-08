@@ -85,18 +85,22 @@ pub fn create(params: Arc<AppParams>, editor_state: Arc<ViziaState>) -> Option<B
                             .padding_right(Pixels(10.0));
                         ParamSlider::new(cx, &params.swing).class("slider");
                         Element::new(cx).width(Pixels(20.0));
+
                         Label::new(cx, "Presets")
                             .padding_top(Pixels(5.0))
                             .padding_right(Pixels(10.0));
-                        for n in 0..6 {
-                            let event_sender = params.editor_event_sender.lock().unwrap().clone();
-                            Button::new(cx, |cx| Label::new(cx, format!("{n}"))).on_press(
-                                move |_| {
-                                    event_sender.send(EditorEvent::LoadPreset(n)).ok();
-                                },
-                            );
-                            Element::new(cx).width(Pixels(5.0));
-                        }
+                        ButtonGroup::new(cx, |cx| {
+                            for n in 0..6 {
+                                let event_sender =
+                                    params.editor_event_sender.lock().unwrap().clone();
+                                Button::new(cx, |cx| Label::new(cx, format!("{n}"))).on_press(
+                                    move |_| {
+                                        event_sender.send(EditorEvent::LoadPreset(n)).ok();
+                                    },
+                                );
+                                Element::new(cx).width(Pixels(5.0));
+                            }
+                        });
                     });
                 })
                 .row_start(1)
