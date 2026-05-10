@@ -28,9 +28,6 @@ pub struct App {
     /// Channel for receiving events from the editor.
     editor_event_receiver: mpsc::Receiver<EditorEvent>,
 
-    /// Flag to update the engine after a parameter has been changed.
-    update_engine: Arc<AtomicBool>,
-
     /// Flag if transport is playing.
     playing: bool,
 
@@ -52,7 +49,6 @@ impl Default for App {
         Self {
             params: Arc::new(AppParams::new(update_engine.clone(), editor_channel.0)),
             editor_event_receiver: editor_channel.1,
-            update_engine,
             playing: false,
             tracks: core::array::from_fn(|_| Track::new()),
             patterns: core::array::from_fn(|_| Pattern::<16>::new()),
@@ -129,11 +125,6 @@ impl Plugin for App {
                     self.update_engine();
                 }
             }
-        }
-
-        if self.update_engine.load(Ordering::Relaxed) {
-            self.update_engine();
-            self.update_engine.store(false, Ordering::Relaxed);
         }
 
         let playing = context.transport().playing;
