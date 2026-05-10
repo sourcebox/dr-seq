@@ -77,14 +77,14 @@ impl Track {
         // Do some calculations to determine where we are.
         let mut play_step = (pulse_no / pp16th + shift as u32) % steps.len() as u32;
 
-        if params.triplet && play_step % 4 == 3 {
-            // In triplet mode, skip every 4th step.
-            return;
-        }
-
         // Apply reverse option.
         if params.reverse {
             play_step = (steps.len() - 1) as u32 - play_step;
+        }
+
+        if params.triplet && play_step % 4 == 3 {
+            // In triplet mode, skip every 4th step.
+            return;
         }
 
         // Apply re-sort function.
