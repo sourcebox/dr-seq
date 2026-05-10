@@ -80,6 +80,17 @@ pub static PRESET_PATTERN_4: PresetPattern = PresetPattern {
     ],
 };
 
+pub static PRESET_PATTERN_5: PresetPattern = PresetPattern {
+    steps: [
+        "X__X__X____X_XX_",
+        "____X__X_X__X___",
+        "XXO_X_XHX_H_XH__",
+        "__X__X_X___X____",
+        "________________",
+        "________________",
+    ],
+};
+
 /// Loads a preset into the parameters.
 pub fn load_preset(preset_no: u32, params: Arc<AppParams>) {
     let preset = match preset_no {
@@ -87,6 +98,7 @@ pub fn load_preset(preset_no: u32, params: Arc<AppParams>) {
         2 => &PRESET_PATTERN_2,
         3 => &PRESET_PATTERN_3,
         4 => &PRESET_PATTERN_4,
+        5 => &PRESET_PATTERN_5,
         _ => &PRESET_PATTERN_0,
     };
 
