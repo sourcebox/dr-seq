@@ -33,6 +33,10 @@ pub struct AppParams {
     #[id = "swing"]
     pub swing: IntParam,
 
+    /// Triplet mode.
+    #[id = "triplet"]
+    pub triplet: BoolParam,
+
     /// Track 1 enable.
     #[id = "track1-enable"]
     pub track1_enable: BoolParam,
@@ -164,6 +168,7 @@ impl AppParams {
                     Arc::new(move |_| update_engine.store(true, Ordering::Release))
                 },
             ),
+            triplet: BoolParam::new("3/4", false),
 
             // Track enables
             track1_enable: BoolParam::new("Track 1 Enable", true)

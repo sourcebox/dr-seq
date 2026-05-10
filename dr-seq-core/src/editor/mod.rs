@@ -84,6 +84,8 @@ pub fn create(params: Arc<AppParams>, editor_state: Arc<ViziaState>) -> Option<B
                             .padding_right(Pixels(10.0));
                         ParamSlider::new(cx, &params.swing).class("slider");
                         Element::new(cx).width(Pixels(20.0));
+                        ParamButton::new(cx, &params.triplet);
+                        Element::new(cx).width(Pixels(20.0));
 
                         Label::new(cx, "Presets")
                             .padding_top(Pixels(5.0))

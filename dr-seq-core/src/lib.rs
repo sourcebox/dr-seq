@@ -197,6 +197,7 @@ impl Plugin for App {
                     0
                 },
                 reverse: self.params.mangler_mirror.value(),
+                triplet: self.params.triplet.value(),
                 ..Default::default()
             };
 
