@@ -13,13 +13,12 @@ use vizia_plug::{ViziaState, ViziaTheming, create_vizia_editor};
 
 use crate::AppParams;
 use crate::config::NAME;
-use crate::params::StepState;
 use controls::*;
 
 #[derive(Debug, Clone)]
 pub enum EditorEvent {
-    /// Click on a cell with track and step.
-    CellClick(usize, usize, StepState),
+    /// Update the engine.
+    UpdateEngine,
 
     /// Load a preset.
     LoadPreset(u32),

@@ -121,14 +121,12 @@ impl Plugin for App {
     ) -> ProcessStatus {
         if let Ok(event) = self.editor_event_receiver.try_recv() {
             match event {
-                EditorEvent::CellClick(track, step, state) => {
-                    let param = &self.params.pattern.steps[track][step];
-                    param.store(state.into(), Ordering::Relaxed);
+                EditorEvent::UpdateEngine => {
                     self.update_engine();
                 }
                 EditorEvent::LoadPreset(preset_no) => {
                     load_preset(preset_no, self.params.clone());
-                    self.update_engine.store(true, Ordering::Relaxed);
+                    self.update_engine();
                 }
             }
         }

@@ -343,7 +343,7 @@ impl From<u32> for StepState {
 #[derive(Default, Serialize, Deserialize)]
 pub struct Pattern {
     /// Array of tracks with steps.
-    pub steps: [[AtomicU32; 16]; TRACKS],
+    pub steps: [[Arc<AtomicU32>; 16]; TRACKS],
 }
 
 impl<'a> PersistentField<'a, Pattern> for Pattern {

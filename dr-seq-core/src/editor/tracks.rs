@@ -24,19 +24,14 @@ pub fn create(cx: &mut Context, params: Arc<AppParams>) {
                 Element::new(cx).height(TRACK_ROW_SPACER_HEIGHT);
             }
 
-            create_track(
-                cx,
-                params.clone(),
-                track,
-                params.current_step.load(Ordering::Relaxed),
-            );
+            create_track(cx, params.clone(), track);
         }
     })
     .id("tracks");
 }
 
 /// Creates a single track.
-fn create_track(cx: &mut Context, params: Arc<AppParams>, track: usize, current_step: usize) {
+fn create_track(cx: &mut Context, params: Arc<AppParams>, track: usize) {
     let enable_params = [
         &params.track1_enable,
         &params.track2_enable,
@@ -68,10 +63,8 @@ fn create_track(cx: &mut Context, params: Arc<AppParams>, track: usize, current_
             let event_sender = params.editor_event_sender.lock().unwrap().clone();
 
             for step in 0..16 {
-                let signal = SyncSignal::new(Arc::new(AtomicU32::new(
-                    params.pattern.steps[track][step].load(Ordering::Relaxed),
-                )));
-                StepCell::new(cx, signal, track, step, accent_track, event_sender.clone());
+                let signal = SyncSignal::new(params.pattern.steps[track][step].clone());
+                StepCell::new(cx, signal, accent_track, event_sender.clone());
                 Element::new(cx).width(Pixels(3.0));
 
                 if step % 4 == 3 && step != 15 {
@@ -103,8 +96,6 @@ impl StepCell {
     fn new(
         cx: &mut Context,
         state: SyncSignal<Arc<AtomicU32>>,
-        track: usize,
-        step: usize,
         accent_step: bool,
         event_sender: mpsc::SyncSender<EditorEvent>,
     ) -> Handle<'_, Self> {
@@ -148,9 +139,7 @@ impl StepCell {
             state.update(|s| s.store(new_state.into(), Ordering::Relaxed));
 
             // Send an event back to the engine.
-            event_sender
-                .send(EditorEvent::CellClick(track, step, new_state))
-                .ok();
+            event_sender.send(EditorEvent::UpdateEngine).ok();
         })
     }
 }
