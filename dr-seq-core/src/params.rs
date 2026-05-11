@@ -144,6 +144,10 @@ pub struct AppParams {
     /// FAST mangler, doubles the speed.
     #[id = "mangler-fast"]
     pub mangler_fast: BoolParam,
+
+    /// SLOW mangler, halves the speed.
+    #[id = "mangler-slow"]
+    pub mangler_slow: BoolParam,
 }
 
 impl AppParams {
@@ -297,6 +301,7 @@ impl AppParams {
             mangler_swag: BoolParam::new("SWAG", false),
             mangler_hack: BoolParam::new("HACK", false),
             mangler_fast: BoolParam::new("FAST", false),
+            mangler_slow: BoolParam::new("SLOW", false),
         }
     }
 }

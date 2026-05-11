@@ -124,6 +124,8 @@ pub fn create(params: Arc<AppParams>, editor_state: Arc<ViziaState>) -> Option<B
                         ParamButton::new(cx, &params.mangler_hack);
                         Element::new(cx).width(Pixels(5.0));
                         ParamButton::new(cx, &params.mangler_fast);
+                        Element::new(cx).width(Pixels(5.0));
+                        ParamButton::new(cx, &params.mangler_slow);
                     });
                 })
                 .row_start(2)

@@ -182,12 +182,17 @@ impl Plugin for App {
                     .store(current_step, Ordering::Relaxed);
             }
 
+            let mut track_ppq = CLOCK_PPQ;
+
             // The FAST mangler doubles the speed by halving the ppq.
-            let track_ppq = if self.params.mangler_fast.value() {
-                CLOCK_PPQ / 2
-            } else {
-                CLOCK_PPQ
-            };
+            if self.params.mangler_fast.value() {
+                track_ppq /= 2;
+            }
+
+            // The SLOW mangler halves the speed by doubling the ppq.
+            if self.params.mangler_slow.value() {
+                track_ppq *= 2;
+            }
 
             let mut track_params = TrackParams {
                 swing: self.params.swing.value() * CLOCK_PPQ as i32 / 8 / 100,
