@@ -121,18 +121,6 @@ pub struct AppParams {
     #[id = "ghost-velocity"]
     pub ghost_velocity: IntParam,
 
-    /// MIRROR mangler, reverses the playback.
-    #[id = "mangler-mirror"]
-    pub mangler_mirror: BoolParam,
-
-    /// FAST mangler, doubles the speed.
-    #[id = "mangler-fast"]
-    pub mangler_fast: BoolParam,
-
-    /// SWAG mangler, shifts the steps.
-    #[id = "mangler-swag"]
-    pub mangler_swag: BoolParam,
-
     /// SOLE mangler, isolates a single step.
     #[id = "mangler-sole"]
     pub mangler_sole: BoolParam,
@@ -141,9 +129,21 @@ pub struct AppParams {
     #[id = "mangler-flame"]
     pub mangler_flame: BoolParam,
 
+    /// MIRROR mangler, reverses the playback.
+    #[id = "mangler-mirror"]
+    pub mangler_mirror: BoolParam,
+
+    /// SWAG mangler, shifts the steps.
+    #[id = "mangler-swag"]
+    pub mangler_swag: BoolParam,
+
     /// HACK mangler, re-sorts the steps.
     #[id = "mangler-hack"]
     pub mangler_hack: BoolParam,
+
+    /// FAST mangler, doubles the speed.
+    #[id = "mangler-fast"]
+    pub mangler_fast: BoolParam,
 }
 
 impl AppParams {
@@ -291,12 +291,12 @@ impl AppParams {
             ),
 
             // Manglers
-            mangler_mirror: BoolParam::new("MIRROR", false),
-            mangler_fast: BoolParam::new("FAST", false),
-            mangler_swag: BoolParam::new("SWAG", false),
             mangler_sole: BoolParam::new("SOLE", false),
             mangler_flame: BoolParam::new("FLAME", false),
+            mangler_mirror: BoolParam::new("MIRROR", false),
+            mangler_swag: BoolParam::new("SWAG", false),
             mangler_hack: BoolParam::new("HACK", false),
+            mangler_fast: BoolParam::new("FAST", false),
         }
     }
 }
