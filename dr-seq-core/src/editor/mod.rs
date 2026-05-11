@@ -94,11 +94,10 @@ pub fn create(params: Arc<AppParams>, editor_state: Arc<ViziaState>) -> Option<B
                             for n in 0..6 {
                                 let event_sender =
                                     params.editor_event_sender.lock().unwrap().clone();
-                                Button::new(cx, |cx| Label::new(cx, format!("{n}"))).on_press(
-                                    move |_| {
+                                Button::new(cx, |cx| Label::new(cx, format!("{}", n + 1)))
+                                    .on_press(move |_| {
                                         event_sender.send(EditorEvent::LoadPreset(n)).ok();
-                                    },
-                                );
+                                    });
                                 Element::new(cx).width(Pixels(5.0));
                             }
                         });
