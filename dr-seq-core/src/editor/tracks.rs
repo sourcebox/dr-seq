@@ -3,7 +3,6 @@
 use std::sync::Arc;
 use std::sync::atomic::AtomicU32;
 use std::sync::atomic::Ordering;
-use std::sync::mpsc::SyncSender;
 
 use vizia_plug::vizia::prelude::*;
 
@@ -15,7 +14,7 @@ use crate::config::*;
 use crate::params::StepState;
 
 /// Creates the tracks.
-pub fn create(cx: &mut Context, params: Arc<AppParams>, event_sender: &SyncSender<EditorEvent>) {
+pub fn create(cx: &mut Context, params: Arc<AppParams>) {
     VStack::new(cx, |cx| {
         for track in 0..TRACKS {
             if track == TRACKS - 1 {
@@ -24,19 +23,14 @@ pub fn create(cx: &mut Context, params: Arc<AppParams>, event_sender: &SyncSende
                 Element::new(cx).height(TRACK_ROW_SPACER_HEIGHT);
             }
 
-            create_track(cx, params.clone(), track, event_sender);
+            create_track(cx, params.clone(), track);
         }
     })
     .id("tracks");
 }
 
 /// Creates a single track.
-fn create_track(
-    cx: &mut Context,
-    params: Arc<AppParams>,
-    track: usize,
-    event_sender: &SyncSender<EditorEvent>,
-) {
+fn create_track(cx: &mut Context, params: Arc<AppParams>, track: usize) {
     let enable_params = [
         &params.track1_enable,
         &params.track2_enable,
@@ -67,7 +61,7 @@ fn create_track(
 
             for step in 0..16 {
                 let signal = SyncSignal::new(params.pattern.steps[track][step].clone());
-                create_cell(cx, signal, accent_track, event_sender.clone());
+                create_cell(cx, signal, accent_track);
                 Element::new(cx).width(Pixels(3.0));
 
                 if step % 4 == 3 && step != 15 {
@@ -90,12 +84,7 @@ fn create_track(
 }
 
 /// Creates a single cell.
-fn create_cell(
-    cx: &mut Context,
-    state: SyncSignal<Arc<AtomicU32>>,
-    accent_step: bool,
-    event_sender: SyncSender<EditorEvent>,
-) {
+fn create_cell(cx: &mut Context, state: SyncSignal<Arc<AtomicU32>>, accent_step: bool) {
     VStack::new(cx, |cx| {
         Element::new(cx).class("content");
     })
@@ -134,6 +123,6 @@ fn create_cell(
         state.update(|s| s.store(new_state.into(), Ordering::Relaxed));
 
         // Send an event back to the engine.
-        event_sender.send(EditorEvent::UpdateEngine).ok();
+        eh.emit(EditorEvent::UpdateEngine);
     });
 }

@@ -16,6 +16,7 @@ use crate::AppParams;
 use crate::config::NAME;
 use controls::*;
 
+/// Events shared with the audio thread.
 #[derive(Debug, Clone)]
 pub enum EditorEvent {
     /// Update the engine.
@@ -23,6 +24,20 @@ pub enum EditorEvent {
 
     /// Load a preset.
     LoadPreset(u32),
+}
+
+/// Event channels for message exchange.
+struct EventChannels {
+    /// Sender for events to the audio thread.
+    event_sender: SyncSender<EditorEvent>,
+}
+
+impl Model for EventChannels {
+    fn event(&mut self, _cx: &mut EventContext, event: &mut Event) {
+        event.map(|editor_event: &EditorEvent, _meta| {
+            self.event_sender.send(editor_event.clone()).ok();
+        });
+    }
 }
 
 /// Returns the default state.
@@ -39,6 +54,11 @@ pub fn create(
     create_vizia_editor(editor_state, ViziaTheming::Custom, move |cx, _| {
         cx.add_stylesheet(include_str!("style.css")).ok();
 
+        EventChannels {
+            event_sender: event_sender.clone(),
+        }
+        .build(cx);
+
         ResizeHandle::new(cx);
 
         HStack::new(cx, |cx| {
@@ -52,7 +72,7 @@ pub fn create(
             vec![Pixels(310.0), Pixels(50.0)],
             |cx| {
                 VStack::new(cx, |cx| {
-                    tracks::create(cx, params.clone(), &event_sender);
+                    tracks::create(cx, params.clone());
                 })
                 .row_start(0)
                 .column_start(0);
@@ -97,10 +117,9 @@ pub fn create(
                             .padding_right(Pixels(10.0));
                         ButtonGroup::new(cx, |cx| {
                             for n in 0..6 {
-                                let event_sender = event_sender.clone();
                                 Button::new(cx, |cx| Label::new(cx, format!("{}", n + 1)))
-                                    .on_press(move |_| {
-                                        event_sender.send(EditorEvent::LoadPreset(n)).ok();
+                                    .on_press(move |cx| {
+                                        cx.emit(EditorEvent::LoadPreset(n));
                                     });
                                 Element::new(cx).width(Pixels(5.0));
                             }
