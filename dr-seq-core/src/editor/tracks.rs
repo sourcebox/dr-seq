@@ -15,8 +15,8 @@ use crate::config::*;
 use crate::params::StepState;
 
 /// Creates the tracks.
-pub fn create(cx: &mut Context, params: Arc<AppParams>, event_sender: SyncSender<EditorEvent>) {
-    VStack::new(cx, move |cx| {
+pub fn create(cx: &mut Context, params: Arc<AppParams>, event_sender: &SyncSender<EditorEvent>) {
+    VStack::new(cx, |cx| {
         for track in 0..TRACKS {
             if track == TRACKS - 1 {
                 // Add some space before the accent track.
@@ -24,7 +24,7 @@ pub fn create(cx: &mut Context, params: Arc<AppParams>, event_sender: SyncSender
                 Element::new(cx).height(TRACK_ROW_SPACER_HEIGHT);
             }
 
-            create_track(cx, params.clone(), track, event_sender.clone());
+            create_track(cx, params.clone(), track, event_sender);
         }
     })
     .id("tracks");
@@ -35,7 +35,7 @@ fn create_track(
     cx: &mut Context,
     params: Arc<AppParams>,
     track: usize,
-    event_sender: SyncSender<EditorEvent>,
+    event_sender: &SyncSender<EditorEvent>,
 ) {
     let enable_params = [
         &params.track1_enable,
@@ -67,7 +67,7 @@ fn create_track(
 
             for step in 0..16 {
                 let signal = SyncSignal::new(params.pattern.steps[track][step].clone());
-                StepCell::new(cx, signal, accent_track, event_sender.clone());
+                create_cell(cx, signal, accent_track, event_sender.clone());
                 Element::new(cx).width(Pixels(3.0));
 
                 if step % 4 == 3 && step != 15 {
@@ -89,60 +89,51 @@ fn create_track(
     });
 }
 
-/// Cell for a single step in the beat grid.
-struct StepCell;
+/// Creates a single cell.
+fn create_cell(
+    cx: &mut Context,
+    state: SyncSignal<Arc<AtomicU32>>,
+    accent_step: bool,
+    event_sender: SyncSender<EditorEvent>,
+) {
+    VStack::new(cx, |cx| {
+        Element::new(cx).class("content");
+    })
+    .class("step")
+    .bind(state, move |handle| {
+        let step_state = StepState::from(state.get().load(Ordering::Relaxed));
+        handle
+            .toggle_class("normal", step_state == StepState::Normal)
+            .toggle_class("accent", step_state == StepState::Accent)
+            .toggle_class("weak", step_state == StepState::Weak)
+            .toggle_class("ghost", step_state == StepState::Ghost);
+    })
+    .on_mouse_down(move |eh, _| {
+        let shift = eh.modifiers().contains(Modifiers::SHIFT);
+        let alt = eh.modifiers().contains(Modifiers::ALT);
 
-impl View for StepCell {}
+        let step_state = StepState::from(state.get().load(Ordering::Relaxed));
 
-impl StepCell {
-    /// Returns a new cell.
-    fn new(
-        cx: &mut Context,
-        state: SyncSignal<Arc<AtomicU32>>,
-        accent_step: bool,
-        event_sender: SyncSender<EditorEvent>,
-    ) -> Handle<'_, Self> {
-        Self.build(cx, move |cx| {
-            VStack::new(cx, |cx| {
-                Element::new(cx).class("content");
-            })
-            .class("step")
-            .bind(state, move |handle| {
-                let step_state = StepState::from(state.get().load(Ordering::Relaxed));
-                handle
-                    .toggle_class("normal", step_state == StepState::Normal)
-                    .toggle_class("accent", step_state == StepState::Accent)
-                    .toggle_class("weak", step_state == StepState::Weak)
-                    .toggle_class("ghost", step_state == StepState::Ghost);
-            });
-        })
-        .on_mouse_down(move |eh, _| {
-            let shift = eh.modifiers().contains(Modifiers::SHIFT);
-            let alt = eh.modifiers().contains(Modifiers::ALT);
+        let mut new_state = match (shift, alt) {
+            (true, false) => StepState::Weak,
+            (true, true) => StepState::Ghost,
+            (false, true) => StepState::Accent,
+            _ => StepState::Normal,
+        };
 
-            let step_state = StepState::from(state.get().load(Ordering::Relaxed));
+        if accent_step && new_state != StepState::Off {
+            // Accent track has only on/off steps, so the on
+            // state is always `Accent`.
+            new_state = StepState::Accent;
+        }
 
-            let mut new_state = match (shift, alt) {
-                (true, false) => StepState::Weak,
-                (true, true) => StepState::Ghost,
-                (false, true) => StepState::Accent,
-                _ => StepState::Normal,
-            };
+        if new_state == step_state {
+            new_state = StepState::Off;
+        }
 
-            if accent_step && new_state != StepState::Off {
-                // Accent track has only on/off steps, so the on
-                // state is always `Accent`.
-                new_state = StepState::Accent;
-            }
+        state.update(|s| s.store(new_state.into(), Ordering::Relaxed));
 
-            if new_state == step_state {
-                new_state = StepState::Off;
-            }
-
-            state.update(|s| s.store(new_state.into(), Ordering::Relaxed));
-
-            // Send an event back to the engine.
-            event_sender.send(EditorEvent::UpdateEngine).ok();
-        })
-    }
+        // Send an event back to the engine.
+        event_sender.send(EditorEvent::UpdateEngine).ok();
+    });
 }

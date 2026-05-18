@@ -52,7 +52,7 @@ pub fn create(
             vec![Pixels(310.0), Pixels(50.0)],
             |cx| {
                 VStack::new(cx, |cx| {
-                    tracks::create(cx, params.clone(), event_sender.clone());
+                    tracks::create(cx, params.clone(), &event_sender);
                 })
                 .row_start(0)
                 .column_start(0);
