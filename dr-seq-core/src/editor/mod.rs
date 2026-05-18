@@ -5,6 +5,7 @@ mod style;
 mod tracks;
 
 use std::sync::Arc;
+use std::sync::mpsc::SyncSender;
 
 use nih_plug::prelude::Editor;
 use vizia_plug::vizia::prelude::*;
@@ -30,7 +31,11 @@ pub fn default_state() -> Arc<ViziaState> {
 }
 
 /// Create the editor.
-pub fn create(params: Arc<AppParams>, editor_state: Arc<ViziaState>) -> Option<Box<dyn Editor>> {
+pub fn create(
+    params: Arc<AppParams>,
+    event_sender: SyncSender<EditorEvent>,
+    editor_state: Arc<ViziaState>,
+) -> Option<Box<dyn Editor>> {
     create_vizia_editor(editor_state, ViziaTheming::Custom, move |cx, _| {
         cx.add_stylesheet(include_str!("style.css")).ok();
 
@@ -47,7 +52,7 @@ pub fn create(params: Arc<AppParams>, editor_state: Arc<ViziaState>) -> Option<B
             vec![Pixels(310.0), Pixels(50.0)],
             |cx| {
                 VStack::new(cx, |cx| {
-                    tracks::create(cx, params.clone());
+                    tracks::create(cx, params.clone(), event_sender.clone());
                 })
                 .row_start(0)
                 .column_start(0);
@@ -92,8 +97,7 @@ pub fn create(params: Arc<AppParams>, editor_state: Arc<ViziaState>) -> Option<B
                             .padding_right(Pixels(10.0));
                         ButtonGroup::new(cx, |cx| {
                             for n in 0..6 {
-                                let event_sender =
-                                    params.editor_event_sender.lock().unwrap().clone();
+                                let event_sender = event_sender.clone();
                                 Button::new(cx, |cx| Label::new(cx, format!("{}", n + 1)))
                                     .on_press(move |_| {
                                         event_sender.send(EditorEvent::LoadPreset(n)).ok();

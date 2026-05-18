@@ -25,6 +25,9 @@ pub struct App {
     /// Parameters shared with host.
     params: Arc<AppParams>,
 
+    /// Sender part of channel for events from editor to the engine.
+    editor_event_sender: mpsc::SyncSender<EditorEvent>,
+
     /// Channel for receiving events from the editor.
     editor_event_receiver: mpsc::Receiver<EditorEvent>,
 
@@ -47,7 +50,8 @@ impl Default for App {
         let editor_channel: (mpsc::SyncSender<EditorEvent>, mpsc::Receiver<EditorEvent>) =
             mpsc::sync_channel(64);
         Self {
-            params: Arc::new(AppParams::new(update_engine.clone(), editor_channel.0)),
+            params: Arc::new(AppParams::new(update_engine.clone())),
+            editor_event_sender: editor_channel.0,
             editor_event_receiver: editor_channel.1,
             playing: false,
             tracks: core::array::from_fn(|_| Track::new()),
@@ -95,7 +99,11 @@ impl Plugin for App {
     }
 
     fn editor(&mut self, _async_executor: AsyncExecutor<Self>) -> Option<Box<dyn Editor>> {
-        editor::create(self.params.clone(), self.params.editor_state.clone())
+        editor::create(
+            self.params.clone(),
+            self.editor_event_sender.clone(),
+            self.params.editor_state.clone(),
+        )
     }
 
     fn initialize(

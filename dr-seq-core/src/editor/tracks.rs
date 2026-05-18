@@ -3,7 +3,7 @@
 use std::sync::Arc;
 use std::sync::atomic::AtomicU32;
 use std::sync::atomic::Ordering;
-use std::sync::mpsc;
+use std::sync::mpsc::SyncSender;
 
 use vizia_plug::vizia::prelude::*;
 
@@ -15,7 +15,7 @@ use crate::config::*;
 use crate::params::StepState;
 
 /// Creates the tracks.
-pub fn create(cx: &mut Context, params: Arc<AppParams>) {
+pub fn create(cx: &mut Context, params: Arc<AppParams>, event_sender: SyncSender<EditorEvent>) {
     VStack::new(cx, move |cx| {
         for track in 0..TRACKS {
             if track == TRACKS - 1 {
@@ -24,14 +24,19 @@ pub fn create(cx: &mut Context, params: Arc<AppParams>) {
                 Element::new(cx).height(TRACK_ROW_SPACER_HEIGHT);
             }
 
-            create_track(cx, params.clone(), track);
+            create_track(cx, params.clone(), track, event_sender.clone());
         }
     })
     .id("tracks");
 }
 
 /// Creates a single track.
-fn create_track(cx: &mut Context, params: Arc<AppParams>, track: usize) {
+fn create_track(
+    cx: &mut Context,
+    params: Arc<AppParams>,
+    track: usize,
+    event_sender: SyncSender<EditorEvent>,
+) {
     let enable_params = [
         &params.track1_enable,
         &params.track2_enable,
@@ -59,8 +64,6 @@ fn create_track(cx: &mut Context, params: Arc<AppParams>, track: usize) {
     VStack::new(cx, |cx| {
         HStack::new(cx, |cx| {
             Label::new(cx, TRACK_LABELS[track]).width(Pixels(45.0));
-
-            let event_sender = params.editor_event_sender.lock().unwrap().clone();
 
             for step in 0..16 {
                 let signal = SyncSignal::new(params.pattern.steps[track][step].clone());
@@ -97,7 +100,7 @@ impl StepCell {
         cx: &mut Context,
         state: SyncSignal<Arc<AtomicU32>>,
         accent_step: bool,
-        event_sender: mpsc::SyncSender<EditorEvent>,
+        event_sender: SyncSender<EditorEvent>,
     ) -> Handle<'_, Self> {
         Self.build(cx, move |cx| {
             VStack::new(cx, |cx| {

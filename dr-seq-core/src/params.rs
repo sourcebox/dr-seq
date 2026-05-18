@@ -1,9 +1,7 @@
 //! Plugin parameters.
 
 use std::sync::Arc;
-use std::sync::Mutex;
 use std::sync::atomic::{AtomicBool, AtomicU32, AtomicUsize, Ordering};
-use std::sync::mpsc;
 
 use nih_plug::params::persist::PersistentField;
 use nih_plug::prelude::*;
@@ -11,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use vizia_plug::ViziaState;
 
 use crate::config::{CLOCK_PPQ, TRACKS};
-use crate::editor::{self, EditorEvent};
+use crate::editor;
 
 #[derive(Params)]
 pub struct AppParams {
@@ -22,9 +20,6 @@ pub struct AppParams {
     /// State of the pattern in the grid.
     #[persist = "pattern"]
     pub pattern: Pattern,
-
-    /// Sender part of channel for events from editor to the engine.
-    pub editor_event_sender: Mutex<mpsc::SyncSender<EditorEvent>>,
 
     /// Number of the current step.
     pub current_step: AtomicUsize,
@@ -152,10 +147,7 @@ pub struct AppParams {
 
 impl AppParams {
     /// Returns a new instance.
-    pub fn new(
-        update_engine: Arc<AtomicBool>,
-        editor_event_sender: mpsc::SyncSender<EditorEvent>,
-    ) -> Self {
+    pub fn new(update_engine: Arc<AtomicBool>) -> Self {
         let delay_range = IntRange::Linear {
             min: -(CLOCK_PPQ as i32) / 8,
             max: (CLOCK_PPQ as i32) / 8,
@@ -164,7 +156,6 @@ impl AppParams {
         Self {
             editor_state: editor::default_state(),
             pattern: Pattern::default(),
-            editor_event_sender: Mutex::new(editor_event_sender),
             current_step: AtomicUsize::new(0),
             swing: IntParam::new("Swing", 0, IntRange::Linear { min: 0, max: 100 }).with_callback(
                 {
