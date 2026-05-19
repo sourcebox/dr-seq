@@ -1,7 +1,7 @@
 //! Configuration settings.
 
-use nih_plug::wrapper::clap::features::ClapFeature;
-use nih_plug::wrapper::vst3::subcategories::Vst3SubCategory;
+use nice_plug::wrapper::clap::features::ClapFeature;
+use nice_plug::wrapper::vst3::subcategories::Vst3SubCategory;
 
 /// Application name.
 pub const NAME: &str = "Dr. Seq";

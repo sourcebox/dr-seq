@@ -1,6 +1,6 @@
 //! Common control elements with some individual styling.
 
-use nih_plug::prelude::Param;
+use nice_plug::prelude::Param;
 use vizia_plug::vizia::prelude::*;
 use vizia_plug::widgets::*;
 

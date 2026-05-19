@@ -10,7 +10,7 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc;
 
-use nih_plug::prelude::*;
+use nice_plug::prelude::*;
 
 use dr_seq_engine::{Pattern, Pitch, StepEvent, Track, TrackEvent, TrackParams, Velocity};
 
@@ -386,4 +386,4 @@ impl Vst3Plugin for App {
     const VST3_SUBCATEGORIES: &'static [Vst3SubCategory] = VST3_SUBCATEGORIES;
 }
 
-nih_export_clap!(App);
+nice_export_clap!(App);

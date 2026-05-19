@@ -7,7 +7,7 @@ mod tracks;
 use std::sync::Arc;
 use std::sync::mpsc::SyncSender;
 
-use nih_plug::prelude::Editor;
+use nice_plug::prelude::Editor;
 use vizia_plug::vizia::prelude::*;
 use vizia_plug::widgets::*;
 use vizia_plug::{ViziaState, ViziaTheming, create_vizia_editor};

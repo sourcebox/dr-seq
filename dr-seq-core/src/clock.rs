@@ -1,7 +1,7 @@
 //! Clock generator.
 
-use nih_plug::buffer::Buffer;
-use nih_plug::context::process::Transport;
+use nice_plug::buffer::Buffer;
+use nice_plug::context::process::Transport;
 
 /// Clock generator.
 #[derive(Debug)]
