@@ -91,6 +91,30 @@ pub static PRESET_PATTERN_5: PresetPattern = PresetPattern {
     ],
 };
 
+/// DnB main.
+pub static PRESET_PATTERN_6: PresetPattern = PresetPattern {
+    steps: [
+        "X_________X_____",
+        "____X__x_x__X___",
+        "X_X_X_X_X_X_X_X_",
+        "________________",
+        "________________",
+        "________________",
+    ],
+};
+
+/// DnB variation.
+pub static PRESET_PATTERN_7: PresetPattern = PresetPattern {
+    steps: [
+        "X_____X_________",
+        "____X_____X_____",
+        "X_X_X_X_X_X_X_X_",
+        "________________",
+        "________________",
+        "________________",
+    ],
+};
+
 /// Loads a preset into the parameters.
 pub fn load_preset(preset_no: u32, params: Arc<AppParams>) {
     let preset = match preset_no {
@@ -99,6 +123,8 @@ pub fn load_preset(preset_no: u32, params: Arc<AppParams>) {
         3 => &PRESET_PATTERN_3,
         4 => &PRESET_PATTERN_4,
         5 => &PRESET_PATTERN_5,
+        6 => &PRESET_PATTERN_6,
+        7 => &PRESET_PATTERN_7,
         _ => &PRESET_PATTERN_0,
     };
 

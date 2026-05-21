@@ -116,7 +116,7 @@ pub fn create(
                             .padding_top(Pixels(5.0))
                             .padding_right(Pixels(10.0));
                         ButtonGroup::new(cx, |cx| {
-                            for n in 0..6 {
+                            for n in 0..8 {
                                 Button::new(cx, |cx| Label::new(cx, format!("{}", n + 1)))
                                     .on_press(move |cx| {
                                         cx.emit(EditorEvent::LoadPreset(n));
