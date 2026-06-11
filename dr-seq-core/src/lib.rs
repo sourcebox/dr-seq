@@ -387,3 +387,4 @@ impl Vst3Plugin for App {
 }
 
 nice_export_clap!(App);
+nice_export_vst3!(App);

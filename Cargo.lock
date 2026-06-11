@@ -1102,14 +1102,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "dr-seq-vst3"
-version = "0.1.0"
-dependencies = [
- "dr-seq-core",
- "nice-plug",
-]
-
-[[package]]
 name = "dtoa"
 version = "1.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"

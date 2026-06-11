@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["dr-seq-engine", "dr-seq-core", "dr-seq-vst3", "xtask"]
+members = ["dr-seq-engine", "dr-seq-core", "xtask"]
 
 [profile.release]
 strip = true
