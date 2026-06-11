@@ -7,4 +7,4 @@ description = "A helper for compiling and bundling plugins, can be invoked in th
 license = "ISC"
 
 [dependencies]
-nice-plug-xtask = { git = "https://codeberg.org/BillyDM/nice-plug.git" }
+nice-plug-xtask = "0.1.1"

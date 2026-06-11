@@ -11,8 +11,7 @@ default-run = "dr-seq-core"
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-nice-plug = { git = "https://codeberg.org/BillyDM/nice-plug.git",
-    rev = "7e7f63049dc2250fa755bc45acb1badce8c7bd4c",
+nice-plug = { version = "0.1.8",
     features = [
     "assert_process_allocs",
     "standalone",

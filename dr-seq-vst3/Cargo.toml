@@ -10,9 +10,7 @@ license = "GPL-3.0-or-later"
 crate-type = ["cdylib"]
 
 [dependencies]
-nice-plug = { git = "https://codeberg.org/BillyDM/nice-plug.git",
-    rev = "7e7f63049dc2250fa755bc45acb1badce8c7bd4c",
-}
+nice-plug = "0.1.8"
 dr-seq-core = { path = "../dr-seq-core" }
 
 [features]
