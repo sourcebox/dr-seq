@@ -8,4 +8,4 @@ run flags="":
 
 # Bundle the plugins.
 bundle flags="":
-    cargo xtask bundle dr-seq-core {{ flags }}
+    cargo xtask bundle dr-seq-plugin {{ flags }}

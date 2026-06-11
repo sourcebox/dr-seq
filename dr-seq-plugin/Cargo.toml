@@ -1,11 +1,11 @@
 [package]
-name = "dr-seq-core"
+name = "dr-seq-plugin"
 version = "0.1.0"
 edition = "2024"
 authors = ["Oliver Rockstedt <info@sourcebox.de>"]
 description = "Grid-based drum sequencer"
 license = "MIT"
-default-run = "dr-seq-core"
+default-run = "dr-seq-plugin"
 
 [lib]
 crate-type = ["cdylib", "lib"]

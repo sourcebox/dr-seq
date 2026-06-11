@@ -1,8 +1,8 @@
-# This provides metadata for NIH-plug's `cargo xtask bundle <foo>` plugin
+# This provides metadata for nice-plug's `cargo xtask bundle <foo>` plugin
 # bundler. This file's syntax is as follows:
 #
 # [package_name]
 # name = "Human Readable Plugin Name"  # defaults to <package_name>
 
-[dr-seq-core]
+[dr-seq-plugin]
 name = "Dr. Seq"
